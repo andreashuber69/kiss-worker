@@ -2,9 +2,11 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "declaration": true,
+    "lib": ["es2023", "WebWorker"],
     "noEmit": false,
     "outDir": "../dist",
     "sourceMap": true
+    
   },
   "include": [
     "**/*.ts"
