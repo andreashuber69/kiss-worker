@@ -21,3 +21,5 @@
     <img src="https://img.shields.io/github/license/andreashuber69/kiss-worker.svg" alt="License">
   </a>
 </p>
+
+This is a work in progress, not ready for public consumption.
