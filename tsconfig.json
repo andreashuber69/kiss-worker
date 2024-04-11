@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "@tsconfig/strictest/tsconfig",
+    "@tsconfig/node-lts/tsconfig"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    ".eslintrc.cjs",
+    "*.ts"
+  ]
+}

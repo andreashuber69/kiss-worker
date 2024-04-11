@@ -1,0 +1,17 @@
+{
+  "version": "0.2",
+  "words": [
+    "andreashuber",
+    "codeclimate"
+  ],
+  "dictionaries": [
+    "bash",
+    "typescript"
+  ],
+  "ignorePaths": [
+    "/cc-test-reporter",
+    "/coverage/",
+    "/dist/",
+    "/package.json"
+  ]
+}
