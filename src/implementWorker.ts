@@ -43,7 +43,7 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
 
     readonly #onMessageError = (ev: MessageEvent) => {
         if (this.#currentReject) {
-            this.#currentReject(new TypeError(`${ev}`));
+            this.#currentReject(new TypeError(JSON.stringify(ev)));
         }
 
         this.#resetHandlers();
@@ -51,7 +51,7 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
 
     readonly #onError = (ev: ErrorEvent) => {
         if (this.#currentReject) {
-            this.#currentReject(new Error(`${ev}`));
+            this.#currentReject(new Error(JSON.stringify(ev)));
         }
 
         this.#resetHandlers();
@@ -64,6 +64,23 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
 }
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+
+const getResult = async (func: () => unknown) => {
+    try {
+        // The func argument can either be synchronous or asynchronous, we therefore must always await the result
+        // eslint-disable-next-line @typescript-eslint/return-await
+        return await func();
+    } catch (error: unknown) {
+        console.log(error);
+
+        // https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
+        setTimeout(() => {
+            throw error;
+        });
+
+        throw error;
+    }
+};
 
 export interface IWorker<T> {
     addEventListener:
@@ -85,7 +102,7 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
     func: T | undefined = undefined,
 ) => {
     if (func && isWorker) {
-        onmessage = async (ev: MessageEvent<Parameters<T>>) => postMessage(await func(...ev.data));
+        onmessage = async (ev: MessageEvent<Parameters<T>>) => postMessage(await getResult(() => func(...ev.data)));
     }
 
     return class extends SimpletonWorker<T> {
