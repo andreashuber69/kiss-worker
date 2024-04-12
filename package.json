@@ -44,7 +44,7 @@
     "version": "git flow release start v`cat package.json | jq -r '.version' && git stash push >/dev/null 2>&1` && git stash pop",
     "postversion": "git commit -a -m \"chore: start release v`cat package.json | jq -r '.version'`\"",
     "finish-release": "git flow release finish -p -m \"chore: finish release\" v`cat package.json | jq -r '.version'`",
-    "test": "vitest --run --browser=chrome"
+    "test": "vitest --run --coverage --browser=chrome"
   },
   "devDependencies": {
     "@andreashuber69/eslint-config": "^1.2.9",
@@ -52,6 +52,7 @@
     "@tsconfig/strictest": "^2.0.5",
     "@types/node": "^20.12.7",
     "@vitest/browser": "^1.5.0",
+    "@vitest/coverage-istanbul": "^1.5.0",
     "c8": "^9.1.0",
     "coveralls": "^3.1.1",
     "cspell": "^8.7.0",
