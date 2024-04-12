@@ -4,7 +4,9 @@ import { FibonacciWorker } from "./FibonacciWorker.js";
 
 describe("implementWorker", () => {
     it("should implement a functioning worker", async () => {
-        const myWorker = new FibonacciWorker();
-        expect(await myWorker.execute(1) === 1);
+        const worker = new FibonacciWorker();
+        const results = await Promise.all([...new Array(10).keys()].map(async (n) => await worker.execute(n)));
+        const expected = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34];
+        expect(results.every((value, index) => value === expected[index])).toBe(true);
     });
 });
