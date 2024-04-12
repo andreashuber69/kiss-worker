@@ -44,7 +44,7 @@
     "version": "git flow release start v`cat package.json | jq -r '.version' && git stash push >/dev/null 2>&1` && git stash pop",
     "postversion": "git commit -a -m \"chore: start release v`cat package.json | jq -r '.version'`\"",
     "finish-release": "git flow release finish -p -m \"chore: finish release\" v`cat package.json | jq -r '.version'`",
-    "test": "vitest --run --browser=firefox"
+    "test": "vitest --run --browser=chrome"
   },
   "devDependencies": {
     "@andreashuber69/eslint-config": "^1.2.9",
