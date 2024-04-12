@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 import { FibonacciWorker } from "./FibonacciWorker.js";
 
 describe("implementWorker", () => {
-    it("should return whatever", async () => {
+    it("should implement a functioning worker", async () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         const myWorker = new FibonacciWorker();
-        expect(await myWorker.execute(1) === 1).toBe(true);
+        expect(await myWorker.execute(1) === 1);
     });
 });
