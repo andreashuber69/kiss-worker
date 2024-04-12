@@ -1,10 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import assert from "node:assert";
-import { describe, it } from "node:test";
-import { implementWorker } from "./implementWorker.js";
+import { describe, expect, it } from "vitest";
+import { FibonacciWorker } from "./FibonacciWorker.js";
 
-await describe(implementWorker.name, async () => {
-    await it("should return whatever", () => {
-        assert(implementWorker() === "whatever");
+describe("implementWorker", () => {
+    it("should implement a functioning worker", async () => {
+        const myWorker = new FibonacciWorker();
+        expect(await myWorker.execute(1) === 1);
     });
 });
