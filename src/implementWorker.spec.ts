@@ -26,7 +26,12 @@ describe("ThrowingWorker", () => {
     it("should throw for every call", async () => {
         const worker = new ThrowingWorker();
         const results = await Promise.allSettled([...new Array(3).keys()].map(async () => await worker.execute()));
-        expect(results.every(({ status }) => status === "rejected")).toBe(true);
+
+        expect(results.every(
+            (result) =>
+                (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm",
+        )).toBe(true);
+
         worker.terminate();
         await expect(async () => await worker.execute()).rejects.toThrow(terminatedError);
     });
