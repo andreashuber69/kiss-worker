@@ -1,8 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
 import { FibonacciWorker } from "./testHelpers/FibonacciWorker.js";
-import { PostingWorker } from "./testHelpers/PostingWorker.js";
-import { ThrowingWorker } from "./testHelpers/ThrowingWorker.js";
+import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
 
 const terminatedError = new Error("The worker has been terminated.");
 
@@ -22,27 +21,38 @@ describe("FibonacciWorker", () => {
     });
 });
 
-describe("ThrowingWorker", () => {
-    it("should throw for every call", async () => {
-        const worker = new ThrowingWorker();
-        const results = await Promise.allSettled([...new Array(3).keys()].map(async () => await worker.execute()));
+describe("FunnyWorker", () => {
+    it("should throw when the worker function throws", async () => {
+        const worker = new FunnyWorker();
+
+        const results =
+            await Promise.allSettled([...new Array(3).keys()].map(async () => await worker.execute("throw")));
 
         expect(results.every(
             (result) =>
                 (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm",
         )).toBe(true);
-
-        worker.terminate();
-        await expect(async () => await worker.execute()).rejects.toThrow(terminatedError);
     });
-});
 
-describe("PostingWorker", () => {
-    it("should throw for every call", async () => {
-        const worker = new PostingWorker();
+    it("should throw when the worker function calls postMessage", async () => {
+        const worker = new FunnyWorker();
 
-        await expect(async () => await worker.execute()).rejects.toThrow(
+        await expect(async () => await worker.execute("post")).rejects.toThrow(
             new Error("The worker function called postMessage, which is not allowed."),
         );
+    });
+
+    it("should throw for exceptions thrown outside of the worker function", async () => {
+        const worker = new FunnyWorker();
+
+        await expect(async () => await worker.execute("throwOutside")).rejects.toThrow(
+            // eslint-disable-next-line @stylistic/max-len
+            new Error("Argument deserialization failed or exception thrown outside of the worker function, see browser console for details."),
+        );
+    });
+
+    it("should log delayed exceptions to the console", async () => {
+        const worker = new FunnyWorker();
+        await worker.execute("throwDelayed");
     });
 });
