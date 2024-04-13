@@ -131,10 +131,10 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
     createWorker: () => IWorker<T>,
     func: T | undefined = undefined,
 ) => {
+    // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
+    // version of the code is always loaded.
+    /* istanbul ignore next -- @preserve */
     if (func && isWorker) {
-        // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
-        // version of the code is always loaded.
-        /* istanbul ignore next -- @preserve */
         onmessage = async (ev: MessageEvent<Parameters<T>>) => {
             try {
                 postMessage({
@@ -157,4 +157,3 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
         }
     };
 };
-
