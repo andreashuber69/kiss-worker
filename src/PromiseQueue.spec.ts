@@ -40,7 +40,7 @@ describe(PromiseQueue.name, () => {
             try {
                 await throwErrorPromise1;
             } catch (error: unknown) {
-                expect(error instanceof Error && error.message === `${id1}`);
+                expect(error instanceof Error && error.message === `${id1}`).toBe(true);
             }
 
             const id2 = Math.random() * 1000;
@@ -48,12 +48,12 @@ describe(PromiseQueue.name, () => {
             try {
                 await queue.execute(async () => await throwError(id2));
             } catch (error: unknown) {
-                expect(error instanceof Error && error.message === `${id2}`);
+                expect(error instanceof Error && error.message === `${id2}`).toBe(true);
             }
 
             for (const [index, value] of (await Promise.all(promises)).entries()) {
-                expect(index === value);
-                expect(index === sequence[index]);
+                expect(index === value).toBe(true);
+                expect(index === sequence[index]).toBe(true);
             }
         } catch (error: unknown) {
             console.log(error);

@@ -8,6 +8,7 @@ export default defineConfig({
             enabled: true,
             provider: "istanbul",
             include: ["src/**/*.ts"],
+            exclude: ["src/testHelpers/*.ts"],
             reporter: ["lcov", "text"],
         },
     },

@@ -1,7 +1,19 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { PromiseQueue } from "./PromiseQueue.js";
 
-abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
+interface ExecuteResult<T> {
+    type: "result";
+    result: T;
+}
+
+interface ExecuteError {
+    type: "error";
+    error: Error;
+}
+
+type Message<T> = ExecuteError | ExecuteResult<T>;
+
+abstract class KissWorker<T extends (...args: never[]) => unknown> {
     public async execute(...args: Parameters<T>) {
         return await this.#queue.execute(
             async () => await new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
@@ -15,46 +27,79 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
     }
 
     public terminate() {
-        this.#worker.removeEventListener("message", this.#onMessage);
-        this.#worker.removeEventListener("messageerror", this.#onMessageError);
-        this.#worker.removeEventListener("error", this.#onError);
-        this.#worker.terminate();
+        // Allow terminate() to be called multiple times
+        if (this.#workerImpl) {
+            this.#workerImpl.removeEventListener("message", this.#onMessage);
+            this.#workerImpl.removeEventListener("messageerror", this.#onError);
+            this.#workerImpl.removeEventListener("error", this.#onError);
+            this.#workerImpl.terminate();
+            this.#workerImpl = undefined;
+        }
     }
 
-    protected constructor(worker: IWorker<MessageEvent<Awaited<ReturnType<T>>>>) {
-        this.#worker = worker;
+    protected constructor(worker: IWorker<T>) {
+        this.#workerImpl = worker;
         this.#worker.addEventListener("message", this.#onMessage);
-        this.#worker.addEventListener("messageerror", this.#onMessageError);
+        this.#worker.addEventListener("messageerror", this.#onError);
         this.#worker.addEventListener("error", this.#onError);
     }
 
-    readonly #worker: IWorker<MessageEvent<Awaited<ReturnType<T>>>>;
     readonly #queue = new PromiseQueue();
+    #workerImpl: IWorker<T> | undefined;
     #currentResolve: ((value: Awaited<ReturnType<T>>) => void) | undefined;
     #currentReject: ((reason: unknown) => void) | undefined;
+    #postMessageWasCalled = false;
 
-    readonly #onMessage = (ev: MessageEvent<Awaited<ReturnType<T>>>) => {
-        if (this.#currentResolve) {
-            this.#currentResolve(ev.data);
+    get #worker() {
+        if (!this.#workerImpl) {
+            throw new Error("The worker has been terminated.");
+        }
+
+        return this.#workerImpl;
+    }
+
+    readonly #onMessage = (ev: MessageEvent) => {
+        if (!this.#currentResolve || !this.#currentReject) {
+            if (this.#postMessageWasCalled) {
+                this.#postMessageWasCalled = false;
+            } else {
+                console.error(
+                    "The worker function returned after having an Error thrown outside of the function, see above.",
+                );
+            }
+
+            return;
+        }
+
+        // We're deliberately casting (as opposed to typing the parameter accordingly) to avoid TS4023. This error
+        // appears because TypeScript puts # private properties in the .d.ts files and code importing the type would
+        // thus need to "see" the types associated with the parameter type.
+        const { data } = ev as MessageEvent<Message<Awaited<ReturnType<T>>>>;
+
+        if (data.type === "result") {
+            this.#currentResolve(data.result);
+        } else if (data.type === "error") {
+            this.#currentReject(data.error);
+        } else {
+            this.#postMessageWasCalled = true;
+            this.#currentReject(new Error("The worker function called postMessage, which is not allowed."));
         }
 
         this.#resetHandlers();
     };
 
-    readonly #onMessageError = (ev: MessageEvent) => {
+    readonly #onError = () => {
+        // With a little bit of imagination, a worker function can do all kinds of funny stuff, e.g.
+        // https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
+        // We do our best to bring it to the attention of the caller.
         if (this.#currentReject) {
-            this.#currentReject(new TypeError(`${ev}`));
+            const prefix = "Argument deserialization failed or exception thrown outside of the worker function";
+            this.#currentReject(new Error(`${prefix}, see browser console for details.`));
+            this.#resetHandlers();
+            console.error(`${prefix}.`);
+        } else {
+            console.error("Exception thrown after the worker function has returned, see below.");
         }
-
-        this.#resetHandlers();
-    };
-
-    readonly #onError = (ev: ErrorEvent) => {
-        if (this.#currentReject) {
-            this.#currentReject(new Error(`${ev}`));
-        }
-
-        this.#resetHandlers();
     };
 
     #resetHandlers() {
@@ -63,35 +108,52 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
     }
 }
 
-const isWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+const isWorker = typeof WorkerGlobalScope !== "undefined" &&
+    /* istanbul ignore next -- @preserve */
+    self instanceof WorkerGlobalScope;
 
-export interface IWorker<T> {
+export interface IWorker<T extends (...args: never[]) => unknown> {
     addEventListener:
         ((event: "error", listener: (err: ErrorEvent) => void) => void) &
-        ((event: "message", listener: (value: T) => void) => void) &
+        ((event: "message", listener: (value: MessageEvent) => void) => void) &
         ((event: "messageerror", listener: (value: MessageEvent) => void) => void);
 
     removeEventListener:
         ((event: "error", listener: (err: ErrorEvent) => void) => void) &
-        ((event: "message", listener: (value: T) => void) => void) &
+        ((event: "message", listener: (value: MessageEvent) => void) => void) &
         ((event: "messageerror", listener: (value: MessageEvent) => void) => void);
 
-    postMessage: (message: unknown) => void;
+    postMessage: (args: Parameters<T>) => void;
     terminate: () => void;
 }
 
 export const implementWorker = <T extends (...args: never[]) => unknown>(
-    createWorker: () => IWorker<MessageEvent<Awaited<ReturnType<T>>>>,
+    createWorker: () => IWorker<T>,
     func: T | undefined = undefined,
 ) => {
+    // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
+    // version of the code is always loaded.
+    /* istanbul ignore next -- @preserve */
     if (func && isWorker) {
-        onmessage = async (ev: MessageEvent<Parameters<T>>) => postMessage(await func(...ev.data));
+        onmessage = async (ev: MessageEvent<Parameters<T>>) => {
+            try {
+                postMessage({
+                    type: "result",
+                    // Func can either be synchronous or asynchronous, we therefore must always await the result.
+                    result: await func(...ev.data),
+                });
+            } catch (error: unknown) {
+                postMessage({
+                    type: "error",
+                    error,
+                });
+            }
+        };
     }
 
-    return class extends SimpletonWorker<T> {
+    return class extends KissWorker<T> {
         public constructor() {
             super(createWorker());
         }
     };
 };
-
