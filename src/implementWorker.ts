@@ -71,10 +71,12 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
         // https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
         // We do our best to bring it to the attention of the caller.
         if (this.#currentReject) {
-            const msg = `${prefix} Argument deserialization failed or exception ocurred outside of the worker function`;
+            const msg =
+                `${prefix} Argument deserialization failed or exception occurred outside of the worker function`;
+
             this.#currentReject(new Error(msg));
         } else {
-            throw new Error(`${prefix} Exception ocurred outside of the worker function!`);
+            throw new Error(`${prefix} Exception occurred outside of the worker function!`);
         }
 
         this.#resetHandlers();
