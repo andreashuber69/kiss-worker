@@ -1,7 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
-import { FibonacciWorker } from "./FibonacciWorker.js";
-import { ThrowingWorker } from "./ThrowingWorker.js";
+import { FibonacciWorker } from "./testHelpers/FibonacciWorker.js";
+import { ThrowingWorker } from "./testHelpers/ThrowingWorker.js";
 
 const terminatedError = new Error("The worker has been terminated.");
 

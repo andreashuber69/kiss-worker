@@ -13,7 +13,7 @@ interface ExecuteError {
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
-abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
+abstract class KissWorker<T extends (...args: never[]) => unknown> {
     public async execute(...args: Parameters<T>) {
         return await this.#queue.execute(
             async () => await new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
@@ -138,7 +138,7 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
         };
     }
 
-    return class extends SimpletonWorker<T> {
+    return class extends KissWorker<T> {
         public constructor() {
             super(createWorker());
         }

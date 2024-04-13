@@ -1,4 +1,4 @@
-import { implementWorker } from "./implementWorker.js";
+import { implementWorker } from "../implementWorker.js";
 
 const throwException = () => {
     throw new Error("Hmmm");
