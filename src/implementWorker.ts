@@ -13,6 +13,8 @@ interface ExecuteError {
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
+const postErrorMessage = "The worker function called postMessage, which is not allowed.";
+
 abstract class KissWorker<T extends (...args: never[]) => unknown> {
     public async execute(...args: Parameters<T>) {
         return await this.#queue.execute(
@@ -59,18 +61,21 @@ abstract class KissWorker<T extends (...args: never[]) => unknown> {
 
     readonly #onMessage = (ev: MessageEvent) => {
         if (!this.#currentResolve || !this.#currentReject) {
-            throw new Error("The worker function called postMessage, which is not allowed.");
+            console.error(postErrorMessage);
+            return;
         }
 
         // We're deliberately casting (as opposed to typing the parameter accordingly) to avoid TS4023. This error
         // appears because TypeScript puts # private properties in the .d.ts files and code importing the type would
-        // thus need to "see" the associated parameter types.
+        // thus need to "see" the types associated with the parameter type.
         const { data } = ev as MessageEvent<Message<Awaited<ReturnType<T>>>>;
 
         if (data.type === "result") {
             this.#currentResolve(data.result);
         } else if (data.type === "error") {
             this.#currentReject(data.error);
+        } else {
+            this.#currentReject(new Error(postErrorMessage));
         }
 
         this.#resetHandlers();
@@ -84,14 +89,13 @@ abstract class KissWorker<T extends (...args: never[]) => unknown> {
         // We do our best to bring it to the attention of the caller.
         if (this.#currentReject) {
             const msg =
-                `${prefix} Argument deserialization failed or exception occurred outside of the worker function`;
+                `${prefix} Argument deserialization failed or exception occurred outside of the worker function.`;
 
             this.#currentReject(new Error(msg));
+            this.#resetHandlers();
         } else {
-            throw new Error(`${prefix} Exception occurred outside of the worker function!`);
+            console.error(`${prefix} Exception occurred outside of the worker function.`);
         }
-
-        this.#resetHandlers();
     };
 
     #resetHandlers() {

@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
 import { FibonacciWorker } from "./testHelpers/FibonacciWorker.js";
+import { PostingWorker } from "./testHelpers/PostingWorker.js";
 import { ThrowingWorker } from "./testHelpers/ThrowingWorker.js";
 
 const terminatedError = new Error("The worker has been terminated.");
@@ -28,5 +29,15 @@ describe("ThrowingWorker", () => {
         expect(results.every(({ status }) => status === "rejected")).toBe(true);
         worker.terminate();
         await expect(async () => await worker.execute()).rejects.toThrow(terminatedError);
+    });
+});
+
+describe("PostingWorker", () => {
+    it("should throw for every call", async () => {
+        const worker = new PostingWorker();
+
+        await expect(async () => await worker.execute()).rejects.toThrow(
+            new Error("The worker function called postMessage, which is not allowed."),
+        );
     });
 });
