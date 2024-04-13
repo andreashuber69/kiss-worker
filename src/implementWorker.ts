@@ -27,23 +27,35 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
     }
 
     public terminate() {
-        this.#worker.removeEventListener("message", this.#onMessage);
-        this.#worker.removeEventListener("messageerror", this.#onError);
-        this.#worker.removeEventListener("error", this.#onError);
-        this.#worker.terminate();
+        // Allow terminate() to be called multiple times
+        if (this.#workerImpl) {
+            this.#workerImpl.removeEventListener("message", this.#onMessage);
+            this.#workerImpl.removeEventListener("messageerror", this.#onError);
+            this.#workerImpl.removeEventListener("error", this.#onError);
+            this.#workerImpl.terminate();
+            this.#workerImpl = undefined;
+        }
     }
 
     protected constructor(worker: IWorker<T>) {
-        this.#worker = worker;
+        this.#workerImpl = worker;
         this.#worker.addEventListener("message", this.#onMessage);
         this.#worker.addEventListener("messageerror", this.#onError);
         this.#worker.addEventListener("error", this.#onError);
     }
 
-    readonly #worker: IWorker<T>;
     readonly #queue = new PromiseQueue();
+    #workerImpl: IWorker<T> | undefined;
     #currentResolve: ((value: Awaited<ReturnType<T>>) => void) | undefined;
     #currentReject: ((reason: unknown) => void) | undefined;
+
+    get #worker() {
+        if (!this.#workerImpl) {
+            throw new Error("The worker has been terminated.");
+        }
+
+        return this.#workerImpl;
+    }
 
     readonly #onMessage = (ev: MessageEvent) => {
         if (!this.#currentResolve || !this.#currentReject) {
