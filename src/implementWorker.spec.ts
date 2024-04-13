@@ -18,8 +18,8 @@ describe("implementWorker", () => {
             await worker.execute();
             expect(false).toBe(true);
         } catch (error: unknown) {
-            console.log(error);
-            expect(true).toBe(true);
+            expect(error).toBeInstanceOf(Error);
+            expect((error as Error).message === "Hmmm").toBe(true);
         }
     });
 });

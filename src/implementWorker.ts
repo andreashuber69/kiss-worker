@@ -1,6 +1,18 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { PromiseQueue } from "./PromiseQueue.js";
 
+interface ExecuteResult<T> {
+    type: "result";
+    result: T;
+}
+
+interface ExecuteError {
+    type: "error";
+    error: Error;
+}
+
+type Message<T> = ExecuteError | ExecuteResult<T>;
+
 abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
     public async execute(...args: Parameters<T>) {
         return await this.#queue.execute(
@@ -16,42 +28,53 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
 
     public terminate() {
         this.#worker.removeEventListener("message", this.#onMessage);
-        this.#worker.removeEventListener("messageerror", this.#onMessageError);
+        this.#worker.removeEventListener("messageerror", this.#onError);
         this.#worker.removeEventListener("error", this.#onError);
         this.#worker.terminate();
     }
 
-    protected constructor(worker: IWorker<MessageEvent<Awaited<ReturnType<T>>>>) {
+    protected constructor(worker: IWorker<T>) {
         this.#worker = worker;
         this.#worker.addEventListener("message", this.#onMessage);
-        this.#worker.addEventListener("messageerror", this.#onMessageError);
+        this.#worker.addEventListener("messageerror", this.#onError);
         this.#worker.addEventListener("error", this.#onError);
     }
 
-    readonly #worker: IWorker<MessageEvent<Awaited<ReturnType<T>>>>;
+    readonly #worker: IWorker<T>;
     readonly #queue = new PromiseQueue();
     #currentResolve: ((value: Awaited<ReturnType<T>>) => void) | undefined;
     #currentReject: ((reason: unknown) => void) | undefined;
 
-    readonly #onMessage = (ev: MessageEvent<Awaited<ReturnType<T>>>) => {
-        if (this.#currentResolve) {
-            this.#currentResolve(ev.data);
+    readonly #onMessage = (ev: MessageEvent) => {
+        if (!this.#currentResolve || !this.#currentReject) {
+            throw new Error("The worker function called postMessage, which is not allowed.");
+        }
+
+        // We're deliberately casting (as opposed to typing the parameter accordingly) to avoid TS4023. This error
+        // appears because TypeScript puts # private properties in the .d.ts files and code importing the type would
+        // thus need to "see" the associated parameter types.
+        const { data } = ev as MessageEvent<Message<Awaited<ReturnType<T>>>>;
+
+        if (data.type === "result") {
+            this.#currentResolve(data.result);
+        } else if (data.type === "error") {
+            this.#currentReject(data.error);
         }
 
         this.#resetHandlers();
     };
 
-    readonly #onMessageError = (ev: MessageEvent) => {
-        if (this.#currentReject) {
-            this.#currentReject(new TypeError(JSON.stringify(ev)));
-        }
+    readonly #onError = (ev: Event) => {
+        const prefix = `Unexpected error in worker: ${JSON.stringify(ev)}!`;
 
-        this.#resetHandlers();
-    };
-
-    readonly #onError = (ev: ErrorEvent) => {
+        // With a little bit of imagination, a worker function can do all kinds of funny stuff, e.g.
+        // https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
+        // We do our best to bring it to the attention of the caller.
         if (this.#currentReject) {
-            this.#currentReject(new Error(JSON.stringify(ev)));
+            const msg = `${prefix} Argument deserialization failed or exception ocurred outside of the worker function`;
+            this.#currentReject(new Error(msg));
+        } else {
+            throw new Error(`${prefix} Exception ocurred outside of the worker function!`);
         }
 
         this.#resetHandlers();
@@ -65,44 +88,40 @@ abstract class SimpletonWorker<T extends (...args: never[]) => unknown> {
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
 
-const getResult = async (func: () => unknown) => {
-    try {
-        // The func argument can either be synchronous or asynchronous, we therefore must always await the result
-        // eslint-disable-next-line @typescript-eslint/return-await
-        return await func();
-    } catch (error: unknown) {
-        console.log(error);
-
-        // https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
-        setTimeout(() => {
-            throw error;
-        });
-
-        throw error;
-    }
-};
-
-export interface IWorker<T> {
+export interface IWorker<T extends (...args: never[]) => unknown> {
     addEventListener:
         ((event: "error", listener: (err: ErrorEvent) => void) => void) &
-        ((event: "message", listener: (value: T) => void) => void) &
+        ((event: "message", listener: (value: MessageEvent) => void) => void) &
         ((event: "messageerror", listener: (value: MessageEvent) => void) => void);
 
     removeEventListener:
         ((event: "error", listener: (err: ErrorEvent) => void) => void) &
-        ((event: "message", listener: (value: T) => void) => void) &
+        ((event: "message", listener: (value: MessageEvent) => void) => void) &
         ((event: "messageerror", listener: (value: MessageEvent) => void) => void);
 
-    postMessage: (message: unknown) => void;
+    postMessage: (args: Parameters<T>) => void;
     terminate: () => void;
 }
 
 export const implementWorker = <T extends (...args: never[]) => unknown>(
-    createWorker: () => IWorker<MessageEvent<Awaited<ReturnType<T>>>>,
+    createWorker: () => IWorker<T>,
     func: T | undefined = undefined,
 ) => {
     if (func && isWorker) {
-        onmessage = async (ev: MessageEvent<Parameters<T>>) => postMessage(await getResult(() => func(...ev.data)));
+        onmessage = async (ev: MessageEvent<Parameters<T>>) => {
+            try {
+                postMessage({
+                    type: "result",
+                    // Func can either be synchronous or asynchronous, we therefore must always await the result.
+                    result: await func(...ev.data),
+                });
+            } catch (error: unknown) {
+                postMessage({
+                    type: "error",
+                    error,
+                });
+            }
+        };
     }
 
     return class extends SimpletonWorker<T> {
