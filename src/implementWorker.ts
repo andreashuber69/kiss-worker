@@ -108,7 +108,9 @@ abstract class KissWorker<T extends (...args: never[]) => unknown> {
     }
 }
 
-const isWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+const isWorker = typeof WorkerGlobalScope !== "undefined" &&
+    /* istanbul ignore next -- @preserve */
+    self instanceof WorkerGlobalScope;
 
 export interface IWorker<T extends (...args: never[]) => unknown> {
     addEventListener:
@@ -130,6 +132,9 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
     func: T | undefined = undefined,
 ) => {
     if (func && isWorker) {
+        // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
+        // version of the code is always loaded.
+        /* istanbul ignore next -- @preserve */
         onmessage = async (ev: MessageEvent<Parameters<T>>) => {
             try {
                 postMessage({
