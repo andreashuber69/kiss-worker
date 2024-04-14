@@ -36,6 +36,7 @@
     "prelint": "cspell '**' && markdownlint '**/*.md'",
     "lint": "eslint --ext .cjs,.ts --report-unused-disable-directives '.'",
     "build": "tsc -p './src/tsconfig.json'",
+    "test-no-coverage": "vitest --run --browser=chrome",
     "test": "vitest --run --coverage --browser=chrome",
     "show-coverage": "vite 'coverage/lcov-report' --logLevel error --open",
     "ci": "npm run lint && npm run build && npm test",
