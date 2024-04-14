@@ -1,6 +1,6 @@
 {
   "name": "kiss-worker",
-  "version": "0.0.2-alpha.4",
+  "version": "0.0.2",
   "description": "KISS Worker",
   "keywords": [
     "kiss",
@@ -25,6 +25,7 @@
   },
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "/dist/",
     "!/dist/testHelpers",
@@ -35,14 +36,15 @@
   "scripts": {
     "prelint": "cspell '**' && markdownlint '**/*.md'",
     "lint": "eslint --ext .cjs,.ts --report-unused-disable-directives '.'",
-    "build": "tsc -p './src/tsconfig.json'",
+    "build": "tsc -p './src' && vite build",
+    "test-no-coverage": "vitest --run --browser=chrome",
+    "test": "vitest --run --coverage --browser=chrome",
     "show-coverage": "vite 'coverage/lcov-report' --logLevel error --open",
     "ci": "npm run lint && npm run build && npm test",
     "preversion": "git checkout develop && git push && git pull",
     "version": "git flow release start v`cat package.json | jq -r '.version' && git stash push >/dev/null 2>&1` && git stash pop",
     "postversion": "git commit -a -m \"chore: start release v`cat package.json | jq -r '.version'`\"",
-    "finish-release": "git flow release finish -p -m \"chore: finish release\" v`cat package.json | jq -r '.version'`",
-    "test": "vitest --run --coverage --browser=chrome"
+    "finish-release": "git flow release finish -p -m \"chore: finish release\" v`cat package.json | jq -r '.version'`"
   },
   "devDependencies": {
     "@andreashuber69/eslint-config": "^1.2.9",
@@ -58,6 +60,7 @@
     "tsx": "^4.7.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.8",
+    "vite-plugin-dts": "^3.8.2",
     "vitest": "^1.5.0",
     "webdriverio": "^8.35.1"
   }

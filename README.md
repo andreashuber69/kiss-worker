@@ -2,6 +2,9 @@
   kiss-worker
 </h1>
 <p align="center">
+  <a href="https://www.npmjs.com/package/kiss-worker">
+    <img src="https://img.shields.io/npm/v/kiss-worker" alt="NPM Version">
+  </a>
   <a href="https://github.com/andreashuber69/kiss-worker/releases">
     <img src="https://img.shields.io/github/release-date/andreashuber69/kiss-worker.svg" alt="Release Date">
   </a>
