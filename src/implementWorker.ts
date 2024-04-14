@@ -37,7 +37,7 @@ abstract class KissWorker<T extends (...args: never[]) => unknown> {
         }
     }
 
-    protected constructor(worker: IWorker<T>) {
+    protected constructor(worker: IWorker) {
         this.#workerImpl = worker;
         this.#worker.addEventListener("message", this.#onMessage);
         this.#worker.addEventListener("messageerror", this.#onError);
@@ -45,7 +45,7 @@ abstract class KissWorker<T extends (...args: never[]) => unknown> {
     }
 
     readonly #queue = new PromiseQueue();
-    #workerImpl: IWorker<T> | undefined;
+    #workerImpl: IWorker | undefined;
     #currentResolve: ((value: Awaited<ReturnType<T>>) => void) | undefined;
     #currentReject: ((reason: unknown) => void) | undefined;
     #postMessageWasCalled = false;
@@ -112,7 +112,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
     self instanceof WorkerGlobalScope;
 
-export interface IWorker<T extends (...args: never[]) => unknown> {
+export interface IWorker {
     addEventListener:
         ((event: "error", listener: (err: ErrorEvent) => void) => void) &
         ((event: "message", listener: (value: MessageEvent) => void) => void) &
@@ -123,12 +123,12 @@ export interface IWorker<T extends (...args: never[]) => unknown> {
         ((event: "message", listener: (value: MessageEvent) => void) => void) &
         ((event: "messageerror", listener: (value: MessageEvent) => void) => void);
 
-    postMessage: (args: Parameters<T>) => void;
+    postMessage: (args: never[]) => void;
     terminate: () => void;
 }
 
 export const implementWorker = <T extends (...args: never[]) => unknown>(
-    createWorker: () => IWorker<T>,
+    createWorker: () => IWorker,
     func: T | undefined = undefined,
 ) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
