@@ -45,7 +45,7 @@ describe("FunnyWorker", () => {
 
         await expect(async () => await worker.execute("throwOutside")).rejects.toThrow(
             // eslint-disable-next-line @stylistic/max-len
-            new Error("Argument deserialization failed or exception thrown outside of the worker function, see browser console for details."),
+            new Error("Argument deserialization failed or exception thrown outside of the worker function, see console for details."),
         );
     });
 

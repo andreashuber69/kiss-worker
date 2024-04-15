@@ -95,7 +95,7 @@ export abstract class KissWorker<T extends (...args: never[]) => unknown> {
         // We do our best to bring it to the attention of the caller.
         if (this.#currentReject) {
             const prefix = "Argument deserialization failed or exception thrown outside of the worker function";
-            this.#currentReject(new Error(`${prefix}, see browser console for details.`));
+            this.#currentReject(new Error(`${prefix}, see console for details.`));
             this.#resetHandlers();
             console.error(`${prefix}.`);
         } else {
