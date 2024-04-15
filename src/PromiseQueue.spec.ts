@@ -1,4 +1,4 @@
-// https://github.com/andreashuber69/verify-coldcard-dice-seed/blob/develop/README.md#----verify-coldcard-dice-seed
+// https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
 
 import { PromiseQueue } from "./PromiseQueue.js";
