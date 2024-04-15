@@ -3,8 +3,6 @@ import { describe, expect, it } from "vitest";
 import { FibonacciWorker } from "./testHelpers/FibonacciWorker.js";
 import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
 
-const terminatedError = new Error("The worker has been terminated.");
-
 describe("FibonacciWorker", () => {
     it("should sequentially execute all calls", async () => {
         const worker = new FibonacciWorker();
@@ -17,7 +15,7 @@ describe("FibonacciWorker", () => {
         const worker = new FibonacciWorker();
         worker.terminate();
         worker.terminate(); // Should be safe to call multiple times
-        await expect(async () => await worker.execute(3)).rejects.toThrow(terminatedError);
+        await expect(async () => await worker.execute(3)).rejects.toThrow(new Error("The worker has been terminated."));
     });
 });
 
