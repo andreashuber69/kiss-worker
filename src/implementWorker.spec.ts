@@ -6,6 +6,8 @@ import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
 const isExpected = (result: PromiseSettledResult<void>) =>
     (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm";
 
+const delay = async () => await new Promise((resolve) => setTimeout(resolve, 200));
+
 describe("KissWorker", () => {
     describe("execute", () => {
         it("should sequentially execute multiple calls", async () => {
@@ -47,11 +49,16 @@ describe("KissWorker", () => {
                 // eslint-disable-next-line @stylistic/max-len
                 new Error("Argument deserialization failed or exception thrown outside of the worker function, see console for details."),
             );
+
+            // Wait for the worker function to return so that the console output always appears.
+            await delay();
         });
 
         it("should log delayed exceptions to the console", async () => {
             const worker = new FunnyWorker();
             await worker.execute("throwDelayed");
+            // Wait for the error handler to be called so that the console output always appears.
+            await delay();
         });
     });
 });
