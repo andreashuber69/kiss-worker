@@ -1,7 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { IWorker } from "./IWorker.js";
 import { KissWorker } from "./KissWorker.js";
-import { listen } from "./listen.js";
+import { serve } from "./serve.js";
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
@@ -15,7 +15,7 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
     if (func && isWorker) {
-        listen<T>(func);
+        serve<T>(func);
     }
 
     return class extends KissWorker<T> {
