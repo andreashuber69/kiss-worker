@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { IWorker } from "./IWorker.js";
 import { KissWorker } from "./KissWorker.js";
+import { listen } from "./listen.js";
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
@@ -11,23 +12,10 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
     func: T | undefined = undefined,
 ) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
-    // version of the code is always loaded.
+    // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
     if (func && isWorker) {
-        onmessage = async (ev: MessageEvent<Parameters<T>>) => {
-            try {
-                postMessage({
-                    type: "result",
-                    // Func can either be synchronous or asynchronous, we therefore must always await the result.
-                    result: await func(...ev.data),
-                });
-            } catch (error: unknown) {
-                postMessage({
-                    type: "error",
-                    error,
-                });
-            }
-        };
+        listen<T>(func);
     }
 
     return class extends KissWorker<T> {
