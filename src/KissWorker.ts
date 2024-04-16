@@ -40,9 +40,9 @@ export abstract class KissWorker<T extends (...args: never[]) => unknown> {
 
     protected constructor(worker: IWorker) {
         this.#workerImpl = worker;
-        this.#worker.addEventListener("message", this.#onMessage);
-        this.#worker.addEventListener("messageerror", this.#onError);
-        this.#worker.addEventListener("error", this.#onError);
+        this.#workerImpl.addEventListener("message", this.#onMessage);
+        this.#workerImpl.addEventListener("messageerror", this.#onError);
+        this.#workerImpl.addEventListener("error", this.#onError);
     }
 
     readonly #queue = new PromiseQueue();
