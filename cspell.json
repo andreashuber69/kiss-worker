@@ -4,6 +4,7 @@
     "andreas",
     "codeclimate",
     "lcov",
+    "linkcode",
     "uninstrumented"
   ],
   "dictionaries": [
