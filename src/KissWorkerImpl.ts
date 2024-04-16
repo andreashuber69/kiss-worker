@@ -14,7 +14,7 @@ interface ExecuteError {
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
-export abstract class KissWorker<T extends (...args: never[]) => unknown> {
+export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
     public async execute(...args: Parameters<T>) {
         return await this.#queue.execute(
             async () => await new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {

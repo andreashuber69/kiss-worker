@@ -1,13 +1,13 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { KissWorker } from "./KissWorker.js";
+import { KissWorkerImpl } from "./KissWorkerImpl.js";
 import { serve } from "./serve.js";
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
     self instanceof WorkerGlobalScope;
 
-export interface IKissWorker<T extends (...args: never[]) => unknown> {
+export interface KissWorker<T extends (...args: never[]) => unknown> {
     execute: (...args: Parameters<T>) => Promise<ReturnType<T>>;
     terminate: () => void;
 }
@@ -15,7 +15,7 @@ export interface IKissWorker<T extends (...args: never[]) => unknown> {
 export const implementWorker = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
     func: T | undefined = undefined,
-): new () => IKissWorker<T> => {
+): new () => KissWorker<T> => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
@@ -23,7 +23,7 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
         serve<T>(func);
     }
 
-    return class extends KissWorker<T> {
+    return class extends KissWorkerImpl<T> {
         public constructor() {
             super(createWorker());
         }
