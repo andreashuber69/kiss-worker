@@ -1,8 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+import type { implementWorker } from "./implementWorker.js";
+
 /**
- * Exposes the minimal interface of the object returned by the the `createWorker` parameter of the `implementWorker`
- * function.
- * @description This is a subset of the {@link Worker} interface (currently available in browsers only).
+ * Exposes the minimally required interface of the object returned by the the `createWorker` parameter of the
+ * {@linkcode implementWorker} function.
+ * @description This is a subset of the {@linkcode Worker} interface (currently available in browsers only).
  */
 export interface DedicatedWorker {
     addEventListener:
