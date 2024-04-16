@@ -27,7 +27,7 @@ describe("KissWorker", () => {
         });
 
         it("should throw after terminate()", async () => {
-            const worker = new FibonacciWorker();
+            const worker = new DelayWorker();
             worker.terminate();
             worker.terminate(); // Should be safe to call multiple times
 
