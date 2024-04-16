@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { IWorker } from "./IWorker.js";
+import type { DedicatedWorker } from "./DedicatedWorker.js";
 import { PromiseQueue } from "./PromiseQueue.js";
 
 interface ExecuteResult<T> {
@@ -38,7 +38,7 @@ export abstract class KissWorker<T extends (...args: never[]) => unknown> {
         }
     }
 
-    protected constructor(worker: IWorker) {
+    protected constructor(worker: DedicatedWorker) {
         this.#workerImpl = worker;
         this.#workerImpl.addEventListener("message", this.#onMessage);
         this.#workerImpl.addEventListener("messageerror", this.#onError);
@@ -46,7 +46,7 @@ export abstract class KissWorker<T extends (...args: never[]) => unknown> {
     }
 
     readonly #queue = new PromiseQueue();
-    #workerImpl: IWorker | undefined;
+    #workerImpl: DedicatedWorker | undefined;
     #currentResolve: ((value: Awaited<ReturnType<T>>) => void) | undefined;
     #currentReject: ((reason: unknown) => void) | undefined;
     #postMessageWasCalled = false;

@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { IWorker } from "./IWorker.js";
+import type { DedicatedWorker } from "./DedicatedWorker.js";
 import { KissWorker } from "./KissWorker.js";
 import { serve } from "./serve.js";
 
@@ -13,7 +13,7 @@ export interface IKissWorker<T extends (...args: never[]) => unknown> {
 }
 
 export const implementWorker = <T extends (...args: never[]) => unknown>(
-    createWorker: () => IWorker,
+    createWorker: () => DedicatedWorker,
     func: T | undefined = undefined,
 ): new () => IKissWorker<T> => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
