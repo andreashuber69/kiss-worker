@@ -2,5 +2,3 @@
 export { implementWorker } from "./implementWorker.js";
 
 export { serve } from "./serve.js";
-
-export type { IWorker } from "./IWorker.js";
