@@ -1,7 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 /**
- * Serves @param func such that it can be called from the main thread.
- * @param func The worker function to serve
+ * Serves @param func on a worker thread such that it can be called from the main thread (or another worker thread).
+ * @param func The worker function to serve.
  */
 export const serve = <T extends (...args: never[]) => unknown>(func: T) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
