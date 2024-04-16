@@ -59,7 +59,7 @@ export abstract class KissWorker<T extends (...args: never[]) => unknown> {
         return this.#workerImpl;
     }
 
-    readonly #onMessage = (ev: MessageEvent) => {
+    readonly #onMessage = (ev: { data: unknown }) => {
         if (!this.#currentResolve || !this.#currentReject) {
             if (this.#postMessageWasCalled) {
                 this.#postMessageWasCalled = false;
@@ -75,7 +75,7 @@ export abstract class KissWorker<T extends (...args: never[]) => unknown> {
         // We're deliberately casting (as opposed to typing the parameter accordingly) to avoid TS4023. This error
         // appears because TypeScript puts # private properties in the .d.ts files and code importing the type would
         // thus need to "see" the types associated with the parameter type.
-        const { data } = ev as MessageEvent<Message<Awaited<ReturnType<T>>>>;
+        const { data } = ev as { data: Message<Awaited<ReturnType<T>>> };
 
         if (data.type === "result") {
             this.#currentResolve(data.result);
