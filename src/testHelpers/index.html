@@ -6,8 +6,7 @@
     <script type="module">
       import { FibonacciWorker } from "./FibonacciWorker.js";
       const worker = new FibonacciWorker();
-      const fibonacci = await worker.execute(40);
-      document.querySelector("#result").textContent = `${fibonacci}`;
+      document.querySelector("#result").textContent = `${await worker.execute(40)}`;
     </script>
   </head>
   <body>
