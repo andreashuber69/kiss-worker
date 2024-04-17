@@ -55,9 +55,6 @@ import { KissWorkerImpl } from "./KissWorkerImpl.js";
 export const implementWorkerExternal = <T extends (...args: never[]) => unknown = never>(
     createWorker: T extends never ? never : () => DedicatedWorker,
 ): new () => KissWorker<T> =>
-    // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
-    // version of the code is ever loaded.
-    /* istanbul ignore next -- @preserve */
     class extends KissWorkerImpl<T> {
         public constructor() {
             super(createWorker());
