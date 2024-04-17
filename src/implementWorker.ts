@@ -60,6 +60,7 @@ export const implementWorker = <T extends (...args: never[]) => unknown>(
         serve(func);
     }
 
-    // It appears that the only alternative to casting here is typing
+    // It appears that the only alternative to casting here is typing the parameter accordingly but that would
+    // unnecessarily pollute the interface.
     return implementWorkerExternal<T>(createWorker as T extends never ? never : () => DedicatedWorker);
 };
