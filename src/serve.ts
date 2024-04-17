@@ -1,6 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+import type { implementWorkerExternal } from "./implementWorkerExternal.js";
+
 /**
- * Serves @param func on a worker thread such that it can be called from the main thread (or another worker thread).
+ * Serves @param func on a worker thread such that it can be called from a different thread.
+ * @description This function must only be called from code executing on a worker thread, see example in the
+ * {@linkcode implementWorkerExternal} documentation.
  * @param func The worker function to serve.
  */
 export const serve = <T extends (...args: never[]) => unknown>(func: T) => {
