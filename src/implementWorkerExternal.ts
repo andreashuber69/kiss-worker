@@ -41,22 +41,16 @@ import { KissWorkerImpl } from "./KissWorkerImpl.js";
  * export { getFibonacci };
  *
  *
- * // index.html
- * <!doctype html>
- * <html lang=en>
- *   <head>
- *     <meta charset=utf-8>
- *     <title>kiss-worker Test</title>
- *     <script type="module">
- *       import { FibonacciWorker } from "./FibonacciWorker.ts";
- *       const worker = new FibonacciWorker();
- *       document.querySelector("#result").textContent = `${await worker.execute(40)}`;
- *     </script>
- *   </head>
- *   <body>
- *     <h1 id="result"></h1>
- *   </body>
- * </html>
+ * // someFunction.ts
+ * import { FibonacciWorker } from "./FibonacciWorker.ts";
+ *
+ * const worker = new FibonacciWorker();
+ *
+ * const someFunction = () => {
+ *     // ...
+ *     const result = worker.execute(42);
+ *     // ...
+ * };
  */
 export const implementWorkerExternal = <T extends (...args: never[]) => unknown = never>(
     createWorker: T extends never ? never : () => DedicatedWorker,
