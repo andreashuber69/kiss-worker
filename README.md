@@ -20,6 +20,9 @@
   <a href="https://coveralls.io/github/andreashuber69/kiss-worker?branch=develop">
     <img src="https://coveralls.io/repos/github/andreashuber69/kiss-worker/badge.svg?branch=develop" alt="Coverage">
   </a>
+  <a href="https://www.npmjs.com/package/kiss-worker?activeTab=code">
+    <img src="https://img.shields.io/bundlephobia/minzip/kiss-worker" alt="npm Bundle Size">
+  </a>
   <a href="https://github.com/andreashuber69/kiss-worker/blob/develop/LICENSE">
     <img src="https://img.shields.io/github/license/andreashuber69/kiss-worker.svg" alt="License">
   </a>
