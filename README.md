@@ -31,13 +31,19 @@
 Provides one of the simplest ways to offload work onto a worker thread in the browser, in under 2kB of additional chunk
 size!
 
-## Installation
+## Prerequisites
+
+This is an ESM-only package. If you're still targeting browsers without ESM support, this package is not for you.
+
+## Getting Started
+
+### Installation
 
 `npm install kiss-worker`
 
 If you are using a bundler, you might want add `--save-dev` to the command line.
 
-## Example
+### Example
 
 ```js
 // FibonacciWorker.js
