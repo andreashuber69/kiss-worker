@@ -46,9 +46,9 @@ import { KissWorkerImpl } from "./KissWorkerImpl.js";
  *
  * const worker = new FibonacciWorker();
  *
- * const someFunction = () => {
+ * const someFunction = async () => {
  *     // ...
- *     const result = worker.execute(42);
+ *     const result = await worker.execute(42);
  *     // ...
  * };
  */
