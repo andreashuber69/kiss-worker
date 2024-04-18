@@ -37,7 +37,7 @@
     "prelint": "cspell '**' && markdownlint '**/*.md'",
     "lint": "eslint --ext .cjs,.ts --report-unused-disable-directives '.'",
     "build": "tsc -p './src' && vite build",
-    "build-code-doc": "typedoc 'src/**/*.ts' --tsconfig './src/tsconfig.json' --excludePrivate --out 'code-doc'",
+    "build-code-doc": "typedoc './src/index.ts' --tsconfig './src/tsconfig.json' --excludePrivate --out './code-doc'",
     "show-code-doc": "vite 'code-doc' --logLevel error --open",
     "test-no-coverage": "vitest --run --browser=chrome",
     "test": "vitest --run --coverage --browser=chrome",
