@@ -5,7 +5,8 @@ import type { implementWorkerExternal } from "./implementWorkerExternal.js";
 /**
  * Exposes the minimally required interface of the object returned by the the `createWorker` parameter of the
  * {@linkcode implementWorker} and {@linkcode implementWorkerExternal} functions.
- * @description This is a subset of the {@linkcode Worker} interface (currently available in browsers only).
+ * @description This is a subset of the [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker) interface
+ * (currently available in browsers only).
  */
 export interface DedicatedWorker {
     addEventListener:
