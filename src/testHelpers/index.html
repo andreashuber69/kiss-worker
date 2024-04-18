@@ -6,8 +6,15 @@
     <title>kiss-worker Test</title>
     <script type="module">
       import { FibonacciWorker } from "./FibonacciWorker.js";
+      // Start a new worker thread waiting for work.
       const worker = new FibonacciWorker();
-      document.querySelector("#result").textContent = `${await worker.execute(40)}`;
+      // Send the argument (40) to the worker thread, where it will be passed to our worker function. In the mean time
+      // we're awaiting the returned promise, which will eventually fulfill with the result calculated on the worker
+      // thread.
+      const result = await worker.execute(40);
+      // Terminate the worker thread when we're done.
+      worker.terminate();
+      document.querySelector("#result").textContent = `${result}`;
     </script>
   </head>
   <body>
