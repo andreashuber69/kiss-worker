@@ -1,6 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 
-export type { DedicatedWorker } from "./DedicatedWorker.js";
+export type { AddRemoveEventListener, DedicatedWorker } from "./DedicatedWorker.js";
 
 export type { KissWorker } from "./KissWorker.js";
 

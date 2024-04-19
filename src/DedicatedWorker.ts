@@ -2,6 +2,11 @@
 import type { implementWorker } from "./implementWorker.js";
 import type { implementWorkerExternal } from "./implementWorkerExternal.js";
 
+export type AddRemoveEventListener =
+    ((event: "error", listener: () => void) => void) &
+    ((event: "message", listener: (ev: { data: unknown }) => void) => void) &
+    ((event: "messageerror", listener: () => void) => void);
+
 /**
  * Exposes the minimally required interface of the object returned by the the `createWorker` parameter of the
  * {@linkcode implementWorker} and {@linkcode implementWorkerExternal} functions.
@@ -9,16 +14,8 @@ import type { implementWorkerExternal } from "./implementWorkerExternal.js";
  * (currently available in browsers only).
  */
 export interface DedicatedWorker {
-    addEventListener:
-        ((event: "error", listener: () => void) => void) &
-        ((event: "message", listener: (ev: { data: unknown }) => void) => void) &
-        ((event: "messageerror", listener: () => void) => void);
-
-    removeEventListener:
-        ((event: "error", listener: () => void) => void) &
-        ((event: "message", listener: (ev: { data: unknown }) => void) => void) &
-        ((event: "messageerror", listener: () => void) => void);
-
+    addEventListener: AddRemoveEventListener;
+    removeEventListener: AddRemoveEventListener;
     postMessage: (args: never[]) => void;
     terminate: () => void;
 }
