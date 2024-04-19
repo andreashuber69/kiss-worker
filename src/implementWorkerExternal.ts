@@ -21,15 +21,6 @@ import { KissWorkerImpl } from "./KissWorkerImpl.js";
  * for more information.
  * @returns The constructor function of an anonymous class implementing the {@linkcode KissWorker} interface.
  * @example
- * // FibonacciWorker.ts
- * import { implementWorkerExternal } from "kiss-worker";
- * import type { getFibonacci } from "./getFibonacci.js";
- *
- * export const FibonacciWorker = implementWorkerExternal<typeof getFibonacci>(
- *     () => new Worker(new URL("getFibonacci.js", import.meta.url), { type: "module" }),
- * );
- *
- *
  * // getFibonacci.ts
  * import { serve } from "kiss-worker";
  *
@@ -38,7 +29,16 @@ import { KissWorkerImpl } from "./KissWorkerImpl.js";
  *
  * serve(getFibonacci);
  *
- * export { getFibonacci };
+ * export type GetFibonacci = typeof getFibonacci;
+ *
+ *
+ * // FibonacciWorker.ts
+ * import { implementWorkerExternal } from "kiss-worker";
+ * import type { GetFibonacci } from "./getFibonacci.js";
+ *
+ * export const FibonacciWorker = implementWorkerExternal<GetFibonacci>(
+ *     () => new Worker(new URL("getFibonacci.js", import.meta.url), { type: "module" }),
+ * );
  *
  *
  * // someFunction.ts

@@ -2,10 +2,10 @@
 import { implementWorkerExternal } from "../implementWorkerExternal.js";
 
 // Import the type of our worker function
-import type { getFibonacci } from "./getFibonacci.js";
+import type { GetFibonacci } from "./getFibonacci.js";
 
 // Implement and export our worker, passing the type of the worker function
-export const FibonacciWorker = implementWorkerExternal<typeof getFibonacci>(
+export const FibonacciWorker = implementWorkerExternal<GetFibonacci>(
     // A function that creates a web worker running the worker script
     () => new Worker(new URL("getFibonacci.js", import.meta.url), { type: "module" }),
 );
