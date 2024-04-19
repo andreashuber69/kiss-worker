@@ -3,9 +3,11 @@
   "words": [
     "andreas",
     "codeclimate",
+    "gzipped",
     "lcov",
     "linkcode",
-    "uninstrumented"
+    "uninstrumented",
+    "workerpool"
   ],
   "dictionaries": [
     "bash",

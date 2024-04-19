@@ -88,13 +88,57 @@ Let's see how we can use this from the main thread:
 </html>
 ```
 
-Now that was easy, wasn't it? Here are a few facts that might not be immediately obvious:
+Here are a few facts that might not be immediately obvious:
 
-1. The call to `new FibonacciWorker()` starts the worker thread. If necessary, the thread could be terminated by calling
-   `worker.terminate()`.
-1. `worker.execute()` is a fully transparent proxy for `getFibonacci()`. It has the same parameters and the same
-   return type. The only difference is that `worker.execute()` is asynchronous, while `getFibonacci()` is synchronous
-   (of course, the transparency would extend to `Error`s thrown inside `getFibonacci()`).
-1. All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the
-   `Worker` constructor. This allows us to use normal `import` statements in `FibonacciWorker.js` (as opposed to
-   `importScripts` required inside classic modules).
+- The call to `new FibonacciWorker()` starts the worker thread. If necessary, the thread could be terminated by calling
+  `worker.terminate()`.
+- `worker.execute()` is a fully transparent proxy for `getFibonacci()`. It has the same parameters and the same return
+  type (of course, the transparency would extend to `Error`s thrown inside `getFibonacci()`). The only difference is
+  that `worker.execute()` is asynchronous, while `getFibonacci()` is synchronous.
+- All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the
+  `Worker` constructor. This allows us to use normal `import` statements in `FibonacciWorker.js` (as opposed to
+  `importScripts` required inside classic modules).
+
+## Motivation
+
+You probably know that blocking the main thread of a browser for more than 50ms will lower the
+[Lighthouse](https://developer.chrome.com/docs/lighthouse/overview/) score of a site. That can happen very quickly,
+e.g simply by using a crypto currency library.
+
+### Web Workers are Surprisingly Hard to Use
+
+While [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) seem to offer a relatively
+straight-forward way to offload such operations onto a separate thread, it's surprisingly hard to get them right. Here
+are just the most common pitfalls (you can find more in the
+[tests](https://github.com/andreashuber69/kiss-worker/blob/develop/src/implementWorker.spec.ts)):
+
+- A given web worker is often used from more than one place in the code, which introduces the danger of overlapping
+  requests with several handlers simultaneously being subscribed to the `"message"` event. Doing so almost
+  certainly introduces subtle bugs.
+- Code executing on the worker might throw to signal error conditions. Such an unhandled exception in the worker thread
+  will trigger the `"error"` event, but the calling thread will only get a generic `Error`. The original `Error` object
+  is lost.
+
+### A Better Interface
+
+The **Web Workers** interface was designed that way because it has to cover even the most exotic use cases. I would
+claim that the vast majority just needs a transparent way to execute a given function on a different thread. Since
+**Web Workers** aren't exactly new, on [npm](https://npmjs.com) you will find hundreds of packages that attempt to
+do just that. The ones I've seen all fail to satisfy at least one of the following requirements:
+
+1. Provide **TypeScript** types and offer fully transparent marshalling of arguments, return values **and** `Error`
+   objects. In other words, calling a function on a worker thread must feel much the same as calling the function
+   on the current thread. To that end, it is imperative that the interface is `Promise`-based so that the caller can
+   use `await`.
+2. Follow the KISS principe (Keep It Simple, Stupid). In other words, the interface must be as simple as possible but
+   no simpler. Many libraries disappoint in this department, because they've either failed to keep up with recent
+   language improvements (e.g. `async` & `await`) or resort to simplistic solutions that will not work in the general
+   case (e.g. sending a string representation of a function to the worker thread).
+3. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
+   cost in the form of additional chunk size and thus helps to keep your site fast and snappy. For example,
+   many of the features offered by the popular [workerpool](https://www.npmjs.com/package/workerpool) will go unused in
+   the vast majority of the cases. Unsurprisingly, `workerpool` is 5 times larger than this library (minified and
+   gzipped). To be clear: I'm sure there **is** a use case for all the features offered by `workerpool`, just not a very
+   common one.
+4. Automatically test all code of every release and provide code coverage metrics.
+5. Last but not least: Provide comprehensive tutorial and reference documentation.
