@@ -28,8 +28,17 @@
   </a>
 </p>
 
-Provides one of the simplest ways to offload work onto a worker thread in the browser, in under 2kB of additional chunk
+Provides one of the simplest ways to run a function on a worker thread in the browser, in under 2kB of additional chunk
 size!
+
+## Features
+
+- Full [TypeScript](https://typescriptlang.org) support with best achievable type safety for all client code
+- Fully transparent marshalling of arguments, return values **and** `Error` objects
+- Sequentialization of simultaneous calls with a FIFO queue
+- Support for synchronous and asynchronous worker functions
+- Automated tests for >99% of the code
+- Reporting of incorrectly implemented worker functions
 
 ## Prerequisites
 
@@ -43,12 +52,12 @@ This is an ESM-only package. If you're still targeting browsers without ESM supp
 
 If you are using a bundler, you might want add `--save-dev` to the command line.
 
-### Example
+### Example 1
 
-[Full Code](https://github.com/andreashuber69/kiss-worker-demo1),
+[GitHub](https://github.com/andreashuber69/kiss-worker-demo1),
 [StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo1)
 
-```js
+```ts
 // ./src/FibonacciWorker.ts
 import { implementWorker } from "kiss-worker";
 
@@ -71,7 +80,7 @@ Let's see how we can use this from the main thread:
 
 ```html
 <!-- index.html -->
-    <!-- ... -->
+<!-- ... -->
     <script type="module">
       import { FibonacciWorker } from "./src/FibonacciWorker.ts";
       // Start a new worker thread waiting for work.
@@ -83,7 +92,7 @@ Let's see how we can use this from the main thread:
       const result = await worker.execute(40);
       document.querySelector("h1").textContent = `${result}`;
     </script>
-    <!-- ... -->
+<!-- ... -->
 ```
 
 Here are a few facts that might not be immediately obvious:
