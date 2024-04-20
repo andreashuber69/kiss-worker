@@ -3,6 +3,7 @@ import type { DedicatedWorker } from "./DedicatedWorker.js";
 import type { implementWorker } from "./implementWorker.js";
 import type { KissWorker } from "./KissWorker.js";
 import { KissWorkerImpl } from "./KissWorkerImpl.js";
+import type { serve } from "./serve.js";
 
 /**
  * Creates a new anonymous class implementing the {@linkcode KissWorker} interface and returns the constructor function.
@@ -13,44 +14,15 @@ import { KissWorkerImpl } from "./KissWorkerImpl.js";
  * {@linkcode KissWorker.execute}. Build tools like [vite](vitejs.dev) support this use case by detecting
  * `new Worker(...)` calls and putting the worker script as well as all directly and indirectly called code into a
  * separate chunk.
- * @param createWorker A function that creates a new dedicated worker with every call.
- * Since TypeScript does not enforce that a type argument must be supplied for a non-default function type parameter,
- * the type of this parameter is such that the compiler will complain about the argument not being assignable to `never`
- * if the calling code does not supply the type of the worker function, see
+ * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
+ * with every call. This function **must** create a worker running a script different from the one it is created in.
+ * Said script must call {@linkcode serve} passing a function the type of which is then passed to this function.
+ * Since TypeScript does not enforce that a type argument must be supplied for a non-default function
+ * type parameter, the type of this parameter is such that the compiler will complain about the argument not being
+ * assignable to `never` if the calling code does not supply the type of the worker function, see
  * [this SO question](https://stackoverflow.com/questions/70039081/strict-type-argument-when-calling-generic-function)
  * for more information.
  * @returns The constructor function of an anonymous class implementing the {@linkcode KissWorker} interface.
- * @example
- * // getFibonacci.ts
- * import { serve } from "kiss-worker";
- *
- * const getFibonacci =
- *     (n: number): number => ((n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2));
- *
- * serve(getFibonacci);
- *
- * export type GetFibonacci = typeof getFibonacci;
- *
- *
- * // FibonacciWorker.ts
- * import { implementWorkerExternal } from "kiss-worker";
- * import type { GetFibonacci } from "./getFibonacci.js";
- *
- * export const FibonacciWorker = implementWorkerExternal<GetFibonacci>(
- *     () => new Worker(new URL("getFibonacci.js", import.meta.url), { type: "module" }),
- * );
- *
- *
- * // someFunction.ts
- * import { FibonacciWorker } from "./FibonacciWorker.ts";
- *
- * const worker = new FibonacciWorker();
- *
- * const someFunction = async () => {
- *     // ...
- *     const result = await worker.execute(42);
- *     // ...
- * };
  */
 export const implementWorkerExternal = <T extends (...args: never[]) => unknown = never>(
     createWorker: T extends never ? never : () => DedicatedWorker,

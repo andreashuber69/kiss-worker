@@ -10,44 +10,14 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
 
 /**
  * Creates a new anonymous class implementing the {@linkcode KissWorker} interface and returns the constructor function.
- * @description This function covers the simple and most common use case shown in the example below.
- * A worker is implemented in a single file (`FibonacciWorker.js`), which is then imported into code running on the main
- * thread (see `script` tag in `index.html`).
- * @param createWorker A function that creates a new dedicated worker with every call. This function **must** create a
- * worker running the script it is declared in. In the example below, the `createWorker` argument refers to
- * `FibonacciWorker.js` while being declared in said file.
+ * @description This function covers the simplest use case: A {@linkcode KissWorker} is implemented in a single file,
+ * which is then imported into code running on the main thread. If a {@linkcode KissWorker} needs to be imported on
+ * other threads, {@linkcode implementWorkerExternal} must be used to implement it.
+ * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
+ * with every call. This function **must** create a worker running the same script it is created in.
  * @param func The function that should be executed on the worker thread with each call to
  * {@linkcode KissWorker.execute}.
  * @returns The constructor function of an anonymous class implementing the {@linkcode KissWorker} interface.
- * @example
- * // FibonacciWorker.js
- * import { implementWorker } from "kiss-worker";
- *
- * const getFibonacci =
- *     (n) => ((n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2));
- *
- * export const FibonacciWorker = implementWorker(
- *     () => new Worker(new URL("FibonacciWorker.js", import.meta.url), { type: "module" }),
- *     getFibonacci,
- * );
- *
- *
- * <!-- index.html -->
- * <!doctype html>
- * <html lang=en>
- *   <head>
- *     <meta charset=utf-8>
- *     <title>kiss-worker Test</title>
- *     <script type="module">
- *       import { FibonacciWorker } from "./FibonacciWorker.js";
- *       const worker = new FibonacciWorker();
- *       document.querySelector("#result").textContent = `${await worker.execute(40)}`;
- *     </script>
- *   </head>
- *   <body>
- *     <h1 id="result"></h1>
- *   </body>
- * </html>
  */
 export const implementWorker = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
