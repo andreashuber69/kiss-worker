@@ -45,17 +45,23 @@ If you are using a bundler, you might want add `--save-dev` to the command line.
 
 ### Example
 
+[Full Code](https://github.com/andreashuber69/kiss-worker-demo1),
+[StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo1)
+
 ```js
-// FibonacciWorker.js
+// ./src/FibonacciWorker.ts
 import { implementWorker } from "kiss-worker";
 
-// The function we want to execute on a worker thread (the worker function).
-const getFibonacci =
-    (n) => ((n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2));
+// The function we want to execute on a worker thread (worker function).
+const getFibonacci = (n: number): number =>
+    ((n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2));
 
 export const FibonacciWorker = implementWorker(
     // A function that creates a web worker running this script
-    () => new Worker(new URL("FibonacciWorker.js", import.meta.url), { type: "module" }),
+    () => new Worker(
+        new URL("FibonacciWorker.js", import.meta.url),
+        { type: "module" }
+    ),
     // Our worker function
     getFibonacci,
 );
@@ -65,27 +71,19 @@ Let's see how we can use this from the main thread:
 
 ```html
 <!-- index.html -->
-<!doctype html>
-<html lang=en>
-  <head>
-    <meta charset=utf-8>
-    <title>kiss-worker Test</title>
+    <!-- ... -->
     <script type="module">
-      import { FibonacciWorker } from "./FibonacciWorker.js";
+      import { FibonacciWorker } from "./src/FibonacciWorker.ts";
       // Start a new worker thread waiting for work.
       const worker = new FibonacciWorker();
-      // Send the argument (40) to the worker thread, where it will be passed
-      // to our worker function. In the mean time we're awaiting the returned
-      // promise, which will eventually fulfill with the result calculated on
-      // the worker thread.
+      // Send the argument (40) to the worker thread, where it will be
+      // passed to our worker function. In the mean time we're awaiting
+      // the returned promise, which will eventually fulfill with the
+      // result calculated on the worker thread.
       const result = await worker.execute(40);
-      document.querySelector("#result").textContent = `${result}`;
+      document.querySelector("h1").textContent = `${result}`;
     </script>
-  </head>
-  <body>
-    <h1 id="result"></h1>
-  </body>
-</html>
+    <!-- ... -->
 ```
 
 Here are a few facts that might not be immediately obvious:
