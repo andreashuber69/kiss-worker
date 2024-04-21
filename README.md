@@ -99,12 +99,16 @@ Here are a few facts that might not be immediately obvious:
 
 - The call to `new FibonacciWorker()` starts the worker thread. If necessary, the thread could be terminated by calling
   `worker.terminate()`.
-- `worker.execute()` is a fully transparent proxy for `getFibonacci()`. It has the same parameters and the same return
-  type (of course, the transparency would extend to `Error`s thrown inside `getFibonacci()`). The only difference is
-  that `worker.execute()` is asynchronous, while `getFibonacci()` is synchronous.
-- All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the
-  `Worker` constructor. This allows us to use normal `import` statements in `FibonacciWorker.js` (as opposed to
-  `importScripts` required inside classic modules).
+- `worker.execute()` is a transparent proxy for `getFibonacci()`. It has the same parameters and the same return type
+  (of course, the transparency would extend to `Error`s thrown inside `getFibonacci()`). The only difference is that
+  `worker.execute()` is asynchronous, while `getFibonacci()` is synchronous.
+- All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the `Worker`
+  constructor. This allows us to use normal `import` statements in `FibonacciWorker.js` (as opposed to `importScripts`
+  required inside classic modules).
+- `FibonacciWorker.ts` is imported by code running on the main thread **and** is also the entry point for the worker
+  thread. This is possible because `implementWorker` detects on which thread it is run. However, this detection would
+  **not** work correctly, if code in a worker thread attempted to start another worker thread. This can easily be fixed,
+  as we will see in the next example.
 
 ## Motivation
 
