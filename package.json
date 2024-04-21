@@ -1,7 +1,7 @@
 {
   "name": "kiss-worker",
-  "version": "1.0.0-beta.0",
-  "description": "KISS Worker",
+  "version": "1.0.0-beta.1",
+  "description": "Provides one of the easiest ways to run a function on a worker thread in the browser.",
   "keywords": [
     "kiss",
     "simple",

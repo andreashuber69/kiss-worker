@@ -13,7 +13,7 @@ import type { serve } from "./serve.js";
  * of code of the worker function is significant, such that you'd rather not load it on the thread calling
  * {@linkcode KissWorker.execute}. Build tools like [vite](vitejs.dev) support this use case by detecting
  * `new Worker(...)` calls and putting the worker script as well as all directly and indirectly called code into a
- * separate chunk.
+ * separate chunk. Please see [this example](https://github.com/andreashuber69/kiss-worker-demo2) for more information.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running a script different from the one it is created in.
  * Said script must call {@linkcode serve} passing a function the type of which is then passed to this function.

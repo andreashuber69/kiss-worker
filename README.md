@@ -28,12 +28,12 @@
   </a>
 </p>
 
-Provides one of the simplest ways to run a function on a worker thread in the browser, in under 2kB of additional chunk
+Provides one of the easiest ways to run a function on a worker thread in the browser, in under 2kB of additional chunk
 size!
 
 ## Features
 
-- Full [TypeScript](https://typescriptlang.org) support with best achievable type safety for all client code
+- Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for all client code
 - Fully transparent marshalling of arguments, return values **and** `Error` objects
 - Sequentialization of simultaneous calls with a FIFO queue
 - Support for synchronous and asynchronous worker functions
@@ -97,18 +97,67 @@ Let's see how we can use this from the main thread:
 
 Here are a few facts that might not be immediately obvious:
 
-- The call to `new FibonacciWorker()` starts the worker thread. If necessary, the thread could be terminated by calling
-  `worker.terminate()`.
+- Each call to `new FibonacciWorker()` starts a new and independent worker thread. If necessary, a thread could be
+  terminated by calling `worker.terminate()`.
 - `worker.execute()` is a transparent proxy for `getFibonacci()`. It has the same parameters and the same return type
   (of course, the transparency would extend to `Error`s thrown inside `getFibonacci()`). The only difference is that
   `worker.execute()` is asynchronous, while `getFibonacci()` is synchronous.
 - All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the `Worker`
-  constructor. This allows us to use normal `import` statements in `FibonacciWorker.js` (as opposed to `importScripts`
-  required inside classic modules).
+  constructor. This allows us to use normal `import` statements in *./src/FibonacciWorker.ts* (as opposed to
+  `importScripts()` required inside classic modules).
 - `FibonacciWorker.ts` is imported by code running on the main thread **and** is also the entry point for the worker
-  thread. This is possible because `implementWorker` detects on which thread it is run. However, this detection would
+  thread. This is possible because `implementWorker()` detects on which thread it is run. However, this detection would
   **not** work correctly, if code in a worker thread attempted to start another worker thread. This can easily be fixed,
   as we will see in the next example.
+
+### Example 2
+
+[GitHub](https://github.com/andreashuber69/kiss-worker-demo2),
+[StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo2)
+
+```ts
+// ./src/getFibonacci.ts
+import { serve } from "kiss-worker";
+
+// The function we want to execute on a worker thread (worker function)
+const getFibonacci = (n: number): number =>
+    (n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2);
+
+// Serve the function, so that it can be called from another thread
+serve(getFibonacci);
+
+// Export the type only
+export type GetFibonacci = typeof getFibonacci;
+```
+
+```ts
+// ./src/FibonacciWorker.ts
+import { implementWorkerExternal } from "kiss-worker";
+
+// Import the type of the worker function ...
+import type { GetFibonacci } from "./getFibonacci.js";
+
+// ... and pass it to establish type safety
+export const FibonacciWorker = implementWorkerExternal<GetFibonacci>(
+    // A function that creates a web worker running the script that
+    // serves the worker function
+    () => new Worker(
+        new URL("getFibonacci.js", import.meta.url),
+        { type: "module" }
+    ),
+);
+```
+
+The usage from *index.html* is identical to the one demonstrated in the [Example 1](#example-1).
+
+What was done in a single file before is now split into two, with the following advantages:
+
+- The code in *./src/getFibonacci.ts* is fully insulated from the rest of the application. It only exports a **type**.
+  Type-only exports and imports are removed during compilation to ECMAScript. So, if the implementation of
+  `getFibonacci()` involved significant amounts of code not used anywhere else, it would only be loaded by the worker
+  thread.
+- `implementWorkerExternal()` can be used to implement a new worker on any thread, not just the main thread (like
+   `implementWorker()`).
 
 ## Motivation
 
