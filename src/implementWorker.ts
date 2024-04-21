@@ -11,9 +11,10 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
 /**
  * Creates a new anonymous class implementing the {@linkcode KissWorker} interface and returns the constructor function.
  * @description This function covers the simplest use case: A {@linkcode KissWorker} is implemented in a single file,
- * which is then imported into code running on the main thread. If a {@linkcode KissWorker} needs to be imported on
- * other threads, {@linkcode implementWorkerExternal} must be used to implement it. Please see
+ * which is then imported into code running on the main thread. Please see
  * [this example](https://github.com/andreashuber69/kiss-worker-demo1) for more information.
+ * NOTE: If a {@linkcode KissWorker} needs to be imported on other threads, {@linkcode implementWorkerExternal} must be
+ * used to implement it.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running the same script it is created in.
  * @param func The function that should be executed on the worker thread with each call to
