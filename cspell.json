@@ -3,8 +3,12 @@
   "words": [
     "andreas",
     "codeclimate",
+    "gzipped",
     "lcov",
-    "uninstrumented"
+    "linkcode",
+    "sequentialization",
+    "uninstrumented",
+    "workerpool"
   ],
   "dictionaries": [
     "bash",
@@ -12,6 +16,7 @@
   ],
   "ignorePaths": [
     "/cc-test-reporter",
+    "/code-doc/",
     "/coverage/",
     "/dist/",
     "/package.json"

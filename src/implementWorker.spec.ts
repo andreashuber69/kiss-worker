@@ -1,5 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
+import { DelayWorker } from "./testHelpers/DelayWorker.js";
 import { FibonacciWorker } from "./testHelpers/FibonacciWorker.js";
 import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
 
@@ -17,8 +18,16 @@ describe("KissWorker", () => {
             expect(results.every((value, index) => value === expected[index])).toBe(true);
         });
 
+        it("should await async worker functions", async () => {
+            const worker = new DelayWorker();
+            const expectedElapsed = Math.random() * 1000;
+            const start = Date.now();
+            await worker.execute(expectedElapsed);
+            expect(Date.now() - start >= expectedElapsed).toBe(true);
+        });
+
         it("should throw after terminate()", async () => {
-            const worker = new FibonacciWorker();
+            const worker = new DelayWorker();
             worker.terminate();
             worker.terminate(); // Should be safe to call multiple times
 
