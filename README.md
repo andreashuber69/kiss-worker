@@ -105,10 +105,10 @@ Here are a few facts that might not be immediately obvious:
 - All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the `Worker`
   constructor. This allows us to use normal `import` statements in *./src/FibonacciWorker.ts* (as opposed to
   `importScripts()` required inside classic modules).
-- `FibonacciWorker.ts` is imported by code running on the main thread **and** is also the entry point for the worker
-  thread. This is possible because `implementWorker()` detects on which thread it is run. However, this detection would
-  **not** work correctly, if code in a worker thread attempted to start another worker thread. This can easily be fixed,
-  as we will see in the next example.
+- *./src/FibonacciWorker.ts* is imported by code running on the main thread **and** is also the entry point for the
+  worker thread. This is possible because `implementWorker()` detects on which thread it is run. However, this detection
+  would **not** work correctly, if code in a worker thread attempted to start another worker thread. This can easily be
+  fixed, as we will see in the next example.
 
 ### Example 2
 
