@@ -76,7 +76,7 @@ export const GetFibonacciWorker = implementWorker(
 );
 ```
 
-Let's see how we can use this from the main thread:
+That's it, we've defined our worker with a single statement! Let's see how we can use this from the main thread:
 
 ```html
 <!-- index.html -->
@@ -99,12 +99,12 @@ Here are a few facts that might not be immediately obvious:
 
 - Each call to `new GetFibonacciWorker()` starts a new and independent worker thread. If necessary, a thread could be
   terminated by calling `worker.terminate()`.
-- `worker.execute()` is a transparent proxy for `getFibonacci()`. It has the same parameters and the same return type
-  (of course, the transparency would extend to `Error`s thrown inside `getFibonacci()`). The only difference is that
-  `worker.execute()` is asynchronous, while `getFibonacci()` is synchronous.
+- The signature of `worker.execute()` is equivalent to the one of `getFibonacci()`. Of course, `Error`s thrown by
+  `getFibonacci()` would also be rethrown by `worker.execute()`. The only difference is that `worker.execute()` is
+  asynchronous, while `getFibonacci()` is synchronous.
 - All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the `Worker`
   constructor. This allows us to use normal `import` statements in *./src/GetFibonacciWorker.ts* (as opposed to
-  `importScripts()` required inside classic modules).
+  `importScripts()` required inside classic workers).
 - *./src/GetFibonacciWorker.ts* is imported by code running on the main thread **and** is also the entry point for the
   worker thread. This is possible because `implementWorker()` detects on which thread it is run. However, this detection
   would **not** work correctly, if code in a worker thread attempted to start another worker thread. This can easily be

@@ -6,6 +6,7 @@
     "gzipped",
     "lcov",
     "linkcode",
+    "rethrown",
     "sequentialization",
     "uninstrumented",
     "workerpool"
