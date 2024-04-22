@@ -23,11 +23,14 @@ import type { serve } from "./serve.js";
  * [this SO question](https://stackoverflow.com/questions/70039081/strict-type-argument-when-calling-generic-function)
  * for more information.
  * @returns The constructor function of an anonymous class implementing the {@linkcode KissWorker} interface.
+ * @typeParam WorkerFunction The type of the worker function. {@linkcode KissWorker.execute} will have an equivalent
+ * signature. NOTE: The caller **must** pass an argument for this parameter, otherwise the argument for `createWorker`
+ * will not be accepted.
  */
-export const implementWorkerExternal = <T extends (...args: never[]) => unknown = never>(
-    createWorker: T extends never ? never : () => DedicatedWorker,
-): new () => KissWorker<T> =>
-    class extends KissWorkerImpl<T> {
+export const implementWorkerExternal = <WorkerFunction extends (...args: never[]) => unknown = never>(
+    createWorker: WorkerFunction extends never ? never : () => DedicatedWorker,
+): new () => KissWorker<WorkerFunction> =>
+    class extends KissWorkerImpl<WorkerFunction> {
         public constructor() {
             super(createWorker());
         }
