@@ -36,13 +36,13 @@ size!
 [Prerequisites](#prerequisites)
 
 [Getting Started](#getting-started)
-    [Installation](#installation)
-    [Example 1](#example-1)
-    [Example 2](#example-2)
+[Installation](#installation)
+[Example 1](#example-1)
+[Example 2](#example-2)
 
 [Motivation](#motivation)
-    [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
-    [A Better Interface](#a-better-interface)
+[Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
+[A Better Interface](#a-better-interface)
 
 ## Features
 
