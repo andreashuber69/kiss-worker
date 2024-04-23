@@ -31,6 +31,19 @@
 Provides one of the easiest ways to run a function on a worker thread in the browser, in under 2kB of additional chunk
 size!
 
+[Features](#features)
+
+[Prerequisites](#prerequisites)
+
+[Getting Started](#getting-started)
+    [Installation](#installation)
+    [Example 1](#example-1)
+    [Example 2](#example-2)
+
+[Motivation](#motivation)
+    [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
+    [A Better Interface](#a-better-interface)
+
 ## Features
 
 - Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for all client code
