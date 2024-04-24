@@ -31,18 +31,15 @@
 Provides one of the easiest ways to run a function on a worker thread in the browser, in under 2kB of additional chunk
 size!
 
-[Features](#features)
-
-[Prerequisites](#prerequisites)
-
-[Getting Started](#getting-started)
-[Installation](#installation)
-[Example 1](#example-1)
-[Example 2](#example-2)
-
-[Motivation](#motivation)
-[Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
-[A Better Interface](#a-better-interface)
+1. [Features](#features)
+1. [Prerequisites](#prerequisites)
+1. [Getting Started](#getting-started)
+   1. [Installation](#installation)
+   1. [Example 1](#example-1)
+   1. [Example 2](#example-2)
+1. [Motivation](#motivation)
+   1. [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
+   1. [A Better Interface](#a-better-interface)
 
 ## Features
 
