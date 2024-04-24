@@ -34,12 +34,12 @@ size!
 1. [Features](#features)
 1. [Prerequisites](#prerequisites)
 1. [Getting Started](#getting-started)
-   1. [Installation](#installation)
-   1. [Example 1](#example-1)
-   1. [Example 2](#example-2)
+   - [Installation](#installation)
+   - [Example 1](#example-1)
+   - [Example 2](#example-2)
 1. [Motivation](#motivation)
-   1. [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
-   1. [A Better Interface](#a-better-interface)
+   - [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
+   - [Requirements for a Better Interface](#requirements-for-a-better-interface)
 
 ## Features
 
@@ -190,12 +190,12 @@ are just the most common pitfalls (you can find more in the
   will trigger the `"error"` event, but the calling thread will only get a generic `Error`. The original `Error` object
   is lost.
 
-### A Better Interface
+### Requirements for a Better Interface
 
 The **Web Workers** interface was designed that way because it has to cover even the most exotic use cases. I would
-claim that the vast majority just needs a transparent way to execute a given function on a different thread. Since
-**Web Workers** aren't exactly new, on [npm](https://npmjs.com) you will find hundreds of packages that attempt to
-do just that. The ones I've seen all fail to satisfy at least one of the following requirements:
+claim you usually just need a transparent way to execute a given function on a different thread. Since **Web Workers**
+aren't exactly new, on [npm](https://npmjs.com) there are hundreds of packages that attempt to do just that. The ones
+I've seen all fail to satisfy at least one of the following requirements:
 
 1. Provide **TypeScript** types and offer fully transparent marshalling of arguments, return values **and** `Error`
    objects. In other words, calling a function on a worker thread must feel much the same as calling the function
