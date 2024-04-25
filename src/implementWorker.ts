@@ -17,7 +17,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * used to implement it.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running the same script it is created in.
- * @param workerFunction The function that should be executed on the worker thread with each call to
+ * @param workerFunction The function that will be executed on the worker thread with each call to
  * {@linkcode KissWorker.execute}.
  * @returns The constructor function of an anonymous class implementing the {@linkcode KissWorker} interface.
  */
