@@ -207,8 +207,8 @@ I've seen all fail to satisfy at least one of the following requirements:
    case (e.g. sending a string representation of a function to the worker thread).
 3. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
    cost in the form of additional chunk size and thus helps to keep your site fast and snappy. For example,
-   many of the features offered by the popular [workerpool](https://www.npmjs.com/package/workerpool) will go unused in
-   the vast majority of the cases. Unsurprisingly, `workerpool` is 5 times larger than this library (minified and
+   many of the features offered by the popular [`workerpool`](https://www.npmjs.com/package/workerpool) will go unused
+   in the vast majority of the cases. Unsurprisingly, `workerpool` is 5 times larger than this library (minified and
    gzipped). To be clear: I'm sure there **is** a use case for all the features offered by `workerpool`, just not a very
    common one.
 4. Automatically test all code of every release and provide code coverage metrics.
