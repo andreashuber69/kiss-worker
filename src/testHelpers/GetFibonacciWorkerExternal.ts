@@ -2,6 +2,6 @@
 import { implementWorkerExternal } from "../implementWorkerExternal.js";
 import type { GetFibonacci } from "./getFibonacci.js";
 
-export const FibonacciWorker = implementWorkerExternal<GetFibonacci>(
+export const GetFibonacciWorker = implementWorkerExternal<GetFibonacci>(
     () => new Worker(new URL("getFibonacci.js", import.meta.url), { type: "module" }),
 );
