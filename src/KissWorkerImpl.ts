@@ -9,7 +9,7 @@ interface ExecuteResult<T> {
 
 interface ExecuteError {
     type: "error";
-    error: Error;
+    error: unknown;
 }
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
@@ -31,7 +31,7 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         // Allow terminate() to be called multiple times
         if (this.#workerImpl) {
             this.#workerImpl.removeEventListener("message", this.#onMessage);
-            this.#workerImpl.removeEventListener("messageerror", this.#onError);
+            this.#workerImpl.removeEventListener("messageerror", this.#onMessageError);
             this.#workerImpl.removeEventListener("error", this.#onError);
             this.#workerImpl.terminate();
             this.#workerImpl = undefined;
@@ -41,7 +41,7 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
     protected constructor(worker: DedicatedWorker) {
         this.#workerImpl = worker;
         this.#workerImpl.addEventListener("message", this.#onMessage);
-        this.#workerImpl.addEventListener("messageerror", this.#onError);
+        this.#workerImpl.addEventListener("messageerror", this.#onMessageError);
         this.#workerImpl.addEventListener("error", this.#onError);
     }
 
@@ -59,14 +59,12 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         return this.#workerImpl;
     }
 
-    readonly #onMessage = (ev: { data: unknown }) => {
+    readonly #onMessage = (ev: unknown) => {
         if (!this.#currentResolve || !this.#currentReject) {
             if (this.#postMessageWasCalled) {
                 this.#postMessageWasCalled = false;
             } else {
-                console.error(
-                    "The worker function returned after having an Error thrown outside of the function, see above.",
-                );
+                console.error("The worker function returned after having an Error thrown outside of the function.");
             }
 
             return;
@@ -89,19 +87,28 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         this.#resetHandlers();
     };
 
-    readonly #onError = () => {
-        // With a little bit of imagination, a worker function can do all kinds of funny stuff, e.g.
-        // https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
-        // We do our best to bring it to the attention of the caller.
+    readonly #onMessageError = (ev: unknown) => this.#showError("Argument deserialization failed", ev);
+
+    readonly #onError = (ev: unknown) => this.#showError("Exception thrown outside of the worker function", ev);
+
+    #showError(reason: string, ev: unknown) {
+        // Apparently for security reasons, JSON.stringify will not work on ev, which is why we have to extract the
+        // relevant properties ourselves.
+        const properties = this.#getProperties(ev);
+        const message = `${reason}:\n${JSON.stringify(properties)}`;
+
         if (this.#currentReject) {
-            const prefix = "Argument deserialization failed or exception thrown outside of the worker function";
-            this.#currentReject(new Error(`${prefix}, see console for details.`));
+            this.#currentReject(new Error(message));
             this.#resetHandlers();
-            console.error(`${prefix}.`);
         } else {
-            console.error("Exception thrown after the worker function has returned, see below.");
+            console.error(message);
         }
-    };
+    }
+
+    #getProperties(ev: unknown) {
+        const { message, filename, lineno } = ev as Record<string, unknown>;
+        return { message, filename, lineno };
+    }
 
     #resetHandlers() {
         this.#currentResolve = undefined;

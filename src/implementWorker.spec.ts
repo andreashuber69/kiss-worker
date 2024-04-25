@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import { DelayWorker } from "./testHelpers/DelayWorker.js";
 import { FibonacciWorker } from "./testHelpers/FibonacciWorker.js";
 import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
@@ -54,10 +54,13 @@ describe("KissWorker", () => {
         it("should throw for exceptions thrown outside of the worker function", async () => {
             const worker = new FunnyWorker();
 
-            await expect(async () => await worker.execute("throwOutside")).rejects.toThrow(
-                // eslint-disable-next-line @stylistic/max-len
-                new Error("Argument deserialization failed or exception thrown outside of the worker function, see console for details."),
-            );
+            try {
+                await worker.execute("throwOutside");
+                assert(false);
+            } catch (error: unknown) {
+                assert(error instanceof Error);
+                expect(error.message.split("\n")[0]).toBe("Exception thrown outside of the worker function:");
+            }
 
             // Wait for the worker function to return so that the console output always appears.
             await delay();
