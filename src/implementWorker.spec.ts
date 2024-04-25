@@ -3,6 +3,7 @@ import { assert, describe, expect, it } from "vitest";
 import { DelayWorker } from "./testHelpers/DelayWorker.js";
 import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
 import { GetFibonacciWorker } from "./testHelpers/GetFibonacciWorker.js";
+import { WrongFilenameWorker } from "./testHelpers/WrongFilenameWorker.js";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
     (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm";
@@ -41,6 +42,14 @@ describe("KissWorker", () => {
             const execute = async () => await worker.execute("throw");
             const results = await Promise.allSettled([...new Array(3).keys()].map(async () => await execute()));
             expect(results.every((result) => isExpected(result))).toBe(true);
+        });
+
+        it("should throw when the worker file is not a valid script", async () => {
+            const worker = new WrongFilenameWorker();
+
+            await expect(async () => await worker.execute()).rejects.toThrow(
+                new Error("The specified worker file is not a valid script."),
+            );
         });
 
         it("should throw when the worker function calls postMessage", async () => {

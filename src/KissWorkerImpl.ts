@@ -87,15 +87,21 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         this.#resetHandlers();
     };
 
-    readonly #onMessageError = (ev: unknown) => this.#showError("Argument deserialization failed", ev);
+    readonly #onMessageError = (ev: unknown) =>
+        this.#showError("Argument deserialization failed", JSON.stringify(this.#getInfo(ev)));
 
-    readonly #onError = (ev: unknown) => this.#showError("Exception thrown outside of the worker function", ev);
+    readonly #onError = (ev: unknown) => {
+        const info = this.#getInfo(ev);
 
-    #showError(reason: string, ev: unknown) {
-        // Apparently for security reasons, JSON.stringify will not work on ev, which is why we have to extract the
-        // relevant properties ourselves.
-        const properties = this.#getProperties(ev);
-        const message = `${reason}:\n${JSON.stringify(properties)}`;
+        if (info.filename) {
+            this.#showError("Exception thrown outside of the worker function", `:\n${JSON.stringify(info)}`);
+        } else {
+            this.#showError("The specified worker file is not a valid script", ".");
+        }
+    };
+
+    #showError(reason: string, suffix: unknown) {
+        const message = `${reason}${suffix}`;
 
         if (this.#currentReject) {
             this.#currentReject(new Error(message));
@@ -105,7 +111,9 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         }
     }
 
-    #getProperties(ev: unknown) {
+    #getInfo(ev: unknown) {
+        // Apparently for security reasons, JSON.stringify will not work on ev, which is why we have to extract the
+        // relevant properties ourselves.
         const { message, filename, lineno } = ev as Record<string, unknown>;
         return { message, filename, lineno };
     }
