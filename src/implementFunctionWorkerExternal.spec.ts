@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { GetFibonacciWorker } from "./testHelpers/GetFibonacciWorkerExternal.js";
 
-describe("KissWorker", () => {
+describe("FunctionWorker", () => {
     describe("execute", () => {
         it("should sequentially execute multiple calls", async () => {
             const worker = new GetFibonacciWorker();

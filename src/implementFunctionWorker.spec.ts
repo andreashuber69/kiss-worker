@@ -10,7 +10,7 @@ const isExpected = (result: PromiseSettledResult<void>) =>
 
 const delay = async () => await new Promise((resolve) => setTimeout(resolve, 200));
 
-describe("KissWorker", () => {
+describe("FunctionWorker", () => {
     describe("execute", () => {
         it("should sequentially execute multiple calls", async () => {
             const worker = new GetFibonacciWorker();

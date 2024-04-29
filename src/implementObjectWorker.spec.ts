@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { CalculatorWorker } from "./testHelpers/CalculatorWorker.js";
 
-describe("KissObjectWorker", () => {
+describe("ObjectWorker", () => {
     describe("obj", () => {
         it("should offer async variants of the original", async () => {
             const worker = new CalculatorWorker();

@@ -2,10 +2,10 @@
 
 export type { AddRemoveEventListener, DedicatedWorker } from "./DedicatedWorker.js";
 
-export type { KissWorker } from "./KissWorker.js";
+export type { FunctionWorker } from "./FunctionWorker.js";
 
-export { implementWorker } from "./implementWorker.js";
+export { implementFunctionWorker } from "./implementFunctionWorker.js";
 
-export { implementWorkerExternal } from "./implementWorkerExternal.js";
+export { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 
-export { serve } from "./serve.js";
+export { serveFunction } from "./serveFunction.js";

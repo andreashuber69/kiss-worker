@@ -1,14 +1,14 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { implementWorkerExternal } from "./implementWorkerExternal.js";
+import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 
 /**
  * Serves `func` on a worker thread such that it can be called from the thread calling
- * {@linkcode implementWorkerExternal}.
+ * {@linkcode implementFunctionWorkerExternal}.
  * @description This function must only be called from code executing on a worker thread, see example in the
- * {@linkcode implementWorkerExternal} documentation.
+ * {@linkcode implementFunctionWorkerExternal} documentation.
  * @param func The function to serve.
  */
-export const serve = <T extends (...args: never[]) => unknown>(func: T) => {
+export const serveFunction = <T extends (...args: never[]) => unknown>(func: T) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
