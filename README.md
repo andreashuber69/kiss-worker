@@ -47,7 +47,7 @@ size!
 - Fully transparent marshalling of arguments, return values **and** `Error` objects
 - Sequentialization of simultaneous calls with a FIFO queue
 - Support for synchronous and asynchronous worker functions
-- Automated tests for >99% of the code
+- Automated tests for 99% of the code
 - Reporting of incorrectly implemented worker functions
 
 ## Prerequisites
