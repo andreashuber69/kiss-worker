@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { ExtendedFunctionParameters } from "./ExtendedFunctionParameters.js";
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 
 /**
  * Calls `ctor` and serves the returned object on a worker thread such that its methods can be called from
@@ -9,7 +10,7 @@ import type { implementObjectWorkerExternal } from "./implementObjectWorkerExter
  * {@linkcode implementObjectWorkerExternal} documentation.
  * @param ctor The constructor of the worker object to serve.
  */
-export const serveObject = <T extends Record<keyof T, (...args: never[]) => unknown>>(
+export const serveObject = <T extends MethodsOnlyObject<T>>(
     ctor: new () => T,
 ) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)

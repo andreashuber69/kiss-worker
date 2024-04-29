@@ -3,16 +3,17 @@ import type { DedicatedWorker } from "./DedicatedWorker.js";
 import type { ExtendedFunctionParameters } from "./ExtendedFunctionParameters.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { Promisify } from "./Promisify.js";
 
-type ExtendedFunction<T extends Record<keyof T, (...args: never[]) => unknown>> =
+type ExtendedFunction<T extends MethodsOnlyObject<T>> =
     (...args: ExtendedFunctionParameters<T>) => ReturnType<T[typeof args[0]]>;
 
-type MethodParameters<T extends Record<keyof T, (...args: never[]) => unknown>> = {
+type MethodParameters<T extends MethodsOnlyObject<T>> = {
     [K in keyof T]: Parameters<T[K]>;
 }[keyof T];
 
-class Proxy<T extends Record<keyof T, (...args: never[]) => unknown>> {
+class Proxy<T extends MethodsOnlyObject<T>> {
     [key: number | string | symbol]: unknown;
 
     public constructor(worker: FunctionWorker<ExtendedFunction<T>>, workerClassCtor: new () => T) {
@@ -29,7 +30,7 @@ class Proxy<T extends Record<keyof T, (...args: never[]) => unknown>> {
     readonly #worker: FunctionWorker<ExtendedFunction<T>>;
 }
 
-export abstract class ObjectWorkerImpl<T extends Record<keyof T, (...args: never[]) => unknown>> {
+export abstract class ObjectWorkerImpl<T extends MethodsOnlyObject<T>> {
     public readonly obj: Promisify<T>;
 
     public terminate() {

@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
 import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { ObjectWorker } from "./ObjectWorker.js";
 import { serveObject } from "./serveObject.js";
 
@@ -25,7 +26,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * @typeParam T The type of the served object. {@linkcode ObjectWorker.obj} will have equally named methods with
  * equivalent signatures.
  */
-export const implementObjectWorker = <T extends Record<keyof T, (...args: never[]) => unknown>>(
+export const implementObjectWorker = <T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
     ctor: new () => T,
 ): new () => ObjectWorker<T> => {
