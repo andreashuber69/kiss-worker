@@ -7,6 +7,9 @@ describe("ObjectWorker", () => {
         it("should offer async variants of the original", async () => {
             const worker = new CalculatorWorker();
             expect(await worker.obj.plus(1, 2)).toBe(3);
+            expect(await worker.obj.unaryPlus(42)).toBe(42);
+            expect(await worker.obj.stringify(17)).toBe("17");
+            worker.terminate();
         });
     });
 });
