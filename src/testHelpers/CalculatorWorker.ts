@@ -10,8 +10,8 @@ export class Calculator {
         return a;
     }
 
-    public stringify(a: number) {
-        return `${a}`;
+    public async stringify(a: number) {
+        return await Promise.resolve(`${a}`);
     }
 }
 
