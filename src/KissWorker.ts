@@ -8,12 +8,12 @@ import type { implementWorkerExternal } from "./implementWorkerExternal.js";
  */
 export interface KissWorker<T extends (...args: never[]) => unknown> {
     /**
-     * Calls the worker function on the worker thread.
-     * @description Can be called multiple times without waiting for previous calls to settle. If done so, calls to the
-     * worker function will be queued and executed as soon as the worker thread is available.
-     * @param args The arguments to pass to the worker function.
-     * @returns The return value of the worker function.
-     * @throws The error thrown by the worker function.
+     * Calls the function served on the worker thread.
+     * @description Can be called without waiting for previous calls to settle. If done so, calls to the served function
+     * will be queued and executed as soon as the worker thread is available.
+     * @param args The arguments to pass to the served function.
+     * @returns The return value of the served function.
+     * @throws The error thrown by the served function.
      */
     execute: (...args: Parameters<T>) => Promise<ReturnType<T>>;
 

@@ -64,7 +64,7 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
             if (this.#postMessageWasCalled) {
                 this.#postMessageWasCalled = false;
             } else {
-                console.error("The worker function returned after having an Error thrown outside of the function.");
+                console.error("func returned after having an Error thrown outside of the function.");
             }
 
             return;
@@ -81,7 +81,7 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
             this.#currentReject(data.error);
         } else {
             this.#postMessageWasCalled = true;
-            this.#currentReject(new Error("The worker function called postMessage, which is not allowed."));
+            this.#currentReject(new Error("func called postMessage, which is not allowed."));
         }
 
         this.#resetHandlers();
@@ -94,7 +94,7 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         const info = this.#getInfo(ev);
 
         if (info.filename) {
-            this.#showError("Exception thrown outside of the worker function", `:\n${JSON.stringify(info)}`);
+            this.#showError("Exception thrown outside of func", `:\n${JSON.stringify(info)}`);
         } else {
             this.#showError("The specified worker file is not a valid script", ".");
         }

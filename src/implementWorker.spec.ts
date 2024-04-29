@@ -19,7 +19,7 @@ describe("KissWorker", () => {
             expect(results.every((value, index) => value === expected[index])).toBe(true);
         });
 
-        it("should await async worker functions", async () => {
+        it("should await async func", async () => {
             const worker = new DelayWorker();
             const expectedElapsed = Math.random() * 1000;
             const start = Date.now();
@@ -37,7 +37,7 @@ describe("KissWorker", () => {
             );
         });
 
-        it("should throw when the worker function throws", async () => {
+        it("should throw when func throws", async () => {
             const worker = new FunnyWorker();
             const execute = async () => await worker.execute("throw");
             const results = await Promise.allSettled([...new Array(3).keys()].map(async () => await execute()));
@@ -52,15 +52,15 @@ describe("KissWorker", () => {
             );
         });
 
-        it("should throw when the worker function calls postMessage", async () => {
+        it("should throw when func calls postMessage", async () => {
             const worker = new FunnyWorker();
 
             await expect(async () => await worker.execute("post")).rejects.toThrow(
-                new Error("The worker function called postMessage, which is not allowed."),
+                new Error("func called postMessage, which is not allowed."),
             );
         });
 
-        it("should throw for exceptions thrown outside of the worker function", async () => {
+        it("should throw for exceptions thrown outside of func", async () => {
             const worker = new FunnyWorker();
 
             try {
@@ -68,10 +68,10 @@ describe("KissWorker", () => {
                 assert(false);
             } catch (error: unknown) {
                 assert(error instanceof Error);
-                expect(error.message.split("\n")[0]).toBe("Exception thrown outside of the worker function:");
+                expect(error.message.split("\n")[0]).toBe("Exception thrown outside of func:");
             }
 
-            // Wait for the worker function to return so that the console output always appears.
+            // Wait for func to return so that the console output always appears.
             await delay();
         });
 

@@ -46,9 +46,9 @@ size!
 - Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for all client code
 - Fully transparent marshalling of arguments, return values **and** `Error` objects
 - Sequentialization of simultaneous calls with a FIFO queue
-- Support for synchronous and asynchronous worker functions
+- Support for synchronous and asynchronous functions and methods
 - Automated tests for 99% of the code
-- Reporting of incorrectly implemented worker functions
+- Reporting of incorrectly implemented functions and methods
 
 ## Prerequisites
 
@@ -71,7 +71,7 @@ The full code of this example can be found on [GitHub](https://github.com/andrea
 // ./src/GetFibonacciWorker.ts
 import { implementWorker } from "kiss-worker";
 
-// The function we want to execute on a worker thread (worker function)
+// The function we want to execute on a worker thread
 const getFibonacci = (n: number): number =>
     (n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2);
 
@@ -81,7 +81,6 @@ export const GetFibonacciWorker = implementWorker(
         new URL("GetFibonacciWorker.js", import.meta.url),
         { type: "module" }
     ),
-    // Our worker function
     getFibonacci,
 );
 ```
@@ -96,9 +95,9 @@ That's it, we've defined our worker with a single statement! Let's see how we ca
       // Start a new worker thread waiting for work.
       const worker = new GetFibonacciWorker();
       // Send the argument (40) to the worker thread, where it will be
-      // passed to our worker function. In the mean time we're awaiting
-      // the returned promise, which will eventually fulfill with the
-      // result calculated on the worker thread.
+      // passed to our function. In the mean time we're awaiting the
+      // returned promise, which will eventually fulfill with the result
+      // calculated on the worker thread.
       const result = await worker.execute(40);
       document.querySelector("h1").textContent = `${result}`;
     </script>
@@ -129,11 +128,11 @@ The full code of this example can be found on [GitHub](https://github.com/andrea
 // ./src/getFibonacci.ts
 import { serve } from "kiss-worker";
 
-// The function we want to execute on a worker thread (worker function)
+// The function we want to execute on a worker thread
 const getFibonacci = (n: number): number =>
     (n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2);
 
-// Serve the function, so that it can be called from the thread that
+// Serve our function, so that it can be called from the thread that
 // calls implementWorkerExternal
 serve(getFibonacci);
 
@@ -145,13 +144,13 @@ export type GetFibonacci = typeof getFibonacci;
 // ./src/GetFibonacciWorker.ts
 import { implementWorkerExternal } from "kiss-worker";
 
-// Import the type of the worker function ...
+// Import the type of our function ...
 import type { GetFibonacci } from "./getFibonacci.js";
 
 // ... and pass it to establish type safety
 export const GetFibonacciWorker = implementWorkerExternal<GetFibonacci>(
     // A function that creates a web worker running the script that
-    // serves the worker function
+    // serves our function
     () => new Worker(
         new URL("getFibonacci.js", import.meta.url),
         { type: "module" }

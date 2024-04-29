@@ -17,24 +17,24 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * used to implement it.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running the same script it is created in.
- * @param workerFunction The function that will be executed on the worker thread with each call to
- * {@linkcode KissWorker.execute}.
+ * @param func The function that will be served on the worker thread. The worker thread will call this function for each
+ * call to {@linkcode KissWorker.execute}.
  * @returns The constructor function of an anonymous class implementing the {@linkcode KissWorker} interface.
  */
-export const implementWorker = <WorkerFunction extends (...args: never[]) => unknown>(
+export const implementWorker = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
-    workerFunction: WorkerFunction,
-): new () => KissWorker<WorkerFunction> => {
+    func: T,
+): new () => KissWorker<T> => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
     if (isWorker) {
-        serve(workerFunction);
+        serve(func);
     }
 
     // It appears that the only alternative to casting here is typing the parameter accordingly but that would
     // unnecessarily pollute the interface.
-    return implementWorkerExternal<WorkerFunction>(
-        createWorker as WorkerFunction extends never ? never : () => DedicatedWorker,
+    return implementWorkerExternal<T>(
+        createWorker as T extends never ? never : () => DedicatedWorker,
     );
 };
