@@ -2,16 +2,16 @@
 import { implementObjectWorker } from "../implementObjectWorker.js";
 
 export class Calculator {
-    public plus(a: number, b: number) {
-        return a + b;
+    public add(left: number, right: number) {
+        return left + right;
     }
 
-    public unaryPlus(a: number) {
-        return a;
+    public subtract(left: number, right: number) {
+        return left - right;
     }
 
-    public async stringify(a: number) {
-        return await Promise.resolve(`${a}`);
+    public async format(num: number) {
+        return await Promise.resolve(`${num}`);
     }
 }
 
