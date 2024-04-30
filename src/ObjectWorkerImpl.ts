@@ -10,12 +10,12 @@ type ExtendedFunction<T extends MethodsOnlyObject<T>> =
     (...args: ExtendedFunctionParameters<T>) => ReturnType<T[typeof args[0]]>;
 
 class Proxy<T extends MethodsOnlyObject<T>> {
-    [key: number | string | symbol]: unknown;
+    [key: string]: unknown;
 
-    public constructor(worker: FunctionWorker<ExtendedFunction<T>>, workerClassCtor: new () => T) {
+    public constructor(worker: FunctionWorker<ExtendedFunction<T>>, ctor: new () => T) {
         this.#worker = worker;
 
-        for (const key of Object.getOwnPropertyNames(workerClassCtor.prototype)) {
+        for (const key of Object.getOwnPropertyNames(ctor.prototype)) {
             if (key !== "constructor") {
                 this[key] =
                     async (...args: Parameters<T[keyof T]>) => await this.#worker.execute(key as keyof T, ...args);
@@ -33,10 +33,10 @@ export abstract class ObjectWorkerImpl<T extends MethodsOnlyObject<T>> {
         this.#worker.terminate();
     }
 
-    protected constructor(createWorker: () => DedicatedWorker, workerClassCtor: new () => T) {
+    protected constructor(createWorker: () => DedicatedWorker, ctor: new () => T) {
         const Worker = implementFunctionWorkerExternal<ExtendedFunction<T>>(createWorker);
         this.#worker = new Worker();
-        this.obj = new Proxy(this.#worker, workerClassCtor) as unknown as Promisify<T>;
+        this.obj = new Proxy(this.#worker, ctor) as unknown as Promisify<T>;
     }
 
     readonly #worker: FunctionWorker<ExtendedFunction<T>>;
