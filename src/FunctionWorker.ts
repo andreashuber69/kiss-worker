@@ -15,7 +15,7 @@ export interface FunctionWorker<T extends (...args: never[]) => unknown> {
      * @returns The return value of the served function.
      * @throws The error thrown by the served function.
      */
-    execute: (...args: Parameters<T>) => Promise<ReturnType<T>>;
+    execute: (...args: Parameters<T>) => Promise<Awaited<ReturnType<T>>>;
 
     /**
      * Terminates the worker thread at once. As of yet unsettled calls to {@linkcode FunctionWorker.execute} will never

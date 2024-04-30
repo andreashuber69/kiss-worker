@@ -15,7 +15,7 @@ interface ExecuteError {
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
 export abstract class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
-    public async execute(...args: Parameters<T>) {
+    public async execute(...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> {
         return await this.#queue.execute(
             async () => await new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
                 this.#currentResolve = resolve;
