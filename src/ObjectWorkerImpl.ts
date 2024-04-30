@@ -2,7 +2,7 @@
 import type { DedicatedWorker } from "./DedicatedWorker.js";
 import type { ExtendedFunctionParameters } from "./ExtendedFunctionParameters.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
-import type { ObjectDescriptor } from "./getObjectDescriptor.js";
+import type { ObjectInfo } from "./getObjectInfo.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { Promisify } from "./Promisify.js";
@@ -13,10 +13,10 @@ type ExtendedFunction<T extends MethodsOnlyObject<T>> =
 class Proxy<T extends MethodsOnlyObject<T>> {
     [key: string]: (...args: Parameters<T[keyof T]>) => Promise<ReturnType<T[keyof T]>>;
 
-    public constructor(worker: FunctionWorker<ExtendedFunction<T>>, descriptor: ObjectDescriptor<T>) {
+    public constructor(worker: FunctionWorker<ExtendedFunction<T>>, info: ObjectInfo<T>) {
         this.#worker = worker;
 
-        for (const key of descriptor.methodNames) {
+        for (const key of info.methodNames) {
             if (key !== "constructor") {
                 this[key as string] =
                     async (...args: Parameters<T[keyof T]>) => await this.#worker.execute(key, ...args);
@@ -34,10 +34,10 @@ export abstract class ObjectWorkerImpl<T extends MethodsOnlyObject<T>> {
         this.#worker.terminate();
     }
 
-    protected constructor(createWorker: () => DedicatedWorker, descriptor: ObjectDescriptor<T>) {
+    protected constructor(createWorker: () => DedicatedWorker, info: ObjectInfo<T>) {
         const Worker = implementFunctionWorkerExternal<ExtendedFunction<T>>(createWorker);
         this.#worker = new Worker();
-        this.obj = new Proxy(this.#worker, descriptor) as unknown as Promisify<T>;
+        this.obj = new Proxy(this.#worker, info) as unknown as Promisify<T>;
     }
 
     readonly #worker: FunctionWorker<ExtendedFunction<T>>;
