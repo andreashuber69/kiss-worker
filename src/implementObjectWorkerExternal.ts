@@ -1,5 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
+import type { ObjectDescriptor } from "./getObjectDescriptor.js";
 import type { implementObjectWorker } from "./implementObjectWorker.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { ObjectWorker } from "./ObjectWorker.js";
@@ -28,10 +29,10 @@ import type { serveObject } from "./serveObject.js";
  */
 export const implementObjectWorkerExternal = <T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
-    ctor: new () => T,
+    descriptor: ObjectDescriptor<T>,
 ): new () => ObjectWorker<T> =>
     class extends ObjectWorkerImpl<T> {
         public constructor() {
-            super(createWorker, ctor);
+            super(createWorker, descriptor);
         }
     };
