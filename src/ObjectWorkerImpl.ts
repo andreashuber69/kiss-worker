@@ -7,10 +7,10 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { Promisify } from "./Promisify.js";
 
 type ExtendedFunction<T extends MethodsOnlyObject<T>> =
-    (...args: ExtendedFunctionParameters<T>) => ReturnType<T[typeof args[0]]>;
+    (...args: ExtendedFunctionParameters<T>) => ReturnType<T[keyof T]>;
 
 class Proxy<T extends MethodsOnlyObject<T>> {
-    [key: string]: unknown;
+    [key: string]: (...args: Parameters<T[keyof T]>) => Promise<ReturnType<T[keyof T]>>;
 
     public constructor(worker: FunctionWorker<ExtendedFunction<T>>, ctor: new () => T) {
         this.#worker = worker;
