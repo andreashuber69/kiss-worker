@@ -9,10 +9,6 @@ import type { Promisify } from "./Promisify.js";
 type ExtendedFunction<T extends MethodsOnlyObject<T>> =
     (...args: ExtendedFunctionParameters<T>) => ReturnType<T[typeof args[0]]>;
 
-type MethodParameters<T extends MethodsOnlyObject<T>> = {
-    [K in keyof T]: Parameters<T[K]>;
-}[keyof T];
-
 class Proxy<T extends MethodsOnlyObject<T>> {
     [key: number | string | symbol]: unknown;
 
@@ -21,8 +17,8 @@ class Proxy<T extends MethodsOnlyObject<T>> {
 
         for (const key of Object.getOwnPropertyNames(workerClassCtor.prototype)) {
             if (key !== "constructor") {
-                Proxy.prototype[key] = async (...args: MethodParameters<T>) =>
-                    await this.#worker.execute(...([key, ...args] as ExtendedFunctionParameters<T>));
+                this[key] =
+                    async (...args: Parameters<T[keyof T]>) => await this.#worker.execute(key as keyof T, ...args);
             }
         }
     }
