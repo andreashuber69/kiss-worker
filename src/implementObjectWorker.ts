@@ -1,10 +1,11 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { getObjectInfo } from "./getObjectInfo.js";
 import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
+import { ObjectInfo } from "./ObjectInfo.js";
 import type { ObjectWorker } from "./ObjectWorker.js";
 import { serveObject } from "./serveObject.js";
+import type { UnionToTuple } from "./UnionToTuple.js";
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
@@ -38,5 +39,8 @@ export const implementObjectWorker = <T extends MethodsOnlyObject<T>>(
         serveObject(ctor);
     }
 
-    return implementObjectWorkerExternal(createWorker, getObjectInfo(ctor));
+    return implementObjectWorkerExternal(
+        createWorker,
+        new ObjectInfo<T>(...(Object.getOwnPropertyNames(ctor.prototype) as UnionToTuple<keyof T>)),
+    );
 };

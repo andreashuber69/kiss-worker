@@ -2,9 +2,9 @@
 import type { DedicatedWorker } from "./DedicatedWorker.js";
 import type { ExtendedFunctionParameters } from "./ExtendedFunctionParameters.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
-import type { ObjectInfo } from "./getObjectInfo.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
+import type { ObjectInfo } from "./ObjectInfo.js";
 import type { Promisify } from "./Promisify.js";
 
 type ExtendedFunction<T extends MethodsOnlyObject<T>> =

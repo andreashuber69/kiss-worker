@@ -1,5 +1,4 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { getObjectInfo } from "../getObjectInfo.js";
 import { serveObject } from "../serveObject.js";
 
 class Calculator {
@@ -18,4 +17,4 @@ class Calculator {
 
 serveObject(Calculator);
 
-export const info = getObjectInfo(Calculator);
+export type { Calculator };
