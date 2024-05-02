@@ -30,5 +30,6 @@ export class ObjectInfo<T extends MethodsOnlyObject<T>> {
         this.methodNames = methodNames as ReadonlyArray<keyof T>;
     }
 
+    /** The names passed to the constructor. */
     public readonly methodNames: ReadonlyArray<keyof T>;
 }

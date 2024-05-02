@@ -26,6 +26,8 @@ import type { serveFunction } from "./serveFunction.js";
  * assignable to `never` if the calling code does not supply the type of the served function, see
  * [this SO question](https://stackoverflow.com/questions/70039081/strict-type-argument-when-calling-generic-function)
  * for more information.
+ * @param _info An instance of {@linkcode FunctionInfo} instantiated with the type exported by the script running on the
+ * worker thread.
  * @returns The constructor function of an anonymous class implementing the {@linkcode FunctionWorker} interface.
  * @typeParam T The type of the served function. {@linkcode FunctionWorker.execute} will have an equivalent signature.
  */
