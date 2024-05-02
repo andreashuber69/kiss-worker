@@ -1,3 +1,4 @@
+// https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { serveObject } from "./serveObject.js";
