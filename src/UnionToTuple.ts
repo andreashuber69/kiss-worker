@@ -5,4 +5,4 @@ type UnionToIntersection<U> = (U extends never ? never : (arg: U) => never) exte
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UnionToTuple<T, A extends any[] = []> =
     UnionToIntersection<T extends never ? never : (t: T) => T> extends
-    (_: never) => infer W ? UnionToTuple<Exclude<T, W>, [...A, W]> : A;
+    (_: never) => infer W ? UnionToTuple<Exclude<T, W>, [W, ...A]> : A;

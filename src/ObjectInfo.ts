@@ -20,7 +20,7 @@ export class ObjectInfo<T extends MethodsOnlyObject<T>> {
     /**
      * Creates a new {@linkcode ObjectInfo} object.
      * @description NOTE: Due to limitations of the currently used advanced TypeScript generics, the method names have
-     * to be supplied in a particular order, which doesn't seem to have much of a connection to the declaration order.
+     * to be supplied in the order they were declared on the type.
      * @param methodNames The names of all the methods of `T`.
      */
     public constructor(...methodNames: UnionToTuple<keyof T>) {
