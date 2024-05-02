@@ -1,9 +1,9 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { assert, describe, expect, it } from "vitest";
-import { DelayWorker } from "./testHelpers/DelayWorker.js";
-import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
-import { GetFibonacciWorker } from "./testHelpers/GetFibonacciWorker.js";
-import { WrongFilenameWorker } from "./testHelpers/WrongFilenameWorker.js";
+import { createDelayWorker } from "./testHelpers/createDelayWorker.js";
+import { createFunnyWorker } from "./testHelpers/createFunnyWorker.js";
+import { createGetFibonacciWorker } from "./testHelpers/createGetFibonacciWorker.js";
+import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.js";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
     (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm";
@@ -13,14 +13,14 @@ const delay = async () => await new Promise((resolve) => setTimeout(resolve, 200
 describe("FunctionWorker", () => {
     describe("execute", () => {
         it("should sequentially execute multiple calls", async () => {
-            const worker = new GetFibonacciWorker();
+            const worker = createGetFibonacciWorker();
             const results = await Promise.all([...new Array(10).keys()].map(async (n) => await worker.execute(n)));
             const expected = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34];
             expect(results.every((value, index) => value === expected[index])).toBe(true);
         });
 
         it("should await async func", async () => {
-            const worker = new DelayWorker();
+            const worker = createDelayWorker();
             const expectedElapsed = Math.random() * 1000;
             const start = Date.now();
             await worker.execute(expectedElapsed);
@@ -28,7 +28,7 @@ describe("FunctionWorker", () => {
         });
 
         it("should throw after terminate()", async () => {
-            const worker = new DelayWorker();
+            const worker = createDelayWorker();
             worker.terminate();
             worker.terminate(); // Should be safe to call multiple times
 
@@ -38,14 +38,14 @@ describe("FunctionWorker", () => {
         });
 
         it("should throw when func throws", async () => {
-            const worker = new FunnyWorker();
+            const worker = createFunnyWorker();
             const execute = async () => await worker.execute("throw");
             const results = await Promise.allSettled([...new Array(3).keys()].map(async () => await execute()));
             expect(results.every((result) => isExpected(result))).toBe(true);
         });
 
         it("should throw when the worker file is not a valid script", async () => {
-            const worker = new WrongFilenameWorker();
+            const worker = createWrongFilenameWorker();
 
             await expect(async () => await worker.execute()).rejects.toThrow(
                 new Error("The specified worker file is not a valid script."),
@@ -53,7 +53,7 @@ describe("FunctionWorker", () => {
         });
 
         it("should throw when func calls postMessage", async () => {
-            const worker = new FunnyWorker();
+            const worker = createFunnyWorker();
 
             await expect(async () => await worker.execute("post")).rejects.toThrow(
                 new Error("func called postMessage, which is not allowed."),
@@ -61,7 +61,7 @@ describe("FunctionWorker", () => {
         });
 
         it("should throw for exceptions thrown outside of func", async () => {
-            const worker = new FunnyWorker();
+            const worker = createFunnyWorker();
 
             try {
                 await worker.execute("throwOutside");
@@ -76,7 +76,7 @@ describe("FunctionWorker", () => {
         });
 
         it("should log delayed exceptions to the console", async () => {
-            const worker = new FunnyWorker();
+            const worker = createFunnyWorker();
             await worker.execute("throwDelayed");
             // Wait for the error handler to be called so that the console output always appears.
             await delay();

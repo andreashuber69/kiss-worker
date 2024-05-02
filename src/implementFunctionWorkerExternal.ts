@@ -7,8 +7,7 @@ import type { implementFunctionWorker } from "./implementFunctionWorker.js";
 import type { serveFunction } from "./serveFunction.js";
 
 /**
- * Creates a new anonymous class implementing the {@linkcode FunctionWorker} interface and returns the constructor
- * function.
+ * Provides a function returning an object implementing the {@linkcode FunctionWorker} interface.
  * @description Compared to {@linkcode implementFunctionWorker}, {@linkcode implementFunctionWorkerExternal} covers the
  * following additional requirements:
  * - The constructor function returned by {@linkcode implementFunctionWorkerExternal} can be executed on **any** thread.
@@ -34,9 +33,12 @@ import type { serveFunction } from "./serveFunction.js";
 export const implementFunctionWorkerExternal = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
     _info: FunctionInfo<T>,
-): new () => FunctionWorker<T> =>
-    class extends FunctionWorkerImpl<T> {
+): () => FunctionWorker<T> => {
+    const NewFunctionWorker = class extends FunctionWorkerImpl<T> {
         public constructor() {
             super(createWorker());
         }
     };
+
+    return () => new NewFunctionWorker();
+};

@@ -26,7 +26,7 @@ const doFunnyThings = async (what: "post" | "throw" | "throwDelayed" | "throwOut
     }
 };
 
-export const FunnyWorker = implementFunctionWorker(
-    () => new Worker(new URL("FunnyWorker.js", import.meta.url), { type: "module" }),
+export const createFunnyWorker = implementFunctionWorker(
+    () => new Worker(new URL("createFunnyWorker.js", import.meta.url), { type: "module" }),
     doFunnyThings,
 );

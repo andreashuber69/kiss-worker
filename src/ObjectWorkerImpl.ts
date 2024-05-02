@@ -36,8 +36,10 @@ export abstract class ObjectWorkerImpl<T extends MethodsOnlyObject<T>> {
     }
 
     protected constructor(createWorker: () => DedicatedWorker, info: ObjectInfo<T>) {
-        const Worker = implementFunctionWorkerExternal(createWorker, new FunctionInfo<ExtendedFunction<T>>());
-        this.#worker = new Worker();
+        const createFunctionWorker =
+            implementFunctionWorkerExternal(createWorker, new FunctionInfo<ExtendedFunction<T>>());
+
+        this.#worker = createFunctionWorker();
         this.obj = new Proxy(this.#worker, info) as unknown as Promisify<T>;
     }
 

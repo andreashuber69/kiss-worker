@@ -26,7 +26,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
 export const implementFunctionWorker = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
     func: T,
-): new () => FunctionWorker<T> => {
+): () => FunctionWorker<T> => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
