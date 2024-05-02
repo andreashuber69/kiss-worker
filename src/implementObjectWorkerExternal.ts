@@ -9,8 +9,7 @@ import type { serveObject } from "./serveObject.js";
 
 
 /**
- * Creates a new anonymous class implementing the {@linkcode ObjectWorker} interface and returns the constructor
- * function.
+ * Provides a function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @description Compared to {@linkcode implementObjectWorker}, {@linkcode implementObjectWorkerExternal} covers the
  * following additional requirements:
  * - The constructor function returned by {@linkcode implementObjectWorkerExternal} can be executed on **any** thread.
@@ -31,9 +30,12 @@ import type { serveObject } from "./serveObject.js";
 export const implementObjectWorkerExternal = <T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
     info: ObjectInfo<T>,
-): new () => ObjectWorker<T> =>
-    class extends ObjectWorkerImpl<T> {
+): () => ObjectWorker<T> => {
+    class ObjWorker extends ObjectWorkerImpl<T> {
         public constructor() {
             super(createWorker, info);
         }
-    };
+    }
+
+    return () => new ObjWorker();
+};

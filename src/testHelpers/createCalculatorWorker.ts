@@ -15,7 +15,7 @@ export class Calculator {
     }
 }
 
-export const CalculatorWorker = implementObjectWorker(
-    () => new Worker(new URL("CalculatorWorker.js", import.meta.url), { type: "module" }),
+export const createCalculatorWorker = implementObjectWorker(
+    () => new Worker(new URL("createCalculatorWorker.js", import.meta.url), { type: "module" }),
     Calculator,
 );
