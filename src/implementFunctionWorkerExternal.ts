@@ -34,4 +34,4 @@ export const implementFunctionWorkerExternal = <T extends (...args: never[]) => 
     createWorker: () => DedicatedWorker,
     _info: FunctionInfo<T>,
 ): () => FunctionWorker<T> =>
-    () => new FunctionWorkerImpl<T>(createWorker());
+    () => new FunctionWorkerImpl<T>(createWorker);
