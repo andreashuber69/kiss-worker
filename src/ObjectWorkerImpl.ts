@@ -28,19 +28,19 @@ class Proxy<T extends MethodsOnlyObject<T>> {
     readonly #worker: FunctionWorker<ExtendedFunction<T>>;
 }
 
-export abstract class ObjectWorkerImpl<T extends MethodsOnlyObject<T>> {
-    public readonly obj: Promisify<T>;
-
-    public terminate() {
-        this.#worker.terminate();
-    }
-
-    protected constructor(createWorker: () => DedicatedWorker, info: ObjectInfo<T>) {
+export class ObjectWorkerImpl<T extends MethodsOnlyObject<T>> {
+    public constructor(createWorker: () => DedicatedWorker, info: ObjectInfo<T>) {
         const createFunctionWorker =
             implementFunctionWorkerExternal(createWorker, new FunctionInfo<ExtendedFunction<T>>());
 
         this.#worker = createFunctionWorker();
         this.obj = new Proxy(this.#worker, info) as unknown as Promisify<T>;
+    }
+
+    public readonly obj: Promisify<T>;
+
+    public terminate() {
+        this.#worker.terminate();
     }
 
     readonly #worker: FunctionWorker<ExtendedFunction<T>>;

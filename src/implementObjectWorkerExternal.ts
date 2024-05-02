@@ -30,12 +30,5 @@ import type { serveObject } from "./serveObject.js";
 export const implementObjectWorkerExternal = <T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
     info: ObjectInfo<T>,
-): () => ObjectWorker<T> => {
-    class ObjWorker extends ObjectWorkerImpl<T> {
-        public constructor() {
-            super(createWorker, info);
-        }
-    }
-
-    return () => new ObjWorker();
-};
+): () => ObjectWorker<T> =>
+    () => new ObjectWorkerImpl<T>(createWorker, info);
