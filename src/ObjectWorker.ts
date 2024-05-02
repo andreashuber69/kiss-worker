@@ -5,7 +5,7 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { Promisify } from "./Promisify.js";
 
 /**
- * Represents the worker thread created by calling the constructor function returned by
+ * Represents the worker thread created by calling the function returned by
  * {@linkcode implementObjectWorker} or {@linkcode implementObjectWorkerExternal}.
  */
 export interface ObjectWorker<T extends MethodsOnlyObject<T>> {

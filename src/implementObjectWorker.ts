@@ -23,7 +23,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * @param ctor The constructor function for the object that will be served on the worker thread. The worker thread will
  * store the object returned by this function and henceforth call the appropriate method on it for each call to one of
  * the methods of {@linkcode ObjectWorker.obj}.
- * @returns The constructor function of an anonymous class implementing the {@linkcode ObjectWorker} interface.
+ * @returns The function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @typeParam T The type of the served object. {@linkcode ObjectWorker.obj} will have equally named methods with
  * equivalent signatures.
  */

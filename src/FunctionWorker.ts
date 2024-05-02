@@ -3,7 +3,7 @@ import type { implementFunctionWorker } from "./implementFunctionWorker.js";
 import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 
 /**
- * Represents the worker thread created by calling the constructor function returned by
+ * Represents the worker thread created by calling the function returned by
  * {@linkcode implementFunctionWorker} or {@linkcode implementFunctionWorkerExternal}.
  */
 export interface FunctionWorker<T extends (...args: never[]) => unknown> {

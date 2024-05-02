@@ -12,7 +12,7 @@ import type { serveObject } from "./serveObject.js";
  * Provides a function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @description Compared to {@linkcode implementObjectWorker}, {@linkcode implementObjectWorkerExternal} covers the
  * following additional requirements:
- * - The constructor function returned by {@linkcode implementObjectWorkerExternal} can be executed on **any** thread.
+ * - The function returned by {@linkcode implementObjectWorkerExternal} can be executed on **any** thread.
  * - The code of the served object is only ever loaded on the worker thread. This can become important when the amount
  * of code of the served object is significant, such that you'd rather not load it on the thread calling
  * {@linkcode ObjectWorker.obj}. Build tools like [vite](vitejs.dev) support this use case by detecting
@@ -23,7 +23,7 @@ import type { serveObject } from "./serveObject.js";
  * Said script must call {@linkcode serveObject} passing a constructor function and export the type of the object.
  * @param info An instance of {@linkcode ObjectInfo} instantiated with the type exported by the script running on the
  * worker thread.
- * @returns The constructor function of an anonymous class implementing the {@linkcode ObjectWorker} interface.
+ * @returns The function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @typeParam T The type of the served object. {@linkcode ObjectWorker.obj} will have equally named methods with
  * equivalent signatures.
  */

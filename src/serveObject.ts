@@ -8,7 +8,7 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
  * the thread calling {@linkcode implementObjectWorkerExternal}.
  * @description This function must only be called from code executing on a worker thread, see example in the
  * {@linkcode implementObjectWorkerExternal} documentation.
- * @param ctor The constructor of the worker object to serve.
+ * @param ctor The constructor function of the worker object to serve.
  */
 export const serveObject = <T extends MethodsOnlyObject<T>>(
     ctor: new () => T,
