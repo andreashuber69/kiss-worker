@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
 import type { ExtendedFunctionParameters } from "./ExtendedFunctionParameters.js";
+import { FunctionInfo } from "./FunctionInfo.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
@@ -35,7 +36,7 @@ export abstract class ObjectWorkerImpl<T extends MethodsOnlyObject<T>> {
     }
 
     protected constructor(createWorker: () => DedicatedWorker, info: ObjectInfo<T>) {
-        const Worker = implementFunctionWorkerExternal<ExtendedFunction<T>>(createWorker);
+        const Worker = implementFunctionWorkerExternal(createWorker, new FunctionInfo<ExtendedFunction<T>>());
         this.#worker = new Worker();
         this.obj = new Proxy(this.#worker, info) as unknown as Promisify<T>;
     }

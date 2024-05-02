@@ -1,5 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
+import { FunctionInfo } from "./FunctionInfo.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 import { serveFunction } from "./serveFunction.js";
@@ -33,9 +34,5 @@ export const implementFunctionWorker = <T extends (...args: never[]) => unknown>
         serveFunction(func);
     }
 
-    // It appears that the only alternative to casting here is typing the parameter accordingly but that would
-    // unnecessarily pollute the interface.
-    return implementFunctionWorkerExternal<T>(
-        createWorker as T extends never ? never : () => DedicatedWorker,
-    );
+    return implementFunctionWorkerExternal(createWorker, new FunctionInfo<T>());
 };

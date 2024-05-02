@@ -1,5 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
+import type { FunctionInfo } from "./FunctionInfo.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
 import { FunctionWorkerImpl } from "./FunctionWorkerImpl.js";
 import type { implementFunctionWorker } from "./implementFunctionWorker.js";
@@ -27,11 +28,10 @@ import type { serveFunction } from "./serveFunction.js";
  * for more information.
  * @returns The constructor function of an anonymous class implementing the {@linkcode FunctionWorker} interface.
  * @typeParam T The type of the served function. {@linkcode FunctionWorker.execute} will have an equivalent signature.
- * NOTE: The caller **must** pass an argument for this parameter, otherwise the argument for `createWorker` will not be
- * accepted.
  */
-export const implementFunctionWorkerExternal = <T extends (...args: never[]) => unknown = never>(
-    createWorker: T extends never ? never : () => DedicatedWorker,
+export const implementFunctionWorkerExternal = <T extends (...args: never[]) => unknown>(
+    createWorker: () => DedicatedWorker,
+    _info: FunctionInfo<T>,
 ): new () => FunctionWorker<T> =>
     class extends FunctionWorkerImpl<T> {
         public constructor() {
