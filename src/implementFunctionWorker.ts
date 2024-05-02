@@ -10,8 +10,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     self instanceof WorkerGlobalScope;
 
 /**
- * Creates a new anonymous class implementing the {@linkcode FunctionWorker} interface and returns the constructor
- * function.
+ * Provides a function returning an object implementing the {@linkcode FunctionWorker} interface.
  * @description This function covers the simplest use case: A {@linkcode FunctionWorker} is implemented in a single
  * file, which is then imported into code running on the main thread. Please see
  * [this example](https://github.com/andreashuber69/kiss-worker-demo1) for more information.
