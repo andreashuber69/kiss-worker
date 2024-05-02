@@ -33,12 +33,5 @@ import type { serveFunction } from "./serveFunction.js";
 export const implementFunctionWorkerExternal = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
     _info: FunctionInfo<T>,
-): () => FunctionWorker<T> => {
-    const NewFunctionWorker = class extends FunctionWorkerImpl<T> {
-        public constructor() {
-            super(createWorker());
-        }
-    };
-
-    return () => new NewFunctionWorker();
-};
+): () => FunctionWorker<T> =>
+    () => new FunctionWorkerImpl<T>(createWorker());

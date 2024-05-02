@@ -14,7 +14,14 @@ interface ExecuteError {
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
-export abstract class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
+export class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
+    public constructor(worker: DedicatedWorker) {
+        this.#workerImpl = worker;
+        this.#workerImpl.addEventListener("message", this.#onMessage);
+        this.#workerImpl.addEventListener("messageerror", this.#onMessageError);
+        this.#workerImpl.addEventListener("error", this.#onError);
+    }
+
     public async execute(...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> {
         return await this.#queue.execute(
             async () => await new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
@@ -36,13 +43,6 @@ export abstract class FunctionWorkerImpl<T extends (...args: never[]) => unknown
             this.#workerImpl.terminate();
             this.#workerImpl = undefined;
         }
-    }
-
-    protected constructor(worker: DedicatedWorker) {
-        this.#workerImpl = worker;
-        this.#workerImpl.addEventListener("message", this.#onMessage);
-        this.#workerImpl.addEventListener("messageerror", this.#onMessageError);
-        this.#workerImpl.addEventListener("error", this.#onError);
     }
 
     readonly #queue = new PromiseQueue();
