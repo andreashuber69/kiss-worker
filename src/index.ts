@@ -7,9 +7,15 @@ export { implementFunctionWorker } from "./implementFunctionWorker.js";
 
 export { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 
+export { FunctionInfo } from "./FunctionInfo.js";
+
 export { serveFunction } from "./serveFunction.js";
 
 export type { ObjectWorker } from "./ObjectWorker.js";
+
+export type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
+
+export type { Promisify } from "./Promisify.js";
 
 export { implementObjectWorker } from "./implementObjectWorker.js";
 
