@@ -27,7 +27,7 @@ const getAllPropertyNames = (prototype: unknown): string[] => {
  * @description This function covers the simplest use case: A {@linkcode ObjectWorker} is implemented in a single
  * file, which is then imported into code running on the main thread. Please see
  * [this example](https://github.com/andreashuber69/kiss-worker-demo1) for more information.
- * NOTE: If a {@linkcode ObjectWorker} needs to be imported on other threads,
+ * NOTE: If the returned function needs to be called on other (non-main) threads,
  * {@linkcode implementObjectWorkerExternal} must be used to implement it.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running the same script it is created in.
@@ -35,8 +35,6 @@ const getAllPropertyNames = (prototype: unknown): string[] => {
  * store the object returned by this function and henceforth call the appropriate method on it for each call to one of
  * the methods of {@linkcode ObjectWorker.obj}.
  * @returns The function returning an object implementing the {@linkcode ObjectWorker} interface.
- * @typeParam T The type of the served object. {@linkcode ObjectWorker.obj} will have equally named methods with
- * equivalent signatures.
  */
 export const implementObjectWorker = <
     C extends new (...args: never[]) => T,

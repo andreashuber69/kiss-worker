@@ -18,17 +18,10 @@ import type { serveFunction } from "./serveFunction.js";
  * separate chunk. Please see [this example](https://github.com/andreashuber69/kiss-worker-demo2) for more information.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running a script different from the one it is created in.
- * Said script must call {@linkcode serveFunction} passing a function and export the type of said function, which is
- * then passed to {@linkcode implementFunctionWorkerExternal}.
- * Since TypeScript does not enforce that a type argument must be supplied for a non-default function
- * type parameter, the type of this parameter is such that the compiler will complain about the argument not being
- * assignable to `never` if the calling code does not supply the type of the served function, see
- * [this SO question](https://stackoverflow.com/questions/70039081/strict-type-argument-when-calling-generic-function)
- * for more information.
+ * The script must call {@linkcode serveFunction} passing a function and export the type of said function.
  * @param _info An instance of {@linkcode FunctionInfo} instantiated with the type exported by the script running on the
  * worker thread.
  * @returns The function returning an object implementing the {@linkcode FunctionWorker} interface.
- * @typeParam T The type of the served function. {@linkcode FunctionWorker.execute} will have an equivalent signature.
  */
 export const implementFunctionWorkerExternal = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,

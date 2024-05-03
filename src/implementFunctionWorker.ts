@@ -14,7 +14,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * @description This function covers the simplest use case: A {@linkcode FunctionWorker} is implemented in a single
  * file, which is then imported into code running on the main thread. Please see
  * [this example](https://github.com/andreashuber69/kiss-worker-demo1) for more information.
- * NOTE: If a {@linkcode FunctionWorker} needs to be imported on other threads,
+ * NOTE: If the returned function needs to be called on other (non-main) threads,
  * {@linkcode implementFunctionWorkerExternal} must be used to implement it.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running the same script it is created in.

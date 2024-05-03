@@ -15,7 +15,7 @@ import type { UnionToTuple } from "./UnionToTuple.js";
  * extracted from a type at runtime and therefore have to be supplied by the user.
  * This class supports this process by ensuring that the supplied method names are always in sync with the method names
  * declared by the type. If they are not, the TS compiler will show an error.
- * @typeParam T The type of the object being served with {@linkcode serveObject}.
+ * @typeParam C The type of the constructor function of the object being served with {@linkcode serveObject}.
  */
 export class ObjectInfo<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {
     /**
