@@ -14,17 +14,11 @@ export const serveFunction = <T extends (...args: never[]) => unknown>(func: T) 
     /* istanbul ignore next -- @preserve */
     onmessage = async (ev: MessageEvent<Parameters<T>>) => {
         try {
-            postMessage({
-                type: "result",
-                // We cannot know whether func is synchronous or asynchronous, we therefore must always await
-                // the result.
-                result: await func(...ev.data),
-            });
+            // We cannot know whether func is synchronous or asynchronous, we therefore must always await
+            // the result.
+            postMessage({ type: "result", result: await func(...ev.data) });
         } catch (error: unknown) {
-            postMessage({
-                type: "error",
-                error,
-            });
+            postMessage({ type: "error", error });
         }
     };
 };
