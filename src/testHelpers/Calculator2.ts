@@ -1,7 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { serveObject } from "../serveObject.js";
 
-class Calculator {
+class Calculator2 {
     public add(left: number, right: number) {
         return left + right;
     }
@@ -15,6 +15,6 @@ class Calculator {
     }
 }
 
-serveObject(Calculator);
+serveObject(Calculator2);
 
-export type { Calculator };
+export type { Calculator2 };
