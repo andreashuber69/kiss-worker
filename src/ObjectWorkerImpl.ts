@@ -18,10 +18,8 @@ class Proxy<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T
         this.#worker = worker;
 
         for (const key of info.methodNames) {
-            if (key !== "constructor") {
-                this[key as string] =
-                    async (...args: Parameters<T[keyof T]>) => await this.#worker.execute("call", key, ...args);
-            }
+            this[key as string] =
+                async (...args: Parameters<T[keyof T]>) => await this.#worker.execute("call", key, ...args);
         }
     }
 

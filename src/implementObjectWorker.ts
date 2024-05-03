@@ -42,9 +42,8 @@ export const implementObjectWorker = <
         serveObject<C, T>(ctor);
     }
 
-    return implementObjectWorkerExternal(
-        createWorker,
-        new ObjectInfo<C, T>(...(Object.getOwnPropertyNames(ctor.prototype) as UnionToTuple<keyof T>)),
-        ...args2,
-    );
+    const propertyNames =
+        Object.getOwnPropertyNames(ctor.prototype).filter((v) => v !== "constructor") as UnionToTuple<keyof T>;
+
+    return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>(...propertyNames), ...args2);
 };
