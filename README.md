@@ -28,8 +28,7 @@
   </a>
 </p>
 
-Provides one of the easiest ways to run a function on a worker thread in the browser, in under 2kB of additional chunk
-size!
+Provides one of the easiest ways to use a worker thread in the browser, in just ~2kB of additional chunk size!
 
 1. [Features](#features)
 1. [Prerequisites](#prerequisites)
@@ -59,8 +58,6 @@ This is an ESM-only package. If you're still targeting browsers without ESM supp
 ### Installation
 
 `npm install kiss-worker`
-
-If you are using a bundler, you might want add `--save-dev` to the command line.
 
 ### Example 1
 
