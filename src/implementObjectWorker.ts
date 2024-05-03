@@ -44,8 +44,7 @@ export const implementObjectWorker = <
 >(
     createWorker: () => DedicatedWorker,
     ctor: C,
-    ...args2: ConstructorParameters<C>
-): () => Promise<ObjectWorker<T>> => {
+): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
@@ -54,5 +53,5 @@ export const implementObjectWorker = <
     }
 
     const propertyNames = getAllPropertyNames(ctor.prototype) as UnionToTuple<keyof T>;
-    return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>(...propertyNames), ...args2);
+    return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>(...propertyNames));
 };
