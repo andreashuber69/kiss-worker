@@ -8,10 +8,10 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { ObjectInfo } from "./ObjectInfo.js";
 import type { Promisify } from "./Promisify.js";
 
-type ExtendedFunction<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> =
+type ExtendedFunction<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> =
     (...args: ExtendedFunctionParameters<C, T>) => ReturnType<T[keyof T]>;
 
-class Proxy<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {
+class Proxy<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
     [key: string]: (...args: Parameters<T[keyof T]>) => Promise<ReturnType<T[keyof T]>>;
 
     public constructor(worker: FunctionWorker<ExtendedFunction<C, T>>, info: ObjectInfo<C, T>) {
@@ -28,7 +28,7 @@ class Proxy<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T
     readonly #worker: FunctionWorker<ExtendedFunction<C, T>>;
 }
 
-export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {
+export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
     public constructor(createWorker: () => DedicatedWorker, info: ObjectInfo<C, T>) {
         const createFunctionWorker =
             implementFunctionWorkerExternal(createWorker, new FunctionInfo<ExtendedFunction<C, T>>());

@@ -42,7 +42,7 @@ export const implementObjectWorker = <
         serveObject<C, T>(ctor);
     }
 
-    return implementObjectWorkerExternal<C, T>(
+    return implementObjectWorkerExternal(
         createWorker,
         new ObjectInfo<C, T>(...(Object.getOwnPropertyNames(ctor.prototype) as UnionToTuple<keyof T>)),
         ...args2,
