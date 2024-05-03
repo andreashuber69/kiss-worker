@@ -2,15 +2,15 @@
 import { serveObject } from "../serveObject.js";
 
 class CalculatorExternal {
-    public add(left: number, right: number) {
+    public addExternal(left: number, right: number) {
         return left + right;
     }
 
-    public subtract(left: number, right: number) {
+    public subtractExternal(left: number, right: number) {
         return left - right;
     }
 
-    public async format(num: number) {
+    public async formatExternal(num: number) {
         return await Promise.resolve(`${num}`);
     }
 }
