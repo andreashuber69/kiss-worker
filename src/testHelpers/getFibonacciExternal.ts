@@ -6,4 +6,6 @@ const getFibonacciExternal =
 
 serveFunction(getFibonacciExternal);
 
-export type GetFibonacci = typeof getFibonacciExternal;
+// False positive
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+export type { getFibonacciExternal };
