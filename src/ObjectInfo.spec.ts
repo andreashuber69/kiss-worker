@@ -60,11 +60,11 @@ declare class Large {
 
 describe("ObjectInfo", () => {
     it("should work with an empty class", () => {
-        expect(new ObjectInfo<Empty>().methodNames.length).toBe(0);
+        expect(new ObjectInfo<typeof Empty>().methodNames.length).toBe(0);
     });
 
     it("should work with a large class", () => {
-        const info = new ObjectInfo<Large>(
+        const info = new ObjectInfo<typeof Large>(
             "method00",
             "method01",
             "method02",

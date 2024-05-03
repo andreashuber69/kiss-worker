@@ -17,7 +17,7 @@ import type { UnionToTuple } from "./UnionToTuple.js";
  * declared by the type. If they are not, the TS compiler will show an error.
  * @typeParam T The type of the object being served with {@linkcode serveObject}.
  */
-export class ObjectInfo<T extends MethodsOnlyObject<T>> {
+export class ObjectInfo<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {
     /**
      * Creates a new {@linkcode ObjectInfo} object.
      * @description NOTE: Due to limitations of the currently used advanced TypeScript generics, the method names have

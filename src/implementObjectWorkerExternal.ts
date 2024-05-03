@@ -27,8 +27,21 @@ import type { serveObject } from "./serveObject.js";
  * @typeParam T The type of the served object. {@linkcode ObjectWorker.obj} will have equally named methods with
  * equivalent signatures.
  */
-export const implementObjectWorkerExternal = <T extends MethodsOnlyObject<T>>(
+export const implementObjectWorkerExternal = <
+    C extends new (...args: never[]) => T,
+    T extends MethodsOnlyObject<T> = InstanceType<C>,
+>(
     createWorker: () => DedicatedWorker,
-    info: ObjectInfo<T>,
-): () => ObjectWorker<T> =>
-    () => new ObjectWorkerImpl<T>(createWorker, info);
+    info: ObjectInfo<C, T>,
+    ...args2: ConstructorParameters<C>
+): () => Promise<ObjectWorker<T>> => async () => {
+    const result = new ObjectWorkerImpl<C, T>(createWorker, info);
+
+    try {
+        await result.construct(...args2);
+        return result;
+    } catch (error: unknown) {
+        result.terminate();
+        throw error;
+    }
+};

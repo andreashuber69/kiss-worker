@@ -10,30 +10,30 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
  * {@linkcode implementObjectWorkerExternal} documentation.
  * @param ctor The constructor function of the worker object to serve.
  */
-export const serveObject = <T extends MethodsOnlyObject<T>>(
-    ctor: new () => T,
+export const serveObject = <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>>(
+    ctor: C,
 ) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
-    const obj = new ctor();
+    let obj: T | undefined;
 
     /* istanbul ignore next -- @preserve */
-    onmessage = async (ev: MessageEvent<ExtendedFunctionParameters<T>>) => {
+    onmessage = async ({ data }: MessageEvent<ExtendedFunctionParameters<C, T>>) => {
         try {
-            const [methodName, ...args] = ev.data;
+            if (data[0] === "construct") {
+                const [, ...args] = data;
+                obj = new ctor(...args);
+                postMessage({ type: "result", result: undefined });
+            } else {
+                const [, methodName, ...args] = data;
 
-            postMessage({
-                type: "result",
                 // We cannot know whether the called method is synchronous or asynchronous, we therefore must always
                 // await the result.
-                result: await obj[methodName](...args),
-            });
+                postMessage({ type: "result", result: await obj?.[methodName](...args) });
+            }
         } catch (error: unknown) {
-            postMessage({
-                type: "error",
-                error,
-            });
+            postMessage({ type: "error", error });
         }
     };
 };

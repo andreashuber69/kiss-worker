@@ -5,7 +5,7 @@ import { createCalculatorWorker } from "./testHelpers/createCalculatorWorker.js"
 describe("ObjectWorker", () => {
     describe("obj", () => {
         it("should offer async variants of the original", async () => {
-            const worker = createCalculatorWorker();
+            const worker = await createCalculatorWorker();
             expect(await worker.obj.add(1, 2)).toBe(3);
             expect(await worker.obj.subtract(7, 4)).toBe(3);
             expect(await worker.obj.format(17)).toBe("17");

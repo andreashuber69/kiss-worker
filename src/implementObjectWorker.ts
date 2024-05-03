@@ -27,19 +27,24 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * @typeParam T The type of the served object. {@linkcode ObjectWorker.obj} will have equally named methods with
  * equivalent signatures.
  */
-export const implementObjectWorker = <T extends MethodsOnlyObject<T>>(
+export const implementObjectWorker = <
+    C extends new (...args: never[]) => T,
+    T extends MethodsOnlyObject<T> = InstanceType<C>,
+>(
     createWorker: () => DedicatedWorker,
-    ctor: new () => T,
-): () => ObjectWorker<T> => {
+    ctor: C,
+    ...args2: ConstructorParameters<C>
+): () => Promise<ObjectWorker<T>> => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
     if (isWorker) {
-        serveObject(ctor);
+        serveObject<C, T>(ctor);
     }
 
-    return implementObjectWorkerExternal(
+    return implementObjectWorkerExternal<C, T>(
         createWorker,
-        new ObjectInfo<T>(...(Object.getOwnPropertyNames(ctor.prototype) as UnionToTuple<keyof T>)),
+        new ObjectInfo<C, T>(...(Object.getOwnPropertyNames(ctor.prototype) as UnionToTuple<keyof T>)),
+        ...args2,
     );
 };
