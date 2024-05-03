@@ -9,13 +9,20 @@ interface ExecuteResult<T> {
 
 interface ExecuteError {
     type: "error";
-    error: Error;
+    error: unknown;
 }
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
-export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
-    public async execute(...args: Parameters<T>) {
+export class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
+    public constructor(createWorker: () => DedicatedWorker) {
+        this.#workerImpl = createWorker();
+        this.#workerImpl.addEventListener("message", this.#onMessage);
+        this.#workerImpl.addEventListener("messageerror", this.#onMessageError);
+        this.#workerImpl.addEventListener("error", this.#onError);
+    }
+
+    public async execute(...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> {
         return await this.#queue.execute(
             async () => await new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
                 this.#currentResolve = resolve;
@@ -31,18 +38,11 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         // Allow terminate() to be called multiple times
         if (this.#workerImpl) {
             this.#workerImpl.removeEventListener("message", this.#onMessage);
-            this.#workerImpl.removeEventListener("messageerror", this.#onError);
+            this.#workerImpl.removeEventListener("messageerror", this.#onMessageError);
             this.#workerImpl.removeEventListener("error", this.#onError);
             this.#workerImpl.terminate();
             this.#workerImpl = undefined;
         }
-    }
-
-    protected constructor(worker: DedicatedWorker) {
-        this.#workerImpl = worker;
-        this.#workerImpl.addEventListener("message", this.#onMessage);
-        this.#workerImpl.addEventListener("messageerror", this.#onError);
-        this.#workerImpl.addEventListener("error", this.#onError);
     }
 
     readonly #queue = new PromiseQueue();
@@ -59,14 +59,12 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
         return this.#workerImpl;
     }
 
-    readonly #onMessage = (ev: { data: unknown }) => {
+    readonly #onMessage = (ev: unknown) => {
         if (!this.#currentResolve || !this.#currentReject) {
             if (this.#postMessageWasCalled) {
                 this.#postMessageWasCalled = false;
             } else {
-                console.error(
-                    "The worker function returned after having an Error thrown outside of the function, see above.",
-                );
+                console.error("func returned after having an Error thrown outside of the function.");
             }
 
             return;
@@ -83,25 +81,42 @@ export abstract class KissWorkerImpl<T extends (...args: never[]) => unknown> {
             this.#currentReject(data.error);
         } else {
             this.#postMessageWasCalled = true;
-            this.#currentReject(new Error("The worker function called postMessage, which is not allowed."));
+            this.#currentReject(new Error("func called postMessage, which is not allowed."));
         }
 
         this.#resetHandlers();
     };
 
-    readonly #onError = () => {
-        // With a little bit of imagination, a worker function can do all kinds of funny stuff, e.g.
-        // https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
-        // We do our best to bring it to the attention of the caller.
-        if (this.#currentReject) {
-            const prefix = "Argument deserialization failed or exception thrown outside of the worker function";
-            this.#currentReject(new Error(`${prefix}, see console for details.`));
-            this.#resetHandlers();
-            console.error(`${prefix}.`);
+    readonly #onMessageError = (ev: unknown) =>
+        this.#showError("Argument deserialization failed", JSON.stringify(this.#getInfo(ev)));
+
+    readonly #onError = (ev: unknown) => {
+        const info = this.#getInfo(ev);
+
+        if (info.filename) {
+            this.#showError("Exception thrown outside of func", `:\n${JSON.stringify(info)}`);
         } else {
-            console.error("Exception thrown after the worker function has returned, see below.");
+            this.#showError("The specified worker file is not a valid script", ".");
         }
     };
+
+    #showError(reason: string, suffix: unknown) {
+        const message = `${reason}${suffix}`;
+
+        if (this.#currentReject) {
+            this.#currentReject(new Error(message));
+            this.#resetHandlers();
+        } else {
+            console.error(message);
+        }
+    }
+
+    #getInfo(ev: unknown) {
+        // Apparently for security reasons, JSON.stringify will not work on ev, which is why we have to extract the
+        // relevant properties ourselves.
+        const { message, filename, lineno } = ev as Record<string, unknown>;
+        return { message, filename, lineno };
+    }
 
     #resetHandlers() {
         this.#currentResolve = undefined;

@@ -1,11 +1,26 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-
 export type { AddRemoveEventListener, DedicatedWorker } from "./DedicatedWorker.js";
 
-export type { KissWorker } from "./KissWorker.js";
+export type { FunctionWorker } from "./FunctionWorker.js";
 
-export { implementWorker } from "./implementWorker.js";
+export { implementFunctionWorker } from "./implementFunctionWorker.js";
 
-export { implementWorkerExternal } from "./implementWorkerExternal.js";
+export { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 
-export { serve } from "./serve.js";
+export { FunctionInfo } from "./FunctionInfo.js";
+
+export { serveFunction } from "./serveFunction.js";
+
+export type { ObjectWorker } from "./ObjectWorker.js";
+
+export type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
+
+export type { Promisify } from "./Promisify.js";
+
+export { implementObjectWorker } from "./implementObjectWorker.js";
+
+export { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
+
+export { ObjectInfo } from "./ObjectInfo.js";
+
+export { serveObject } from "./serveObject.js";

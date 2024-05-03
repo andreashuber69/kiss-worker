@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementWorker } from "../implementWorker.js";
+import { implementFunctionWorker } from "../implementFunctionWorker.js";
 
 const doFunnyThings = async (what: "post" | "throw" | "throwDelayed" | "throwOutside") => {
     switch (what) {
@@ -26,5 +26,7 @@ const doFunnyThings = async (what: "post" | "throw" | "throwDelayed" | "throwOut
     }
 };
 
-export const FunnyWorker =
-    implementWorker(() => new Worker(new URL("FunnyWorker.js", import.meta.url), { type: "module" }), doFunnyThings);
+export const createFunnyWorker = implementFunctionWorker(
+    () => new Worker(new URL("createFunnyWorker.js", import.meta.url), { type: "module" }),
+    doFunnyThings,
+);

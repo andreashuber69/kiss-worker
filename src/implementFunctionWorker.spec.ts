@@ -1,25 +1,26 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { describe, expect, it } from "vitest";
-import { DelayWorker } from "./testHelpers/DelayWorker.js";
-import { FibonacciWorker } from "./testHelpers/FibonacciWorker.js";
-import { FunnyWorker } from "./testHelpers/FunnyWorker.js";
+import { assert, describe, expect, it } from "vitest";
+import { createDelayWorker } from "./testHelpers/createDelayWorker.js";
+import { createFunnyWorker } from "./testHelpers/createFunnyWorker.js";
+import { createGetFibonacciWorker } from "./testHelpers/createGetFibonacciWorker.js";
+import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.js";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
     (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm";
 
 const delay = async () => await new Promise((resolve) => setTimeout(resolve, 200));
 
-describe("KissWorker", () => {
+describe("FunctionWorker", () => {
     describe("execute", () => {
         it("should sequentially execute multiple calls", async () => {
-            const worker = new FibonacciWorker();
+            const worker = createGetFibonacciWorker();
             const results = await Promise.all([...new Array(10).keys()].map(async (n) => await worker.execute(n)));
             const expected = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34];
             expect(results.every((value, index) => value === expected[index])).toBe(true);
         });
 
-        it("should await async worker functions", async () => {
-            const worker = new DelayWorker();
+        it("should await async func", async () => {
+            const worker = createDelayWorker();
             const expectedElapsed = Math.random() * 1000;
             const start = Date.now();
             await worker.execute(expectedElapsed);
@@ -27,7 +28,7 @@ describe("KissWorker", () => {
         });
 
         it("should throw after terminate()", async () => {
-            const worker = new DelayWorker();
+            const worker = createDelayWorker();
             worker.terminate();
             worker.terminate(); // Should be safe to call multiple times
 
@@ -36,35 +37,46 @@ describe("KissWorker", () => {
             );
         });
 
-        it("should throw when the worker function throws", async () => {
-            const worker = new FunnyWorker();
+        it("should throw when func throws", async () => {
+            const worker = createFunnyWorker();
             const execute = async () => await worker.execute("throw");
             const results = await Promise.allSettled([...new Array(3).keys()].map(async () => await execute()));
             expect(results.every((result) => isExpected(result))).toBe(true);
         });
 
-        it("should throw when the worker function calls postMessage", async () => {
-            const worker = new FunnyWorker();
+        it("should throw when the worker file is not a valid script", async () => {
+            const worker = createWrongFilenameWorker();
 
-            await expect(async () => await worker.execute("post")).rejects.toThrow(
-                new Error("The worker function called postMessage, which is not allowed."),
+            await expect(async () => await worker.execute()).rejects.toThrow(
+                new Error("The specified worker file is not a valid script."),
             );
         });
 
-        it("should throw for exceptions thrown outside of the worker function", async () => {
-            const worker = new FunnyWorker();
+        it("should throw when func calls postMessage", async () => {
+            const worker = createFunnyWorker();
 
-            await expect(async () => await worker.execute("throwOutside")).rejects.toThrow(
-                // eslint-disable-next-line @stylistic/max-len
-                new Error("Argument deserialization failed or exception thrown outside of the worker function, see console for details."),
+            await expect(async () => await worker.execute("post")).rejects.toThrow(
+                new Error("func called postMessage, which is not allowed."),
             );
+        });
 
-            // Wait for the worker function to return so that the console output always appears.
+        it("should throw for exceptions thrown outside of func", async () => {
+            const worker = createFunnyWorker();
+
+            try {
+                await worker.execute("throwOutside");
+                assert(false);
+            } catch (error: unknown) {
+                assert(error instanceof Error);
+                expect(error.message.split("\n")[0]).toBe("Exception thrown outside of func:");
+            }
+
+            // Wait for func to return so that the console output always appears.
             await delay();
         });
 
         it("should log delayed exceptions to the console", async () => {
-            const worker = new FunnyWorker();
+            const worker = createFunnyWorker();
             await worker.execute("throwDelayed");
             // Wait for the error handler to be called so that the console output always appears.
             await delay();
