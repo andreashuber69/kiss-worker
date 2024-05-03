@@ -11,6 +11,17 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
     self instanceof WorkerGlobalScope;
 
+const getAllPropertyNames = (prototype: unknown): string[] => {
+    if (prototype && prototype !== Object.prototype) {
+        return [
+            ...Object.getOwnPropertyNames(prototype).filter((v) => v !== "constructor"),
+            ...getAllPropertyNames(Object.getPrototypeOf(prototype)),
+        ];
+    }
+
+    return [];
+};
+
 /**
  * Provides a function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @description This function covers the simplest use case: A {@linkcode ObjectWorker} is implemented in a single
@@ -42,8 +53,6 @@ export const implementObjectWorker = <
         serveObject<C, T>(ctor);
     }
 
-    const propertyNames =
-        Object.getOwnPropertyNames(ctor.prototype).filter((v) => v !== "constructor") as UnionToTuple<keyof T>;
-
+    const propertyNames = getAllPropertyNames(ctor.prototype) as UnionToTuple<keyof T>;
     return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>(...propertyNames), ...args2);
 };

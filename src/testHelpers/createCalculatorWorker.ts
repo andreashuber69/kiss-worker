@@ -1,11 +1,13 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { implementObjectWorker } from "../implementObjectWorker.js";
 
-export class Calculator {
+class Base {
     public add(left: number, right: number) {
         return left + right;
     }
+}
 
+export class Calculator extends Base {
     public subtract(left: number, right: number) {
         return left - right;
     }
