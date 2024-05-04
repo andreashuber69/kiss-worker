@@ -224,9 +224,9 @@ are just the most common pitfalls (you can find more in the
 ### Requirements for a Better Interface
 
 The **Web Workers** interface was designed that way because it has to cover even the most exotic use cases. I would
-claim you usually just need a transparent way to execute a given function on a different thread. Since **Web Workers**
-aren't exactly new, on [npm](https://npmjs.com) there are hundreds of packages that attempt to do just that. The ones
-I've seen all fail to satisfy at least one of the following requirements:
+claim you usually just need a transparent way to execute a single function or methods of an object on a different
+thread. Since **Web Workers** aren't exactly new, on [npm](https://npmjs.com) there are hundreds of packages that
+attempt to do just that. The ones I've seen all fail to satisfy at least one of the following requirements:
 
 1. Provide **TypeScript** types and offer fully transparent marshalling of arguments, return values **and** `Error`
    objects. In other words, calling a function on a worker thread must feel much the same as calling the function
@@ -239,7 +239,7 @@ I've seen all fail to satisfy at least one of the following requirements:
 3. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
    cost in the form of additional chunk size and thus helps to keep your site fast and snappy. For example,
    many of the features offered by the popular [`workerpool`](https://www.npmjs.com/package/workerpool) will go unused
-   in the vast majority of the cases. Unsurprisingly, `workerpool` is 5 times larger than this library (minified and
+   in the vast majority of the cases. Unsurprisingly, `workerpool` is >3 times larger than this library (minified and
    gzipped). To be clear: I'm sure there **is** a use case for all the features offered by `workerpool`, just not a very
    common one.
 4. Automatically test all code of every release and provide code coverage metrics.
