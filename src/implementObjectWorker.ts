@@ -26,7 +26,7 @@ const getAllPropertyNames = (prototype: unknown): string[] => {
  * Provides a function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @description This function covers the simplest use case: A {@linkcode ObjectWorker} is implemented in a single
  * file, which is then imported into code running on the main thread. Please see
- * [this example](https://github.com/andreashuber69/kiss-worker-demo1) for more information.
+ * [this example](https://github.com/andreashuber69/kiss-worker-demo2) for more information.
  * NOTE: If the returned function needs to be called on other (non-main) threads,
  * {@linkcode implementObjectWorkerExternal} must be used to implement it.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
