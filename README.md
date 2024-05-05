@@ -28,7 +28,7 @@
   </a>
 </p>
 
-Provides one of the easiest ways to use a worker thread in the browser, in just ~2kB of additional chunk size!
+Provides one of the easiest ways to use a worker thread in the browser, in at most ~2kB of additional chunk size!
 
 1. [Features](#features)
 1. [Prerequisites](#prerequisites)
@@ -36,6 +36,10 @@ Provides one of the easiest ways to use a worker thread in the browser, in just 
    - [Installation](#installation)
    - [Example 1: Single Function](#example-1-single-function)
    - [Example 2: Object](#example-2-object)
+1. [Advanced Topics](#advanced-topics)
+   - [Asynchronous Functions and Methods](#asynchronous-functions-and-methods)
+   - [Simultaneous Calls](#simultaneous-calls)
+   - [Worker Code Isolation](#worker-code-isolation)
 1. [Motivation](#motivation)
    - [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
    - [Requirements for a Better Interface](#requirements-for-a-better-interface)
@@ -48,6 +52,7 @@ Provides one of the easiest ways to use a worker thread in the browser, in just 
 - Support for synchronous and asynchronous functions and methods
 - Automated tests for 99% of the code
 - Reporting of incorrectly implemented functions and methods
+- Tree shaking friendly (only pay for what you use)
 
 ## Prerequisites
 
@@ -106,8 +111,8 @@ if (element) {
 
 Here are a few facts that might not be immediately obvious:
 
-- Each call to `createFibonacciWorker()` starts a new and independent worker thread. If necessary, a thread could be
-  terminated by calling `worker.terminate()`.
+- Each call to the `createFibonacciWorker()` factory function starts a new and independent worker thread. If necessary,
+  a thread could be terminated by calling `worker.terminate()`.
 - The signature of `worker.execute()` is equivalent to the one of `fibonacci()`. Of course, `Error`s thrown by
   `fibonacci()` would also be rethrown by `worker.execute()`. The only difference is that `worker.execute()` is
   asynchronous, while `fibonacci()` is synchronous.
@@ -117,7 +122,7 @@ Here are a few facts that might not be immediately obvious:
 - *./src/createFibonacciWorker.ts* is imported by code running on the main thread **and** is also the entry point for
   the worker thread. This is possible because `implementFunctionWorker()` detects on which thread it is run. However,
   this detection would **not** work correctly, if code in a worker thread attempted to start another worker thread. This
-  can easily be fixed, as we will see later.
+  can easily be fixed, see [Worker Code Isolation](#worker-code-isolation).
 
 ### Example 2: Object
 
@@ -172,9 +177,9 @@ for (let round = 0; element && round < 20; ++round) {
 
 More facts that might not be immediately obvious:
 
-- Contrary to `implementFunctionWorker()`, the function created by `implementObjectWorker()` returns a `Promise`. This
-  is owed to the fact that the passed constructor is executed on the worker thread. So, if the `Calculator` constructor
-  threw an error, it would be rethrown by `createCalculatorWorker()`.
+- Contrary to `implementFunctionWorker()`, the factory function created by `implementObjectWorker()` returns a
+  `Promise`. This is owed to the fact that the passed constructor is executed on the worker thread. So, if the
+  `Calculator` constructor threw an error, it would be rethrown by `createCalculatorWorker()`.
 - `worker.obj` acts as a proxy for the `Calculator` object served on the worker thread. `worker.obj` thus offers the
   same methods as a `Calculator` object, again with equivalent signatures.
 
@@ -190,16 +195,63 @@ If client code does not await each call to `execute` or methods offered by the `
 happen that a call is made even though a previously returned promise is still unsettled. In such a scenario the later
 call is automatically queued and only executed after all previously returned promises have settled.
 
-### Load Worker Code on the Worker Thread Only
+### Worker Code Isolation
 
-What was done in a single file before is now split into two, with the following advantages:
+As hinted at [above](#example-1-single-function), the implementation of a worker in a single file has its downsides,
+which is why it's sometimes necessary to fully isolate worker code from the rest of the application. For this purpose
+`implementFunctionWorkerExternal()` and `implementObjectWorkerExternal()` are provided. Using these instead of their
+counterparts has the following advantages:
 
-- The code in *./src/getFibonacci.ts* is fully insulated from the rest of the application. It only exports a **type**.
-  Type-only exports and imports are removed during compilation to ECMAScript. So, if the implementation of
-  `getFibonacci()` involved significant amounts of code not used anywhere else, it would only be loaded by the worker
-  thread.
-- `implementWorkerExternal()` can be used to implement a new worker on any thread, not just the main thread (like
-   `implementWorker()`).
+- A factory function returned by `implementFunctionWorkerExternal()` or `implementObjectWorkerExternal()` can be
+  executed on **any** thread (not just the main thread).
+- The code of the served function or object is only ever loaded on the worker thread. This can become important when the
+  amount of code running on the worker thread is significant, such that you'd rather not load it anywhere else. Build
+  tools like [vite](vitejs.dev) support this use case by detecting `new Worker(...)` calls and putting the worker script
+  as well as all directly and indirectly called code into a separate chunk.
+
+Lets see how [Example 1](#example-1-single-function) can be implemented such that worker code is fully isolated.
+
+The full code of this example can be found on [GitHub](https://github.com/andreashuber69/kiss-worker-demo3) and
+[StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo3).
+
+```ts
+// ./src/fibonacci.ts
+import { serveFunction } from "kiss-worker";
+
+// The function we want to execute on a worker thread
+const fibonacci = (n: number): number =>
+    ((n < 2) ? Math.floor(n) : fibonacci(n - 1) + fibonacci(n - 2));
+
+// Serve the function so that it can be called from the thread executing
+// implementFunctionWorkerExternal
+serveFunction(fibonacci);
+
+// Export the type only
+export type { fibonacci };
+```
+
+```ts
+// ./src/createFibonacciWorker.ts
+import { FunctionInfo, implementFunctionWorkerExternal } from
+    "kiss-worker";
+
+// Import the type only
+import type { fibonacci } from "./fibonacci.js";
+
+export const createFibonacciWorker = implementFunctionWorkerExternal(
+    // A function that creates a web worker running the script serving
+    // the function
+    () => new Worker(
+        new URL("fibonacci.js", import.meta.url),
+        { type: "module" },
+    ),
+    new FunctionInfo<typeof fibonacci>(),
+);
+```
+
+The usage from *./src/main.ts* is the same as in [Example 1](#example-1-single-function). What was done in a single file
+before is now split into two. Note that *./src/fibonacci.ts* only exports a **type**. Type-only exports and imports are
+removed during compilation to ECMAScript.
 
 ## Motivation
 
