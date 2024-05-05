@@ -10,9 +10,9 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     self instanceof WorkerGlobalScope;
 
 /**
- * Provides a function returning an object implementing the {@linkcode FunctionWorker} interface.
- * @description This function covers the simplest use case: A {@linkcode FunctionWorker} is implemented in a single
- * file, which is then imported into code running on the main thread. Please see
+ * Creates a factory function returning an object implementing the {@linkcode FunctionWorker} interface.
+ * @description This function covers the simplest use case: A factory function is implemented in a single file, which
+ * is then imported into code running on the main thread. Please see
  * [this example](https://github.com/andreashuber69/kiss-worker-demo1) for more information.
  * NOTE: If the returned function needs to be called on other (non-main) threads,
  * {@linkcode implementFunctionWorkerExternal} must be used to implement it.

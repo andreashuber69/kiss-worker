@@ -28,14 +28,18 @@
   </a>
 </p>
 
-Provides one of the easiest ways to use a worker thread in the browser, in just ~2kB of additional chunk size!
+Provides one of the easiest ways to use a worker thread in the browser, in at most ~2kB of additional chunk size!
 
 1. [Features](#features)
 1. [Prerequisites](#prerequisites)
 1. [Getting Started](#getting-started)
    - [Installation](#installation)
-   - [Example 1](#example-1)
-   - [Example 2](#example-2)
+   - [Example 1: Single Function](#example-1-single-function)
+   - [Example 2: Object](#example-2-object)
+1. [Advanced Topics](#advanced-topics)
+   - [Asynchronous Functions and Methods](#asynchronous-functions-and-methods)
+   - [Simultaneous Calls](#simultaneous-calls)
+   - [Worker Code Isolation](#worker-code-isolation)
 1. [Motivation](#motivation)
    - [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
    - [Requirements for a Better Interface](#requirements-for-a-better-interface)
@@ -48,6 +52,7 @@ Provides one of the easiest ways to use a worker thread in the browser, in just 
 - Support for synchronous and asynchronous functions and methods
 - Automated tests for 99% of the code
 - Reporting of incorrectly implemented functions and methods
+- Tree shaking friendly (only pay for what you use)
 
 ## Prerequisites
 
@@ -59,112 +64,249 @@ This is an ESM-only package. If you're still targeting browsers without ESM supp
 
 `npm install kiss-worker`
 
-### Example 1
+### Example 1: Single Function
 
 The full code of this example can be found on [GitHub](https://github.com/andreashuber69/kiss-worker-demo1) and
 [StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo1).
 
 ```ts
-// ./src/GetFibonacciWorker.ts
-import { implementWorker } from "kiss-worker";
+// ./src/createFibonacciWorker.ts
+import { implementFunctionWorker } from "kiss-worker";
 
 // The function we want to execute on a worker thread
-const getFibonacci = (n: number): number =>
-    (n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2);
+const fibonacci = (n: number): number =>
+    ((n < 2) ? Math.floor(n) : fibonacci(n - 1) + fibonacci(n - 2));
 
-export const GetFibonacciWorker = implementWorker(
+export const createFibonacciWorker = implementFunctionWorker(
     // A function that creates a web worker running this script
     () => new Worker(
-        new URL("GetFibonacciWorker.js", import.meta.url),
-        { type: "module" }
+        new URL("createFibonacciWorker.js", import.meta.url),
+        { type: "module" },
     ),
-    getFibonacci,
+    fibonacci,
 );
 ```
 
-That's it, we've defined our worker with a single statement! Let's see how we can use this from the main thread:
+That's it, we've defined our worker with a single statement! Let's see how we can use this from *main.ts*:
 
-```html
-<!-- index.html -->
-<!-- ... -->
-    <script type="module">
-      import { GetFibonacciWorker } from "./src/GetFibonacciWorker.ts";
-      // Start a new worker thread waiting for work.
-      const worker = new GetFibonacciWorker();
-      // Send the argument (40) to the worker thread, where it will be
-      // passed to our function. In the mean time we're awaiting the
-      // returned promise, which will eventually fulfill with the result
-      // calculated on the worker thread.
-      const result = await worker.execute(40);
-      document.querySelector("h1").textContent = `${result}`;
-    </script>
-<!-- ... -->
+```ts
+// ./src/main.ts
+import { createFibonacciWorker } from "./createFibonacciWorker.ts";
+
+// Start a new worker thread waiting for work.
+const worker = createFibonacciWorker();
+
+// Send the argument (40) to the worker thread, where it will be passed
+// to our function. In the mean time we're awaiting the returned promise,
+// which will eventually fulfill with the result calculated on the worker
+// thread.
+const result = await worker.execute(40);
+
+const element = document.querySelector("h1");
+
+if (element) {
+    element.textContent = `${result}`;
+}
 ```
 
 Here are a few facts that might not be immediately obvious:
 
-- Each call to `new GetFibonacciWorker()` starts a new and independent worker thread. If necessary, a thread could be
-  terminated by calling `worker.terminate()`.
-- The signature of `worker.execute()` is equivalent to the one of `getFibonacci()`. Of course, `Error`s thrown by
-  `getFibonacci()` would also be rethrown by `worker.execute()`. The only difference is that `worker.execute()` is
-  asynchronous, while `getFibonacci()` is synchronous.
+- Each call to the `createFibonacciWorker()` factory function starts a new and independent worker thread. If necessary,
+  a thread could be terminated by calling `worker.terminate()`.
+- The signature of `worker.execute()` is equivalent to the one of `fibonacci()`. Of course, `Error`s thrown by
+  `fibonacci()` would also be rethrown by `worker.execute()`. The only difference is that `worker.execute()` is
+  asynchronous, while `fibonacci()` is synchronous.
 - All involved code is based on ECMAScript modules (ESM), which is why we must pass `{ type: "module" }` to the `Worker`
-  constructor. This allows us to use normal `import` statements in *./src/GetFibonacciWorker.ts* (as opposed to
+  constructor. This allows us to use normal `import` statements in *./src/createFibonacciWorker.ts* (as opposed to
   `importScripts()` required inside classic workers).
-- *./src/GetFibonacciWorker.ts* is imported by code running on the main thread **and** is also the entry point for the
-  worker thread. This is possible because `implementWorker()` detects on which thread it is run. However, this detection
-  would **not** work correctly, if code in a worker thread attempted to start another worker thread. This can easily be
-  fixed, as we will see in the next example.
+- *./src/createFibonacciWorker.ts* is imported by code running on the main thread **and** is also the entry point for
+  the worker thread. This is possible because `implementFunctionWorker()` detects on which thread it is run. However,
+  this detection would **not** work correctly, if code in a worker thread attempted to start another worker thread. This
+  can easily be fixed, see [Worker Code Isolation](#worker-code-isolation).
 
-### Example 2
+### Example 2: Object
 
 The full code of this example can be found on [GitHub](https://github.com/andreashuber69/kiss-worker-demo2) and
 [StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo2).
 
-```ts
-// ./src/getFibonacci.ts
-import { serve } from "kiss-worker";
-
-// The function we want to execute on a worker thread
-const getFibonacci = (n: number): number =>
-    (n < 2) ? Math.floor(n) : getFibonacci(n - 1) + getFibonacci(n - 2);
-
-// Serve our function, so that it can be called from the thread that
-// calls implementWorkerExternal
-serve(getFibonacci);
-
-// Export the type only
-export type GetFibonacci = typeof getFibonacci;
-```
+Sometimes it's not enough to serve just a single function on a worker thread, which is why this library also supports
+serving objects:
 
 ```ts
-// ./src/GetFibonacciWorker.ts
-import { implementWorkerExternal } from "kiss-worker";
+// ./src/createCalculatorWorker.ts
+import { implementObjectWorker } from "kiss-worker";
 
-// Import the type of our function ...
-import type { GetFibonacci } from "./getFibonacci.js";
+// We want to serve an object of this class on a worker thread
+class Calculator {
+    public multiply(left: bigint, right: bigint) {
+        return left * right;
+    }
 
-// ... and pass it to establish type safety
-export const GetFibonacciWorker = implementWorkerExternal<GetFibonacci>(
-    // A function that creates a web worker running the script that
-    // serves our function
+    public divide(left: bigint, right: bigint) {
+        return left / right;
+    }
+}
+
+export const createCalculatorWorker = implementObjectWorker(
+    // A function that creates a web worker running this script
     () => new Worker(
-        new URL("getFibonacci.js", import.meta.url),
-        { type: "module" }
+        new URL("createCalculatorWorker.js", import.meta.url),
+        { type: "module" },
     ),
+    Calculator,
 );
 ```
 
-The usage from *index.html* is identical to the one demonstrated in the [Example 1](#example-1).
+```ts
+// ./src/main.ts
+import { createCalculatorWorker } from "./createCalculatorWorker.ts";
 
-What was done in a single file before is now split into two, with the following advantages:
+// Start a new worker thread waiting for work.
+const worker = await createCalculatorWorker();
 
-- The code in *./src/getFibonacci.ts* is fully insulated from the rest of the application. It only exports a **type**.
-  Type-only exports and imports are removed during compilation to ECMAScript. So, if the implementation of
-  `getFibonacci()` involved significant amounts of code not used anywhere else, it would only be loaded by the worker
-  thread.
-- `implementWorkerExternal()` can be used to implement a new worker on any thread, not just the main thread (like
-   `implementWorker()`).
+const element = document.querySelector("p");
+let current = 2n;
+
+for (let round = 0; element && round < 20; ++round) {
+    // worker.obj is a proxy for the Calculator object on the worker
+    // thread
+    current = await worker.obj.multiply(current, current);
+    element.textContent = `${current}`;
+}
+```
+
+More facts that might not be immediately obvious:
+
+- Contrary to `implementFunctionWorker()`, the factory function created by `implementObjectWorker()` returns a
+  `Promise`. This is owed to the fact that the passed constructor is executed on the worker thread. So, if the
+  `Calculator` constructor threw an error, it would be rethrown by `createCalculatorWorker()`.
+- `worker.obj` acts as a proxy for the `Calculator` object served on the worker thread. `worker.obj` thus offers the
+  same methods as a `Calculator` object, again with equivalent signatures.
+
+## Advanced Topics
+
+### Asynchronous Functions and Methods
+
+These are fully supported out of the box, no special API needed.
+
+### Simultaneous Calls
+
+If client code does not await each call to `execute` or methods offered by the `obj` property of a given worker, it can
+happen that a call is made even though a previously returned promise is still unsettled. In such a scenario the later
+call is automatically queued and only executed after all previously returned promises have settled.
+
+### Worker Code Isolation
+
+As hinted at [above](#example-1-single-function), the implementation of a worker in a single file has its downsides,
+which is why it's sometimes necessary to fully isolate worker code from the rest of the application. For this purpose
+`implementFunctionWorkerExternal()` and `implementObjectWorkerExternal()` are provided. Using these instead of their
+counterparts has the following advantages:
+
+- A factory function returned by `implementFunctionWorkerExternal()` or `implementObjectWorkerExternal()` can be
+  executed on **any** thread (not just the main thread).
+- The code of the served function or object is only ever loaded on the worker thread. This can become important when the
+  amount of code running on the worker thread is significant, such that you'd rather not load it anywhere else. Build
+  tools like [vite](vitejs.dev) support this use case by detecting `new Worker(...)` calls and putting the worker script
+  as well as all directly and indirectly called code into a separate chunk.
+
+Lets see how [Example 1](#example-1-single-function) can be implemented such that worker code is fully isolated.
+
+The full code of this example can be found on [GitHub](https://github.com/andreashuber69/kiss-worker-demo3) and
+[StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo3).
+
+```ts
+// ./src/fibonacci.ts
+import { serveFunction } from "kiss-worker";
+
+// The function we want to execute on a worker thread
+const fibonacci = (n: number): number =>
+    ((n < 2) ? Math.floor(n) : fibonacci(n - 1) + fibonacci(n - 2));
+
+// Serve the function so that it can be called from the thread executing
+// implementFunctionWorkerExternal
+serveFunction(fibonacci);
+
+// Export the type only
+export type { fibonacci };
+```
+
+```ts
+// ./src/createFibonacciWorker.ts
+import { FunctionInfo, implementFunctionWorkerExternal } from
+    "kiss-worker";
+
+// Import the type only
+import type { fibonacci } from "./fibonacci.js";
+
+export const createFibonacciWorker = implementFunctionWorkerExternal(
+    // A function that creates a web worker running the script serving
+    // the function
+    () => new Worker(
+        new URL("fibonacci.js", import.meta.url),
+        { type: "module" },
+    ),
+    new FunctionInfo<typeof fibonacci>(),
+);
+```
+
+The usage from *./src/main.ts* is the same as in [Example 1](#example-1-single-function). What was done in a single file
+before is now split into two. Note that *./src/fibonacci.ts* only exports a **type**. Type-only exports and imports are
+removed during compilation to ECMAScript.
+
+Finally, let's see how [Example 2](#example-2-object) can be implemented such that worker code is fully isolated.
+
+The full code of this example can be found on [GitHub](https://github.com/andreashuber69/kiss-worker-demo4) and
+[StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo4).
+
+```ts
+// ./src/Calculator.ts
+import { serveObject } from "kiss-worker";
+
+// We want to serve an object of this class on a worker thread
+class Calculator {
+    public multiply(left: bigint, right: bigint) {
+        return left * right;
+    }
+
+    public divide(left: bigint, right: bigint) {
+        return left / right;
+    }
+}
+
+// Pass the constructor function of the class so that the worker thread
+// can create a new object and its methods can be called from the thread
+// executing implementObjectWorkerExternal
+serveObject(Calculator);
+
+// Export the type only
+export type { Calculator };
+```
+
+```ts
+// ./src/createCalculatorWorker.ts
+import { ObjectInfo, implementObjectWorkerExternal } from "kiss-worker";
+
+// Import the type only
+import type { Calculator } from "./Calculator.js";
+
+export const createCalculatorWorker = implementObjectWorkerExternal(
+    // A function that creates a web worker running the script serving
+    // the object
+    () => new Worker(
+        new URL("Calculator.js", import.meta.url),
+        { type: "module" },
+    ),
+    // Provide required information about the served object
+    new ObjectInfo<typeof Calculator>("multiply", "divide"),
+);
+```
+
+Again, the usage from *./src/main.ts* is the same as in [Example 2](#example-2-object). Note that
+`implementObjectWorkerExternal` can only work as advertised if it knows the method names of the object being served on
+the worker thread. Due to TypeScript design constraints, method names cannot be extracted from a type at runtime and
+therefore have to be supplied by the user. The `ObjectInfo` class supports this process by ensuring that the supplied
+method names are always in sync with the method names declared by the type. If they are not, the TS compiler will show
+an error.
 
 ## Motivation
 
@@ -189,9 +331,9 @@ are just the most common pitfalls (you can find more in the
 ### Requirements for a Better Interface
 
 The **Web Workers** interface was designed that way because it has to cover even the most exotic use cases. I would
-claim you usually just need a transparent way to execute a given function on a different thread. Since **Web Workers**
-aren't exactly new, on [npm](https://npmjs.com) there are hundreds of packages that attempt to do just that. The ones
-I've seen all fail to satisfy at least one of the following requirements:
+claim you usually just need a transparent way to execute a single function or methods of an object on a different
+thread. Since **Web Workers** aren't exactly new, on [npm](https://npmjs.com) there are hundreds of packages that
+attempt to do just that. The ones I've seen all fail to satisfy at least one of the following requirements:
 
 1. Provide **TypeScript** types and offer fully transparent marshalling of arguments, return values **and** `Error`
    objects. In other words, calling a function on a worker thread must feel much the same as calling the function
@@ -204,7 +346,7 @@ I've seen all fail to satisfy at least one of the following requirements:
 3. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
    cost in the form of additional chunk size and thus helps to keep your site fast and snappy. For example,
    many of the features offered by the popular [`workerpool`](https://www.npmjs.com/package/workerpool) will go unused
-   in the vast majority of the cases. Unsurprisingly, `workerpool` is 5 times larger than this library (minified and
+   in the vast majority of the cases. Unsurprisingly, `workerpool` is >3 times larger than this library (minified and
    gzipped). To be clear: I'm sure there **is** a use case for all the features offered by `workerpool`, just not a very
    common one.
 4. Automatically test all code of every release and provide code coverage metrics.

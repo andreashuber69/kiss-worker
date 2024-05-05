@@ -9,8 +9,8 @@ import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerE
 export interface FunctionWorker<T extends (...args: never[]) => unknown> {
     /**
      * Calls the function served on the worker thread.
-     * @description Can be called without waiting for previous calls to settle. If done so, calls to the served function
-     * will be queued and executed as soon as the worker thread is available.
+     * @description Can be called without waiting for previously returned promises to settle. If done so, calls will be
+     * queued and executed as soon as the worker thread is available.
      * @param args The arguments to pass to the served function.
      * @returns The return value of the served function.
      * @throws The error thrown by the served function.

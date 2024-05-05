@@ -12,8 +12,8 @@ export interface ObjectWorker<T extends MethodsOnlyObject<T>> {
     /**
      * Gets a proxy for the object created on the worker thread. The arguments for each call made to any of the methods
      * of {@linkcode ObjectWorker.obj} are sent to the worker thread where the actual function is called.
-     * @description Methods of {@linkcode ObjectWorker.obj} can be called without waiting for previous calls to
-     * settle. If done so, calls will be queued and executed as soon as the worker thread is available.
+     * @description Methods of {@linkcode ObjectWorker.obj} can be called without waiting for previously returned
+     * promises to settle. If done so, calls will be queued and executed as soon as the worker thread is available.
      */
     get obj(): Promisify<T>;
 
