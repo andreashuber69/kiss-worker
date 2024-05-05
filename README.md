@@ -253,6 +253,61 @@ The usage from *./src/main.ts* is the same as in [Example 1](#example-1-single-f
 before is now split into two. Note that *./src/fibonacci.ts* only exports a **type**. Type-only exports and imports are
 removed during compilation to ECMAScript.
 
+Finally, let's see how [Example 2](#example-2-object) can be implemented such that worker code is fully isolated.
+
+The full code of this example can be found on [GitHub](https://github.com/andreashuber69/kiss-worker-demo4) and
+[StackBlitz](https://stackblitz.com/~/github.com/andreashuber69/kiss-worker-demo4).
+
+```ts
+// ./src/Calculator.ts
+import { serveObject } from "kiss-worker";
+
+// We want to serve an object of this class on a worker thread
+class Calculator {
+    public multiply(left: bigint, right: bigint) {
+        return left * right;
+    }
+
+    public divide(left: bigint, right: bigint) {
+        return left / right;
+    }
+}
+
+// Pass the constructor function of the class so that the worker thread
+// can create a new object and its methods can be called from the thread
+// executing implementObjectWorkerExternal
+serveObject(Calculator);
+
+// Export the type only
+export type { Calculator };
+```
+
+```ts
+// ./src/createCalculatorWorker.ts
+import { ObjectInfo, implementObjectWorkerExternal } from "kiss-worker";
+
+// Import the type only
+import type { Calculator } from "./Calculator.js";
+
+export const createCalculatorWorker = implementObjectWorkerExternal(
+    // A function that creates a web worker running the script serving
+    // the object
+    () => new Worker(
+        new URL("Calculator.js", import.meta.url),
+        { type: "module" },
+    ),
+    // Provide required information about the served object
+    new ObjectInfo<typeof Calculator>("multiply", "divide"),
+);
+```
+
+Again, the usage from *./src/main.ts* is the same as in [Example 2](#example-2-object). Note that
+`implementObjectWorkerExternal` can only work as advertised if it knows the method names of the object being served on
+the worker thread. Due to TypeScript design constraints, method names cannot be extracted from a type at runtime and
+therefore have to be supplied by the user. The `ObjectInfo` class supports this process by ensuring that the supplied
+method names are always in sync with the method names declared by the type. If they are not, the TS compiler will show
+an error.
+
 ## Motivation
 
 You probably know that blocking the main thread of a browser for more than 50ms will lower the
