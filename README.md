@@ -28,7 +28,7 @@
   </a>
 </p>
 
-Provides one of the easiest ways to use a worker thread in the browser, in at most ~2kB of additional chunk size!
+Provides one of the easiest ways to use a worker thread in the browser, in ~2kB additional chunk size!
 
 1. [Features](#features)
 1. [Prerequisites](#prerequisites)
@@ -319,7 +319,7 @@ e.g simply by using a crypto currency library.
 While [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) seem to offer a relatively
 straight-forward way to offload such operations onto a separate thread, it's surprisingly hard to get them right. Here
 are just the most common pitfalls (you can find more in the
-[tests](https://github.com/andreashuber69/kiss-worker/blob/develop/src/implementWorker.spec.ts)):
+[tests](https://github.com/andreashuber69/kiss-worker/blob/develop/src/implementFunctionWorker.spec.ts)):
 
 - A given web worker is often used from more than one place in the code, which introduces the danger of overlapping
   requests with several handlers simultaneously being subscribed to the `"message"` event. Doing so almost
