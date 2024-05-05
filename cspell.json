@@ -6,6 +6,7 @@
     "gzipped",
     "lcov",
     "linkcode",
+    "oopsie",
     "rethrown",
     "sequentialization",
     "uninstrumented",
