@@ -23,7 +23,7 @@ const getAllPropertyNames = (prototype: unknown): string[] => {
 };
 
 /**
- * Provides a function returning an object implementing the {@linkcode ObjectWorker} interface.
+ * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @description This function covers the simplest use case: A factory function is implemented in a single file, which
  * is then imported into code running on the main thread. Please see
  * [this example](https://github.com/andreashuber69/kiss-worker-demo2) for more information.

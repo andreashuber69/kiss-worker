@@ -8,7 +8,7 @@ import { ObjectWorkerImpl } from "./ObjectWorkerImpl.js";
 import type { serveObject } from "./serveObject.js";
 
 /**
- * Provides a function returning an object implementing the {@linkcode ObjectWorker} interface.
+ * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @description Compared to {@linkcode implementObjectWorker}, {@linkcode implementObjectWorkerExternal} covers the
  * following additional requirements:
  * - The function returned by {@linkcode implementObjectWorkerExternal} can be executed on **any** thread.
@@ -16,7 +16,7 @@ import type { serveObject } from "./serveObject.js";
  * of code of the served object is significant, such that you'd rather not load it on the thread calling
  * {@linkcode ObjectWorker.obj}. Build tools like [vite](vitejs.dev) support this use case by detecting
  * `new Worker(...)` calls and putting the worker script as well as all directly and indirectly called code into a
- * separate chunk. Please see [this example](https://github.com/andreashuber69/kiss-worker-demo2) for more information.
+ * separate chunk. Please see [this example](https://github.com/andreashuber69/kiss-worker-demo4) for more information.
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running a script different from the one it is created in.
  * The script must call {@linkcode serveObject} passing a constructor function and export the type of the object.
