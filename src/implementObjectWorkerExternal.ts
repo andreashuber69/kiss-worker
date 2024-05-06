@@ -11,7 +11,7 @@ import type { serveObject } from "./serveObject.js";
  * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  * @description Compared to {@linkcode implementObjectWorker}, {@linkcode implementObjectWorkerExternal} covers the
  * following additional requirements:
- * - The function returned by {@linkcode implementObjectWorkerExternal} can be executed on **any** thread.
+ * - The factory function returned by {@linkcode implementObjectWorkerExternal} can be executed on **any** thread.
  * - The code of the served object is only ever loaded on the worker thread. This can become important when the
  * amount of code running on the worker thread is significant, such that you'd rather not load it anywhere else. Build
  * tools like [vite](vitejs.dev) support this use case by detecting `new Worker(...)` calls and putting the worker
@@ -22,7 +22,7 @@ import type { serveObject } from "./serveObject.js";
  * The script must call {@linkcode serveObject} passing a constructor function and export the type of the object.
  * @param info An instance of {@linkcode ObjectInfo} instantiated with the type exported by the script running on the
  * worker thread.
- * @returns The function returning an object implementing the {@linkcode ObjectWorker} interface.
+ * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
 export const implementObjectWorkerExternal = <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,

@@ -20,7 +20,7 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * with every call. This function **must** create a worker running the same script it is created in.
  * @param func The function that will be served on the worker thread. The worker thread will call this function for each
  * call to {@linkcode FunctionWorker.execute}.
- * @returns The function returning an object implementing the {@linkcode FunctionWorker} interface.
+ * @returns The factory function returning an object implementing the {@linkcode FunctionWorker} interface.
  */
 export const implementFunctionWorker = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,

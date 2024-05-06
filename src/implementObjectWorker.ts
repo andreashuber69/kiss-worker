@@ -34,7 +34,7 @@ const getAllPropertyNames = (prototype: unknown): string[] => {
  * @param ctor The constructor function for the object that will be served on the worker thread. The worker thread will
  * store the object returned by this function and henceforth call the appropriate method on it for each call to one of
  * the methods of {@linkcode ObjectWorker.obj}.
- * @returns The function returning an object implementing the {@linkcode ObjectWorker} interface.
+ * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
 export const implementObjectWorker = <
     C extends new (...args: never[]) => T,
