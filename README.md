@@ -40,6 +40,7 @@ Provides one of the easiest ways to use a worker thread in the browser, in ~2kB 
    - [Asynchronous Functions and Methods](#asynchronous-functions-and-methods)
    - [Simultaneous Calls](#simultaneous-calls)
    - [Worker Code Isolation](#worker-code-isolation)
+1. [Limitations](#limitations)
 1. [Motivation](#motivation)
    - [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
    - [Requirements for a Better Interface](#requirements-for-a-better-interface)
@@ -307,6 +308,21 @@ the worker thread. Due to TypeScript design constraints, method names cannot be 
 therefore have to be supplied by the user. The `ObjectInfo` class supports this process by ensuring that the supplied
 method names are always in sync with the method names declared by the type. If they are not, the TS compiler will show
 an error.
+
+## Limitations
+
+- [Transferable objects](https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer) are not currently
+  passed as transferable, they are thus always copied. Support would be easy to add if it was acceptable for a given
+  worker that all transferable objects are either always or never transferred.
+- The type of an object served on a worker thread cannot currently contain anything else than methods, which is enforced
+  at compile time with
+  [`MethodsOnlyObject`](https://github.com/andreashuber69/kiss-worker/blob/develop/src/MethodsOnlyObject.ts). Properties
+  of the served object are currently discovered differently, depending on how client code chooses to implement a worker.
+  The intersection of these two variants leaves methods as the only supportable type of property.
+  - At runtime, `implementObjectWorker` discovers methods through the `prototype` property of the passed
+    constructor function. Non-function properties are not discoverable through the prototype.
+  - `implementObjectWorkerExternal` accepts a (compiler-checked) list of the callable methods.
+  Both limitations will be addressed in future versions.
 
 ## Motivation
 
