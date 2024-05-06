@@ -322,7 +322,8 @@ an error.
   - At runtime, `implementObjectWorker` discovers methods through the `prototype` property of the passed
     constructor function. Non-function properties are not discoverable through the prototype.
   - `implementObjectWorkerExternal` accepts a (compiler-checked) list of the callable methods.
-  Both limitations will be addressed in future versions.
+
+Both limitations will be addressed in future versions.
 
 ## Motivation
 
