@@ -1,7 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { ExtendedFunctionParameters } from "./ExtendedFunctionParameters.js";
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
+import type { WorkerSignature } from "./Signature.js";
 
 /**
  * Calls `ctor` and serves the returned object on a worker thread such that its methods can be called from
@@ -19,7 +19,7 @@ export const serveObject = <C extends new (...args: never[]) => T, T extends Met
     let obj: T | undefined;
 
     /* istanbul ignore next -- @preserve */
-    onmessage = async ({ data }: MessageEvent<ExtendedFunctionParameters<C, T>>) => {
+    onmessage = async ({ data }: MessageEvent<Parameters<WorkerSignature<C, T>>>) => {
         try {
             if (data[0] === "construct") {
                 const [, ...args] = data;
