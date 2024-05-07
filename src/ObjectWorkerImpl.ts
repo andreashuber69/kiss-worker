@@ -15,10 +15,11 @@ class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObje
         this.#worker = worker;
 
         for (const key of info.methodNames) {
-            this[key as string] = (async (...args: Parameters<Proxy<T>[keyof T]>) => {
-                const args2 = ["call", key, ...args] as Parameters<CallSignature<T>>;
-                return await this.#worker.execute(...args2);
-            }) as Proxy<T>[keyof T];
+            // The cast-fest below is necessary because there seems to be no way to transform the type of args to the
+            // parameter types of #worker.execute. The same goes for the type of the function.
+            this[key as string] = (async (...args: Parameters<Proxy<T>[keyof T]>) =>
+                await this.#worker.execute(...(["call", key, ...args] as Parameters<CallSignature<T>>))
+            ) as Proxy<T>[keyof T];
         }
     }
 
@@ -31,7 +32,7 @@ export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends M
             implementFunctionWorkerExternal(createWorker, new FunctionInfo<WorkerSignature<C, T>>());
 
         this.#worker = createFunctionWorker();
-        this.obj = new ProxyImpl(this.#worker, info) as unknown as Proxy<T>;
+        this.obj = new ProxyImpl<C, T>(this.#worker, info) as unknown as Proxy<T>;
     }
 
     public readonly obj: Proxy<T>;
