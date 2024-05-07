@@ -2,7 +2,7 @@
 import type { implementObjectWorker } from "./implementObjectWorker.js";
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import type { Promisify } from "./Promisify.js";
+import type { Proxy } from "./Proxy.js";
 
 /**
  * Represents the worker thread created by calling the factory function returned by
@@ -15,7 +15,7 @@ export interface ObjectWorker<T extends MethodsOnlyObject<T>> {
      * @description Methods of {@linkcode ObjectWorker.obj} can be called without waiting for previously returned
      * promises to settle. If done so, calls will be queued and executed as soon as the worker thread is available.
      */
-    get obj(): Promisify<T>;
+    get obj(): Proxy<T>;
 
     /**
      * Terminates the worker thread at once. As of yet unsettled calls to any of the methods of

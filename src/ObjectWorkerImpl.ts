@@ -6,12 +6,12 @@ import type { FunctionWorker } from "./FunctionWorker.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { ObjectInfo } from "./ObjectInfo.js";
-import type { Promisify } from "./Promisify.js";
+import type { Proxy } from "./Proxy.js";
 
 type ExtendedFunction<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> =
     (...args: ExtendedFunctionParameters<C, T>) => ReturnType<T[keyof T]>;
 
-class Proxy<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
+class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
     [key: string]: (...args: Parameters<T[keyof T]>) => Promise<ReturnType<T[keyof T]>>;
 
     public constructor(worker: FunctionWorker<ExtendedFunction<C, T>>, info: ObjectInfo<C, T>) {
@@ -32,10 +32,10 @@ export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends M
             implementFunctionWorkerExternal(createWorker, new FunctionInfo<ExtendedFunction<C, T>>());
 
         this.#worker = createFunctionWorker();
-        this.obj = new Proxy(this.#worker, info) as unknown as Promisify<T>;
+        this.obj = new ProxyImpl(this.#worker, info) as unknown as Proxy<T>;
     }
 
-    public readonly obj: Promisify<T>;
+    public readonly obj: Proxy<T>;
 
     public terminate() {
         this.#worker.terminate();
