@@ -20,15 +20,15 @@ import type { serveObject } from "./serveObject.js";
  * @param createWorker A function that creates a new [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
  * with every call. This function **must** create a worker running a script different from the one it is created in.
  * The script must call {@linkcode serveObject} passing a constructor function and export the type of the object.
- * @param info An instance of {@linkcode ObjectInfo} instantiated with the type exported by the script running on the
+ * @param _info An instance of {@linkcode ObjectInfo} instantiated with the type exported by the script running on the
  * worker thread.
  * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
 export const implementObjectWorkerExternal = <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
-    info: ObjectInfo<C, T>,
+    _info: ObjectInfo<C, T>,
 ): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => async (...args2: ConstructorParameters<C>) => {
-    const result = new ObjectWorkerImpl<C, T>(createWorker, info);
+    const result = new ObjectWorkerImpl<C, T>(createWorker);
 
     try {
         await result.construct(...args2);

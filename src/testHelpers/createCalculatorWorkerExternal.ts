@@ -5,5 +5,5 @@ import type { Calculator } from "./Calculator.js";
 
 export const createCalculatorWorkerExternal = implementObjectWorkerExternal(
     () => new Worker(new URL("Calculator.js", import.meta.url), { type: "module" }),
-    new ObjectInfo<typeof Calculator>("add", "subtract"),
+    new ObjectInfo<typeof Calculator>(),
 );

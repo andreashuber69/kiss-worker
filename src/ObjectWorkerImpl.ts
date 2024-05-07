@@ -4,17 +4,19 @@ import { FunctionInfo } from "./FunctionInfo.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import type { ObjectInfo } from "./ObjectInfo.js";
 import type { Proxy } from "./Proxy.js";
 import type { CallSignature, WorkerSignature } from "./Signature.js";
 
 class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
     [key: string]: Proxy<T>[keyof Proxy<T>];
 
-    public constructor(worker: FunctionWorker<WorkerSignature<C, T>>, info: ObjectInfo<C, T>) {
+    public constructor(
+        worker: FunctionWorker<WorkerSignature<C, T>>,
+        propertyNames: ReadonlyArray<Extract<keyof T, string>>,
+    ) {
         this.#worker = worker;
 
-        for (const key of info.methodNames) {
+        for (const key of propertyNames) {
             // The cast-fest below is necessary because there seems to be no way to transform the type of args to the
             // parameter types of #worker.execute. The same goes for the type of the function.
             this[key as string] = (async (...args: Parameters<Proxy<T>[keyof Proxy<T>]>) =>
@@ -27,15 +29,19 @@ class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObje
 }
 
 export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
-    public constructor(createWorker: () => DedicatedWorker, info: ObjectInfo<C, T>) {
+    public constructor(createWorker: () => DedicatedWorker) {
         const createFunctionWorker =
             implementFunctionWorkerExternal(createWorker, new FunctionInfo<WorkerSignature<C, T>>());
 
         this.#worker = createFunctionWorker();
-        this.obj = new ProxyImpl<C, T>(this.#worker, info) as unknown as Proxy<T>;
+        // Admittedly, this isn't pretty, but seems to be the only way how we can convince the compiler that obj will
+        // never be undefined without additional runtime checks.
+        this.#obj = undefined as unknown as Proxy<T>;
     }
 
-    public readonly obj: Proxy<T>;
+    public get obj() {
+        return this.#obj;
+    }
 
     public terminate() {
         this.#worker.terminate();
@@ -46,8 +52,12 @@ export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends M
      * @internal
      */
     public async construct(...args: ConstructorParameters<C>) {
-        await this.#worker.execute("construct", ...args);
+        const propertyNames =
+            await this.#worker.execute("construct", ...args) as ReadonlyArray<Extract<keyof T, string>>;
+
+        this.#obj = new ProxyImpl<C, T>(this.#worker, propertyNames) as unknown as Proxy<T>;
     }
 
     readonly #worker: FunctionWorker<WorkerSignature<C, T>>;
+    #obj: Proxy<T>;
 }

@@ -5,22 +5,10 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import { ObjectInfo } from "./ObjectInfo.js";
 import type { ObjectWorker } from "./ObjectWorker.js";
 import { serveObject } from "./serveObject.js";
-import type { UnionToTuple } from "./UnionToTuple.js";
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
     self instanceof WorkerGlobalScope;
-
-const getAllPropertyNames = (prototype: unknown): string[] => {
-    if (prototype && prototype !== Object.prototype) {
-        return [
-            ...Object.getOwnPropertyNames(prototype).filter((v) => v !== "constructor"),
-            ...getAllPropertyNames(Object.getPrototypeOf(prototype)),
-        ];
-    }
-
-    return [];
-};
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
@@ -50,6 +38,5 @@ export const implementObjectWorker = <
         serveObject<C, T>(ctor);
     }
 
-    const propertyNames = getAllPropertyNames(ctor.prototype) as UnionToTuple<Extract<keyof T, string>>;
-    return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>(...propertyNames));
+    return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>());
 };

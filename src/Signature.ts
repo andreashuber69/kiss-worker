@@ -8,4 +8,4 @@ export type CallSignature<T extends MethodsOnlyObject<T>> = {
 }[keyof Proxy<T>];
 
 export type WorkerSignature<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> = CallSignature<T> |
-    ((...args: ["construct", ...ConstructorParameters<C>]) => Promise<undefined>);
+    ((...args: ["construct", ...ConstructorParameters<C>]) => Promise<ReadonlyArray<Extract<keyof T, string>>>);

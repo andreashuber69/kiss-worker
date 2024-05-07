@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+import { getAllPropertyNames } from "./getAllPropertyNames.js";
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { WorkerSignature } from "./Signature.js";
@@ -24,7 +25,7 @@ export const serveObject = <C extends new (...args: never[]) => T, T extends Met
             if (data[0] === "construct") {
                 const [, ...args] = data;
                 obj = new ctor(...args);
-                postMessage({ type: "result", result: undefined });
+                postMessage({ type: "result", result: getAllPropertyNames(Object.getPrototypeOf(obj)) });
             } else {
                 const [, methodName, ...args] = data;
 

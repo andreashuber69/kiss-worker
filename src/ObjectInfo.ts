@@ -2,34 +2,11 @@
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { serveObject } from "./serveObject.js";
-import type { UnionToTuple } from "./UnionToTuple.js";
 
 /**
  * Supplies information to {@linkcode implementObjectWorkerExternal} about the type of the object being served with
  * {@linkcode serveObject}.
- * @description The whole purpose of {@linkcode implementObjectWorkerExternal} is that the script running on the worker
- * thread is never loaded anywhere else. Towards that end, said script should not export anything except the **type** of
- * the object being served. That type is then passed to {@linkcode implementObjectWorkerExternal} through an object of
- * this class. However, {@linkcode implementObjectWorkerExternal} can only work as advertised if it knows the method
- * names of the object being served on the worker thread. Due to TypeScript design constraints, method names cannot be
- * extracted from a type at runtime and therefore have to be supplied by the user.
- * This class supports this process by ensuring that the supplied method names are always in sync with the method names
- * declared by the type. If they are not, the TS compiler will show an error.
  * @typeParam C The type of the constructor function of the object being served with {@linkcode serveObject}.
  */
-export class ObjectInfo<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {
-    /**
-     * Creates a new {@linkcode ObjectInfo} object.
-     * @description NOTE: Due to limitations of the currently used advanced TypeScript generics, the method names have
-     * to be supplied in the order they were declared on the type.
-     * @param methodNames The names of all the methods of `T`.
-     */
-    public constructor(...methodNames: UnionToTuple<Extract<keyof T, string>>) {
-        // Apparently TS cannot not detect the types in the tuple correctly and assumes unknown, which is why we have
-        // to cast here.
-        this.methodNames = methodNames as ReadonlyArray<Extract<keyof T, string>>;
-    }
-
-    /** The names passed to the constructor. */
-    public readonly methodNames: ReadonlyArray<Extract<keyof T, string>>;
-}
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+export class ObjectInfo<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {}
