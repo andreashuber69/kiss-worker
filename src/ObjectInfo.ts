@@ -24,12 +24,12 @@ export class ObjectInfo<C extends new (...args: never[]) => T, T extends Methods
      * to be supplied in the order they were declared on the type.
      * @param methodNames The names of all the methods of `T`.
      */
-    public constructor(...methodNames: UnionToTuple<keyof T>) {
+    public constructor(...methodNames: UnionToTuple<Extract<keyof T, string>>) {
         // Apparently TS cannot not detect the types in the tuple correctly and assumes unknown, which is why we have
         // to cast here.
-        this.methodNames = methodNames as ReadonlyArray<keyof T>;
+        this.methodNames = methodNames as ReadonlyArray<Extract<keyof T, string>>;
     }
 
     /** The names passed to the constructor. */
-    public readonly methodNames: ReadonlyArray<keyof T>;
+    public readonly methodNames: ReadonlyArray<Extract<keyof T, string>>;
 }

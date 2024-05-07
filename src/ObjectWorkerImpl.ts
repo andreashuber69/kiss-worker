@@ -9,7 +9,7 @@ import type { Proxy } from "./Proxy.js";
 import type { CallSignature, WorkerSignature } from "./Signature.js";
 
 class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
-    [key: string]: Proxy<T>[keyof T];
+    [key: string]: Proxy<T>[keyof Proxy<T>];
 
     public constructor(worker: FunctionWorker<WorkerSignature<C, T>>, info: ObjectInfo<C, T>) {
         this.#worker = worker;
@@ -17,9 +17,9 @@ class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObje
         for (const key of info.methodNames) {
             // The cast-fest below is necessary because there seems to be no way to transform the type of args to the
             // parameter types of #worker.execute. The same goes for the type of the function.
-            this[key as string] = (async (...args: Parameters<Proxy<T>[keyof T]>) =>
+            this[key as string] = (async (...args: Parameters<Proxy<T>[keyof Proxy<T>]>) =>
                 await this.#worker.execute(...(["call", key, ...args] as Parameters<CallSignature<T>>))
-            ) as Proxy<T>[keyof T];
+            ) as Proxy<T>[keyof Proxy<T>];
         }
     }
 

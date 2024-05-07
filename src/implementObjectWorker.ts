@@ -50,6 +50,6 @@ export const implementObjectWorker = <
         serveObject<C, T>(ctor);
     }
 
-    const propertyNames = getAllPropertyNames(ctor.prototype) as UnionToTuple<keyof T>;
+    const propertyNames = getAllPropertyNames(ctor.prototype) as UnionToTuple<Extract<keyof T, string>>;
     return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>(...propertyNames));
 };
