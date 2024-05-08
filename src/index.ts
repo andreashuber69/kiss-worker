@@ -15,7 +15,7 @@ export type { ObjectWorker } from "./ObjectWorker.js";
 
 export type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 
-export type { Promisify } from "./Promisify.js";
+export type { Proxy } from "./Proxy.js";
 
 export { implementObjectWorker } from "./implementObjectWorker.js";
 

@@ -5,22 +5,10 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import { ObjectInfo } from "./ObjectInfo.js";
 import type { ObjectWorker } from "./ObjectWorker.js";
 import { serveObject } from "./serveObject.js";
-import type { UnionToTuple } from "./UnionToTuple.js";
 
 const isWorker = typeof WorkerGlobalScope !== "undefined" &&
     /* istanbul ignore next -- @preserve */
     self instanceof WorkerGlobalScope;
-
-const getAllPropertyNames = (prototype: unknown): string[] => {
-    if (prototype && prototype !== Object.prototype) {
-        return [
-            ...Object.getOwnPropertyNames(prototype).filter((v) => v !== "constructor"),
-            ...getAllPropertyNames(Object.getPrototypeOf(prototype)),
-        ];
-    }
-
-    return [];
-};
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
@@ -34,7 +22,7 @@ const getAllPropertyNames = (prototype: unknown): string[] => {
  * @param ctor The constructor function for the object that will be served on the worker thread. The worker thread will
  * store the object returned by this function and henceforth call the appropriate method on it for each call to one of
  * the methods of {@linkcode ObjectWorker.obj}.
- * @returns The function returning an object implementing the {@linkcode ObjectWorker} interface.
+ * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
 export const implementObjectWorker = <
     C extends new (...args: never[]) => T,
@@ -50,6 +38,5 @@ export const implementObjectWorker = <
         serveObject<C, T>(ctor);
     }
 
-    const propertyNames = getAllPropertyNames(ctor.prototype) as UnionToTuple<keyof T>;
-    return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>(...propertyNames));
+    return implementObjectWorkerExternal(createWorker, new ObjectInfo<C, T>());
 };

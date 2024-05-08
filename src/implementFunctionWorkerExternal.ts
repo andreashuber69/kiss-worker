@@ -10,7 +10,7 @@ import type { serveFunction } from "./serveFunction.js";
  * Creates a factory function returning an object implementing the {@linkcode FunctionWorker} interface.
  * @description Compared to {@linkcode implementFunctionWorker}, {@linkcode implementFunctionWorkerExternal} covers the
  * following additional requirements:
- * - The function returned by {@linkcode implementFunctionWorkerExternal} can be executed on **any** thread.
+ * - The factory function returned by {@linkcode implementFunctionWorkerExternal} can be executed on **any** thread.
  * - The code of the served function is only ever loaded on the worker thread. This can become important when the
  * amount of code running on the worker thread is significant, such that you'd rather not load it anywhere else. Build
  * tools like [vite](vitejs.dev) support this use case by detecting `new Worker(...)` calls and putting the worker
@@ -21,7 +21,7 @@ import type { serveFunction } from "./serveFunction.js";
  * The script must call {@linkcode serveFunction} passing a function and export the type of said function.
  * @param _info An instance of {@linkcode FunctionInfo} instantiated with the type exported by the script running on the
  * worker thread.
- * @returns The function returning an object implementing the {@linkcode FunctionWorker} interface.
+ * @returns The factory function returning an object implementing the {@linkcode FunctionWorker} interface.
  */
 export const implementFunctionWorkerExternal = <T extends (...args: never[]) => unknown>(
     createWorker: () => DedicatedWorker,

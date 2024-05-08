@@ -40,6 +40,7 @@ Provides one of the easiest ways to use a worker thread in the browser, in ~2kB 
    - [Asynchronous Functions and Methods](#asynchronous-functions-and-methods)
    - [Simultaneous Calls](#simultaneous-calls)
    - [Worker Code Isolation](#worker-code-isolation)
+1. [Limitations](#limitations)
 1. [Motivation](#motivation)
    - [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
    - [Requirements for a Better Interface](#requirements-for-a-better-interface)
@@ -307,6 +308,21 @@ the worker thread. Due to TypeScript design constraints, method names cannot be 
 therefore have to be supplied by the user. The `ObjectInfo` class supports this process by ensuring that the supplied
 method names are always in sync with the method names declared by the type. If they are not, the TS compiler will show
 an error.
+
+## Limitations
+
+- [Transferable objects](https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer) are not currently
+  passed as transferable, they are thus always copied. Support would be easy to add if it was acceptable for a given
+  worker that all transferable objects are either always or never transferred.
+- At compile time, the interface of a served object is assumed to consist of all properties with a `string` key. At
+  runtime, the object and its prototype chain is examined with `Object.getOwnPropertyNames()`. The former will only
+  return properties declared `public` in the TypeScript code while the latter will return all properties except those
+  [with a name staring with #](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_properties).
+  To avoid surprises, it is best to ensure that both sets of properties are identical, which can easily be achieved by
+  **not** declaring anything `protected` or `private`.
+- The public interface of an object served on a worker thread cannot currently consist of anything else than methods,
+  which is enforced at compile time. The rationale is documented on
+  [`MethodsOnlyObject`](https://github.com/andreashuber69/kiss-worker/blob/develop/src/MethodsOnlyObject.ts).
 
 ## Motivation
 
