@@ -25,7 +25,7 @@ export const serveObject = <C extends new (...args: never[]) => T, T extends Met
             if (data[0] === "construct") {
                 const [, ...args] = data;
                 obj = new ctor(...args);
-                postMessage({ type: "result", result: getAllPropertyNames(Object.getPrototypeOf(obj)) });
+                postMessage({ type: "result", result: getAllPropertyNames(obj) });
             } else {
                 const [, methodName, ...args] = data;
 
