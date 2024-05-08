@@ -314,9 +314,9 @@ an error.
 - [Transferable objects](https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer) are not currently
   passed as transferable, they are thus always copied. Support would be easy to add if it was acceptable for a given
   worker that all transferable objects are either always or never transferred.
-- At compile time, the interface of a served object is determined through the `keyof` operator. At runtime, the
-  object and its prototype chain is examined with `Object.getOwnPropertyNames()`. The former will only return
-  properties declared `public` in the TypeScript code while the latter will return all properties except those
+- At compile time, the interface of a served object is assumed to consist of all properties with a `string` key. At
+  runtime, the object and its prototype chain is examined with `Object.getOwnPropertyNames()`. The former will only
+  return properties declared `public` in the TypeScript code while the latter will return all properties except those
   [with a name staring with #](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_properties).
   To avoid surprises, it is best to ensure that both sets of properties are identical, which can easily be achieved by
   **not** declaring anything `protected` or `private`.
