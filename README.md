@@ -124,6 +124,10 @@ Here are a few facts that might not be immediately obvious:
   the worker thread. This is possible because `implementFunctionWorker()` detects on which thread it is run. However,
   this detection would **not** work correctly, if code in a worker thread attempted to start another worker thread. This
   can easily be fixed, see [Worker Code Isolation](#worker-code-isolation).
+- In order for build tools to be able to put worker code into a separate chunk, it is vital that the expression
+  `() => new Worker(new URL("createFibonacciWorker.js", import.meta.url), { type: "module" })` is kept as is. Please see
+  associated instructions for [vite](https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url) and
+  [webpack](https://webpack.js.org/guides/web-workers/). Other build tools will likely have similar constraints.
 
 ### Example 2: Object
 
@@ -206,9 +210,7 @@ counterparts has the following advantages:
 - A factory function returned by `implementFunctionWorkerExternal()` or `implementObjectWorkerExternal()` can be
   executed on **any** thread (not just the main thread).
 - The code of the served function or object is only ever loaded on the worker thread. This can become important when the
-  amount of code running on the worker thread is significant, such that you'd rather not load it anywhere else. Build
-  tools like [vite](vitejs.dev) support this use case by detecting `new Worker(...)` calls and putting the worker script
-  as well as all directly and indirectly called code into a separate chunk.
+  amount of code running on the worker thread is significant, such that you'd rather not load it anywhere else.
 
 Lets see how [Example 1](#example-1-single-function) can be implemented such that worker code is fully isolated.
 
