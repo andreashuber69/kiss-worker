@@ -92,7 +92,7 @@ That's it, we've defined our worker with a single statement! Let's see how we ca
 
 ```ts
 // ./src/main.ts
-import { createFibonacciWorker } from "./createFibonacciWorker.ts";
+import { createFibonacciWorker } from "./createFibonacciWorker.js";
 
 // Start a new worker thread waiting for work.
 const worker = createFibonacciWorker();
@@ -160,7 +160,7 @@ export const createCalculatorWorker = implementObjectWorker(
 
 ```ts
 // ./src/main.ts
-import { createCalculatorWorker } from "./createCalculatorWorker.ts";
+import { createCalculatorWorker } from "./createCalculatorWorker.js";
 
 // Start a new worker thread waiting for work.
 const worker = await createCalculatorWorker();
@@ -251,8 +251,9 @@ export const createFibonacciWorker = implementFunctionWorkerExternal(
 ```
 
 The usage from *./src/main.ts* is the same as in [Example 1](#example-1-single-function). What was done in a single file
-before is now split into two. Note that *./src/fibonacci.ts* only exports a **type**. Type-only exports and imports are
-removed during compilation to ECMAScript.
+before is now split into two. Note that *./src/fibonacci.ts* only exports a **type**, so we can no longer pass
+the function itself. Instead, we pass a `FunctionInfo` instance to convey the required information. Type-only exports
+and imports are removed during compilation to ECMAScript.
 
 Finally, let's see how [Example 2](#example-2-object) can be implemented such that worker code is fully isolated.
 
@@ -298,16 +299,13 @@ export const createCalculatorWorker = implementObjectWorkerExternal(
         { type: "module" },
     ),
     // Provide required information about the served object
-    new ObjectInfo<typeof Calculator>("multiply", "divide"),
+    new ObjectInfo<typeof Calculator>(),
 );
 ```
 
-Again, the usage from *./src/main.ts* is the same as in [Example 2](#example-2-object). Note that
-`implementObjectWorkerExternal` can only work as advertised if it knows the method names of the object being served on
-the worker thread. Due to TypeScript design constraints, method names cannot be extracted from a type at runtime and
-therefore have to be supplied by the user. The `ObjectInfo` class supports this process by ensuring that the supplied
-method names are always in sync with the method names declared by the type. If they are not, the TS compiler will show
-an error.
+The usage from *./src/main.ts* is the same as in [Example 2](#example-2-object). Again, note that *./src/Calculator.ts*
+only exports a **type**, so we can no longer pass the constructor function itself. Instead, we pass an `ObjectInfo`
+instance to convey the required information.
 
 ## Limitations
 
