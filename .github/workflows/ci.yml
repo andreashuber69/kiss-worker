@@ -9,5 +9,3 @@ jobs:
   ci:
     uses: andreashuber69/actions/.github/workflows/ubuntu-latest-node-lts-ci.yml@master
     secrets: inherit
-    # with:
-    #   tag: beta
