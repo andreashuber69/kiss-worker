@@ -4,6 +4,8 @@ import { createDelayWorker } from "./testHelpers/createDelayWorker.js";
 import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.js";
 import { createFunnyWorker } from "./testHelpers/createFunnyWorker.js";
 import { createUniversalFunctionWorker } from "./testHelpers/createUniversalFunctionWorker.js";
+import { createUniversalObjectWorker } from "./testHelpers/createUniversalObjectWorker.js";
+import type { Obj } from "./testHelpers/createUniversalObjectWorker.js";
 import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.js";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
@@ -88,6 +90,20 @@ describe("FunctionWorker", () => {
 
             await expect(async () => await worker.execute(() => 2)).rejects.toThrow(
                 new Error("Failed to execute 'postMessage' on 'Worker': () => 2 could not be cloned."),
+            );
+        });
+
+        it("should throw when attempting to call a method on a marshalled object", async () => {
+            const worker = createUniversalObjectWorker();
+
+            class MyObj implements Obj {
+                public execute() {
+                    return 42;
+                }
+            }
+
+            await expect(async () => await worker.execute(new MyObj(), "execute")).rejects.toThrow(
+                new Error("obj[method] is not a function"),
             );
         });
     });
