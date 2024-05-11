@@ -3,7 +3,7 @@ import { implementFunctionWorker } from "../implementFunctionWorker.js";
 
 const callFunction = (fun: () => unknown) => fun();
 
-export const createUniversalWorker = implementFunctionWorker(
-    () => new Worker(new URL("createUniversalWorker.js", import.meta.url), { type: "module" }),
+export const createUniversalFunctionWorker = implementFunctionWorker(
+    () => new Worker(new URL("createUniversalFunctionWorker.js", import.meta.url), { type: "module" }),
     callFunction,
 );
