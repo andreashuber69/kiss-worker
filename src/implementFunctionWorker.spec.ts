@@ -3,6 +3,7 @@ import { assert, describe, expect, it } from "vitest";
 import { createDelayWorker } from "./testHelpers/createDelayWorker.js";
 import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.js";
 import { createFunnyWorker } from "./testHelpers/createFunnyWorker.js";
+import { createUniversalWorker } from "./testHelpers/createUniversalWorker.js"
 import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.js";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
@@ -80,6 +81,14 @@ describe("FunctionWorker", () => {
             await worker.execute("throwDelayed");
             // Wait for the error handler to be called so that the console output always appears.
             await delay();
+        });
+
+        it("should throw when marshalling of a function is attempted", async () => {
+            const worker = createUniversalWorker();
+
+            await expect(async () => await worker.execute(() => 2)).rejects.toThrow(
+                new Error("Failed to execute 'postMessage' on 'Worker': () => 2 could not be cloned."),
+            );
         });
     });
 });
