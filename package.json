@@ -1,6 +1,6 @@
 {
   "name": "kiss-worker",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Provides one of the easiest ways to use a worker thread in the browser.",
   "keywords": [
     "kiss",
