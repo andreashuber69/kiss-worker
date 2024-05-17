@@ -59,7 +59,7 @@ describe("FunctionWorker", () => {
             const worker = createFunnyWorker();
 
             await expect(async () => await worker.execute("post")).rejects.toThrow(
-                new Error("func called postMessage, which is not allowed."),
+                new Error("Client code made a prohibited call to postMessage."),
             );
         });
 

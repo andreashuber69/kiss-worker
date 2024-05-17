@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
 import { createCalculatorWorker } from "./testHelpers/createCalculatorWorker.js";
+import { createMisbehavedWorker } from "./testHelpers/createMisbehavedWorker.js";
 import { createThrowingWorker } from "./testHelpers/createThrowingWorker.js";
 
 describe("ObjectWorker", () => {
@@ -8,6 +9,12 @@ describe("ObjectWorker", () => {
         it("should throw when constructor throws", async () => {
             await expect(async () => await createThrowingWorker(true)).rejects.toThrow(
                 new Error("Oopsie in constructor."),
+            );
+        });
+
+        it("should throw when worker factory calls Worker.postMessage", async () => {
+            await expect(async () => await createMisbehavedWorker()).rejects.toThrow(
+                new Error("Client code made a prohibited call to Worker.postMessage."),
             );
         });
     });

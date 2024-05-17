@@ -81,7 +81,7 @@ export class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
             this.#currentReject(data.error);
         } else {
             this.#postMessageWasCalled = true;
-            this.#currentReject(new Error("func called postMessage, which is not allowed."));
+            this.#currentReject(new Error("Client code made a prohibited call to postMessage."));
         }
 
         this.#resetHandlers();

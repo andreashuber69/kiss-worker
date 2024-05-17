@@ -18,13 +18,16 @@ const handleMessage = async <C extends new (...args: never[]) => T, T extends Me
             const newObj = new ctor(...args2);
             postMessage({ type: "result", result: getAllPropertyNames(newObj) });
             return newObj;
+        } else if (data[0] === "call") {
+            const [, methodName, ...args] = data;
+
+            // We cannot know whether the called method is synchronous or asynchronous, we therefore must always
+            // await the result.
+            postMessage({ type: "result", result: await obj?.[methodName](...args) });
+            return obj;
         }
 
-        const [, methodName, ...args] = data;
-
-        // We cannot know whether the called method is synchronous or asynchronous, we therefore must always
-        // await the result.
-        postMessage({ type: "result", result: await obj?.[methodName](...args) });
+        postMessage({ type: "error", error: new Error("Client code made a prohibited call to Worker.postMessage.") });
         return obj;
     } catch (error: unknown) {
         postMessage({ type: "error", error });
