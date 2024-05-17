@@ -183,8 +183,10 @@ for (let round = 0; element && round < 20; ++round) {
 More facts that might not be immediately obvious:
 
 - Contrary to `implementFunctionWorker()`, the factory function created by `implementObjectWorker()` returns a
-  `Promise`. This is owed to the fact that the passed constructor is executed on the worker thread. So, if the
+  `Promise`. This is owed to the fact that the passed constructor function is executed on the worker thread. So, if the
   `Calculator` constructor threw an error, it would be rethrown by `createCalculatorWorker()`.
+- If the `Calculator` constructor required parameters, we'd need to pass the associated arguments to
+  `createCalculatorWorker()`.
 - `worker.obj` acts as a proxy for the `Calculator` object served on the worker thread. `worker.obj` thus offers the
   same methods as a `Calculator` object, again with equivalent signatures.
 

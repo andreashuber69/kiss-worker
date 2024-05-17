@@ -3,6 +3,9 @@ import { assert, describe, expect, it } from "vitest";
 import { createDelayWorker } from "./testHelpers/createDelayWorker.js";
 import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.js";
 import { createFunnyWorker } from "./testHelpers/createFunnyWorker.js";
+import { createUniversalFunctionWorker } from "./testHelpers/createUniversalFunctionWorker.js";
+import { createUniversalObjectWorker } from "./testHelpers/createUniversalObjectWorker.js";
+import type { Obj } from "./testHelpers/createUniversalObjectWorker.js";
 import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.js";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
@@ -56,7 +59,7 @@ describe("FunctionWorker", () => {
             const worker = createFunnyWorker();
 
             await expect(async () => await worker.execute("post")).rejects.toThrow(
-                new Error("func called postMessage, which is not allowed."),
+                new Error("Client code made a prohibited call to postMessage."),
             );
         });
 
@@ -80,6 +83,28 @@ describe("FunctionWorker", () => {
             await worker.execute("throwDelayed");
             // Wait for the error handler to be called so that the console output always appears.
             await delay();
+        });
+
+        it("should throw when marshalling of a function is attempted", async () => {
+            const worker = createUniversalFunctionWorker();
+
+            await expect(async () => await worker.execute(() => 2)).rejects.toThrow(
+                new Error("Failed to execute 'postMessage' on 'Worker': () => 2 could not be cloned."),
+            );
+        });
+
+        it("should throw when attempting to call a method on a marshalled object", async () => {
+            const worker = createUniversalObjectWorker();
+
+            class MyObj implements Obj {
+                public execute() {
+                    return 42;
+                }
+            }
+
+            await expect(async () => await worker.execute(new MyObj(), "execute")).rejects.toThrow(
+                new Error("obj[method] is not a function"),
+            );
         });
     });
 });
