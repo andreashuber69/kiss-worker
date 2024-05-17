@@ -22,6 +22,5 @@ const handleMessage = async <T extends (...args: never[]) => unknown>(func: T, e
  * {@linkcode implementFunctionWorkerExternal} documentation.
  * @param func The function to serve.
  */
-export const serveFunction = <T extends (...args: never[]) => unknown>(func: T) => {
-    onmessage = (ev: MessageEvent<Parameters<T>>) => void handleMessage(func, ev);
-};
+export const serveFunction = <T extends (...args: never[]) => unknown>(func: T) =>
+    addEventListener("message", (ev: MessageEvent<Parameters<T>>) => void handleMessage(func, ev));

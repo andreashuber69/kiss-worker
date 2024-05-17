@@ -46,10 +46,13 @@ export const serveObject = <C extends new (...args: never[]) => T, T extends Met
     let obj: T | undefined;
 
     const handleMessageWithObject =
-        // This is not a race condition because the the obj variable changes its value only exactly once and sensible
-        // client code has no way of triggering new messages before the first message has been fully processed.
+        // This is not a race condition because the the obj variable changes its value only exactly once and client code
+        // has no sensible way of triggering new messages before the first message has been fully processed.
         // eslint-disable-next-line require-atomic-updates
         async (ev: MessageEvent<Parameters<WorkerSignature<C, T>>>) => (obj = await handleMessage(ctor, obj, ev));
 
-    onmessage = (ev: MessageEvent<Parameters<WorkerSignature<C, T>>>) => void handleMessageWithObject(ev);
+    addEventListener(
+        "message",
+        (ev: MessageEvent<Parameters<WorkerSignature<C, T>>>) => void handleMessageWithObject(ev),
+    );
 };
