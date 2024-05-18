@@ -6,7 +6,7 @@ import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerE
  * Represents the worker thread created by calling the factory function returned by
  * {@linkcode implementFunctionWorker} or {@linkcode implementFunctionWorkerExternal}.
  */
-export interface FunctionWorker<T extends (...args: never[]) => unknown> {
+export interface FunctionWorker<T extends (..._: never[]) => unknown> {
     /**
      * Calls the function served on the worker thread.
      * @description Can be called without waiting for previously returned promises to settle. If done so, calls will be

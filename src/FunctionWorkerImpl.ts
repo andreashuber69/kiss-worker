@@ -14,7 +14,7 @@ interface ExecuteError {
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
-export class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
+export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
     public constructor(createWorker: () => DedicatedWorker) {
         this.#workerImpl = createWorker();
         this.#workerImpl.addEventListener("message", this.#onMessage);

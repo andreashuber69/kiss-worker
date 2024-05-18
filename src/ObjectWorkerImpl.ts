@@ -7,7 +7,7 @@ import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { Proxy } from "./Proxy.js";
 import type { CallSignature, WorkerSignature } from "./Signature.js";
 
-class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
+class ProxyImpl<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T>> {
     [key: string]: Proxy<T>[keyof Proxy<T>];
 
     public constructor(

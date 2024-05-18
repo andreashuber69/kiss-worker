@@ -24,8 +24,8 @@ import type { serveObject } from "./serveObject.js";
  * worker thread.
  * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
-export const implementObjectWorkerExternal = <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>>(
+export const implementObjectWorkerExternal = <C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
     _info: ObjectInfo<C, T>,
-): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => async (...args2: ConstructorParameters<C>) =>
-    await ObjectWorkerImpl.create<C, T>(createWorker, ...args2);
+): (...args: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => async (...args: ConstructorParameters<C>) =>
+    await ObjectWorkerImpl.create<C, T>(createWorker, ...args);

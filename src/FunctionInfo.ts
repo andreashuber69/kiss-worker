@@ -11,7 +11,7 @@ import type { serveFunction } from "./serveFunction.js";
  * through an object of this class.
  * @typeParam T The type of the function being served with {@linkcode serveFunction}.
  */
-export class FunctionInfo<T extends (...args: never[]) => unknown> {
+export class FunctionInfo<T extends (..._: never[]) => unknown> {
     public constructor() {
         this.#doesNothing();
     }

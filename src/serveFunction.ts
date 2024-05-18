@@ -4,7 +4,7 @@ import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerE
 // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
 // version of the code is ever loaded.
 /* istanbul ignore next -- @preserve */
-const handleMessage = async <T extends (...args: never[]) => unknown>(func: T, ev: MessageEvent<Parameters<T>>) => {
+const handleMessage = async <T extends (..._: never[]) => unknown>(func: T, ev: MessageEvent<Parameters<T>>) => {
     try {
         // We cannot know whether func is synchronous or asynchronous, we therefore must always await
         // the result.
@@ -22,5 +22,5 @@ const handleMessage = async <T extends (...args: never[]) => unknown>(func: T, e
  * {@linkcode implementFunctionWorkerExternal} documentation.
  * @param func The function to serve.
  */
-export const serveFunction = <T extends (...args: never[]) => unknown>(func: T) =>
+export const serveFunction = <T extends (..._: never[]) => unknown>(func: T) =>
     addEventListener("message", (ev: MessageEvent<Parameters<T>>) => void handleMessage(func, ev));

@@ -23,7 +23,7 @@ import type { serveFunction } from "./serveFunction.js";
  * worker thread.
  * @returns The factory function returning an object implementing the {@linkcode FunctionWorker} interface.
  */
-export const implementFunctionWorkerExternal = <T extends (...args: never[]) => unknown>(
+export const implementFunctionWorkerExternal = <T extends (..._: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
     _info: FunctionInfo<T>,
 ): () => FunctionWorker<T> =>

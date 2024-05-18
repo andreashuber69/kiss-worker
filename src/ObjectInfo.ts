@@ -9,4 +9,4 @@ import type { serveObject } from "./serveObject.js";
  * @typeParam C The type of the constructor function of the object being served with {@linkcode serveObject}.
  */
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class ObjectInfo<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {}
+export class ObjectInfo<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>> {}

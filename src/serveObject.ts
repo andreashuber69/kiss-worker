@@ -7,15 +7,15 @@ import type { WorkerSignature } from "./Signature.js";
 // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
 // version of the code is ever loaded.
 /* istanbul ignore next -- @preserve */
-const handleMessage = async <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>>(
+const handleMessage = async <C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>>(
     ctor: C,
     obj: T | undefined,
     { data }: MessageEvent<Parameters<WorkerSignature<C, T>>>,
 ) => {
     try {
         if (data[0] === "construct") {
-            const [, ...args2] = data;
-            const newObj = new ctor(...args2);
+            const [, ...args] = data;
+            const newObj = new ctor(...args);
             postMessage({ type: "result", result: getAllPropertyNames(newObj) });
             return newObj;
         } else if (data[0] === "call") {
@@ -43,7 +43,7 @@ const handleMessage = async <C extends new (...args: never[]) => T, T extends Me
  * {@linkcode implementObjectWorkerExternal} documentation.
  * @param ctor The constructor function of the worker object to serve.
  */
-export const serveObject = <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>>(
+export const serveObject = <C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T> = InstanceType<C>>(
     ctor: C,
 ) => {
     let obj: T | undefined;

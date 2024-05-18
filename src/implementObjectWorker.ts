@@ -22,12 +22,12 @@ import { serveObject } from "./serveObject.js";
  * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
 export const implementObjectWorker = <
-    C extends new (...args: never[]) => T,
+    C extends new (..._: never[]) => T,
     T extends MethodsOnlyObject<T> = InstanceType<C>,
 >(
     createWorker: () => DedicatedWorker,
     ctor: C,
-): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => {
+): (...args: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
