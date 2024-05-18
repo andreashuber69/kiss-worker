@@ -27,7 +27,7 @@ export const implementObjectWorker = <
 >(
     createWorker: () => DedicatedWorker,
     ctor: C,
-): (...args: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => {
+) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
