@@ -1,14 +1,11 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
 import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
+import { isWorker } from "./isWorker.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import { ObjectInfo } from "./ObjectInfo.js";
 import type { ObjectWorker } from "./ObjectWorker.js";
 import { serveObject } from "./serveObject.js";
-
-const isWorker = typeof WorkerGlobalScope !== "undefined" &&
-    /* istanbul ignore next -- @preserve */
-    self instanceof WorkerGlobalScope;
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
@@ -34,7 +31,7 @@ export const implementObjectWorker = <
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
-    if (isWorker) {
+    if (isWorker()) {
         serveObject<C, T>(ctor);
     }
 

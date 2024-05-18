@@ -3,11 +3,8 @@ import type { DedicatedWorker } from "./DedicatedWorker.js";
 import { FunctionInfo } from "./FunctionInfo.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
+import { isWorker } from "./isWorker.js";
 import { serveFunction } from "./serveFunction.js";
-
-const isWorker = typeof WorkerGlobalScope !== "undefined" &&
-    /* istanbul ignore next -- @preserve */
-    self instanceof WorkerGlobalScope;
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode FunctionWorker} interface.
@@ -29,7 +26,7 @@ export const implementFunctionWorker = <T extends (...args: never[]) => unknown>
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
-    if (isWorker) {
+    if (isWorker()) {
         serveFunction(func);
     }
 
