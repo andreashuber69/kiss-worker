@@ -27,14 +27,5 @@ import type { serveObject } from "./serveObject.js";
 export const implementObjectWorkerExternal = <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
     _info: ObjectInfo<C, T>,
-): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => async (...args2: ConstructorParameters<C>) => {
-    const result = new ObjectWorkerImpl<C, T>(createWorker);
-
-    try {
-        await result.construct(...args2);
-        return result;
-    } catch (error: unknown) {
-        result.terminate();
-        throw error;
-    }
-};
+): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => async (...args2: ConstructorParameters<C>) =>
+    await ObjectWorkerImpl.create<C, T>(createWorker, ...args2);
