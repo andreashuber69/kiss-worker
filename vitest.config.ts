@@ -1,8 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 // eslint-disable-next-line import/no-anonymous-default-export, import/no-default-export
 export default defineConfig({
+    plugins: [tsconfigPaths()],
     test: {
         coverage: {
             provider: "istanbul",

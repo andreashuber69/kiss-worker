@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementFunctionWorker } from "../implementFunctionWorker.js";
+import { implementFunctionWorker } from "kiss-worker";
 
 export interface Obj {
     execute: () => void;

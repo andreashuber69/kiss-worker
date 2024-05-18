@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementObjectWorker } from "../implementObjectWorker.js";
+import { implementObjectWorker } from "kiss-worker";
 
 class Throwing {
     public constructor(doThrow: boolean) {

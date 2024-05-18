@@ -2,6 +2,9 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "lib": ["es2023", "WebWorker"],
+    "paths": {
+      "kiss-worker": ["./index.js"]
+    }
   },
   "include": [
     "**/*.ts"

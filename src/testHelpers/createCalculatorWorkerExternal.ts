@@ -1,6 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementObjectWorkerExternal } from "../implementObjectWorkerExternal.js";
-import { ObjectInfo } from "../ObjectInfo.js";
+import { implementObjectWorkerExternal, ObjectInfo } from "kiss-worker";
 import type { Calculator } from "./Calculator.js";
 
 export const createCalculatorWorkerExternal = implementObjectWorkerExternal(
