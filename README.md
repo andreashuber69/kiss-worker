@@ -72,7 +72,7 @@ The full code of this example can be found on [GitHub](https://github.com/andrea
 
 ```ts
 // ./src/createFibonacciWorker.ts
-import { implementFunctionWorker } from "kiss-worker";
+import { implementFunctionWorker, Worker } from "kiss-worker";
 
 // The function we want to execute on a worker thread
 const fibonacci = (n: number): number =>
@@ -128,6 +128,9 @@ Here are a few facts that might not be immediately obvious:
   `() => new Worker(new URL("createFibonacciWorker.js", import.meta.url), { type: "module" })` is kept as is. Please see
   associated instructions for [vite](https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url) and
   [webpack](https://webpack.js.org/guides/web-workers/). Other build tools will likely have similar constraints.
+- For browser-only code, the `Worker` import would not be necessary, as it is just an alias for the `Worker` class
+  available in browsers. We are nevertheless importing it from `"kiss-worker"` so that we could run the exact same code
+  in a node environment.
 
 ### Example 2: Object
 
@@ -139,7 +142,7 @@ serving objects:
 
 ```ts
 // ./src/createCalculatorWorker.ts
-import { implementObjectWorker } from "kiss-worker";
+import { implementObjectWorker, Worker } from "kiss-worker";
 
 // We want to serve an object of this class on a worker thread
 class Calculator {
@@ -237,7 +240,7 @@ export type { fibonacci };
 
 ```ts
 // ./src/createFibonacciWorker.ts
-import { FunctionInfo, implementFunctionWorkerExternal } from
+import { FunctionInfo, implementFunctionWorkerExternal, Worker } from
     "kiss-worker";
 
 // Import the type only
@@ -290,7 +293,7 @@ export type { Calculator };
 
 ```ts
 // ./src/createCalculatorWorker.ts
-import { ObjectInfo, implementObjectWorkerExternal } from "kiss-worker";
+import { ObjectInfo, implementObjectWorkerExternal, Worker } from "kiss-worker";
 
 // Import the type only
 import type { Calculator } from "./Calculator.js";

@@ -33,6 +33,11 @@
     "!/**/*.map",
     "/*.md"
   ],
+  "imports": {
+    "#api": {
+      "default": "./src/browserApi.js"
+    }
+  },
   "scripts": {
     "prelint": "cspell '**' && markdownlint '**/*.md'",
     "lint": "eslint --ext .cjs,.ts --report-unused-disable-directives '.'",

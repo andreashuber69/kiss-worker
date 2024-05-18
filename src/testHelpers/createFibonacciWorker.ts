@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementFunctionWorker } from "kiss-worker";
+import { implementFunctionWorker, Worker } from "kiss-worker";
 
 // The function we want to execute on a worker thread
 const fibonacci = (n: number): number =>

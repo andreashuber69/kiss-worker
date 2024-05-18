@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { FunctionInfo, implementFunctionWorkerExternal } from "kiss-worker";
+import { FunctionInfo, implementFunctionWorkerExternal, Worker } from "kiss-worker";
 import type { fibonacciExternal } from "./fibonacciExternal.js";
 
 export const createFibonacciWorkerExternal = implementFunctionWorkerExternal(

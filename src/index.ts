@@ -24,3 +24,5 @@ export { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.j
 export { ObjectInfo } from "./ObjectInfo.js";
 
 export { serveObject } from "./serveObject.js";
+
+export { Worker } from "#api";
