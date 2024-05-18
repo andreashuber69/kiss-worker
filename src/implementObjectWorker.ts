@@ -1,11 +1,11 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
 import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
-import { isWorker } from "./isWorker.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import { ObjectInfo } from "./ObjectInfo.js";
 import type { ObjectWorker } from "./ObjectWorker.js";
 import { serveObject } from "./serveObject.js";
+import { isWorker } from "#api";
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
