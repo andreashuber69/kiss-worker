@@ -17,6 +17,6 @@ export type AddRemoveEventListener =
 export interface DedicatedWorker {
     addEventListener: AddRemoveEventListener;
     removeEventListener: AddRemoveEventListener;
-    postMessage: (args: never[]) => void;
+    postMessage: (message: unknown) => void;
     terminate: () => void;
 }
