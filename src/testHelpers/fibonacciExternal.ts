@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { serveFunction } from "kiss-worker";
+import { serveFunction } from "../index.js";
 
 const fibonacciExternal = (n: number): number =>
     ((n < 2) ? Math.floor(n) : fibonacciExternal(n - 1) + fibonacciExternal(n - 2));

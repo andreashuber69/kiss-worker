@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementObjectWorker, Worker } from "kiss-worker";
+import { implementObjectWorker, Worker } from "../index.js";
 
 // We want to serve an object of this class on a worker thread
 class Calculator {

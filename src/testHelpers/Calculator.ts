@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { serveObject } from "kiss-worker";
+import { serveObject } from "../index.js";
 
 class Calculator {
     public add(left: number, right: number) {
