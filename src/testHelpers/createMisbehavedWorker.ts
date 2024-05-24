@@ -8,7 +8,7 @@ class Bouncer {
 }
 
 const maliciousWorkerFactory = () => {
-    const result = new Worker(new URL("createMisbehavedWorker.js", import.meta.url), { type: "module" });
+    const result = new Worker(new URL("createMisbehavedWorker.ts", import.meta.url), { type: "module" });
     // False positive
     // eslint-disable-next-line unicorn/require-post-message-target-origin
     result.postMessage("Ouch!");

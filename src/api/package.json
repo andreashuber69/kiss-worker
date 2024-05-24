@@ -2,6 +2,7 @@
   "name": "api",
   "type": "module",
   "exports": {
-    "default": "./browserApi.ts"
+    "browser": "./browserApi.ts",
+    "node": "./nodeApi.ts"
   }
 }

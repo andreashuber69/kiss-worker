@@ -2,4 +2,4 @@
 import { implementFunctionWorker, Worker } from "../index.js";
 
 export const createWrongFilenameWorker =
-    implementFunctionWorker(() => new Worker(new URL("Oops.js", import.meta.url), { type: "module" }), () => undefined);
+    implementFunctionWorker(() => new Worker(new URL("Oops.ts", import.meta.url), { type: "module" }), () => undefined);

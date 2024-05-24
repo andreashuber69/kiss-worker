@@ -15,7 +15,7 @@ class Throwing {
 
 export const createThrowingWorker = implementObjectWorker(
     () => new Worker(
-        new URL("createThrowingWorker.js", import.meta.url),
+        new URL("createThrowingWorker.ts", import.meta.url),
         { type: "module" },
     ),
     Throwing,

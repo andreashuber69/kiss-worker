@@ -8,7 +8,7 @@ const fibonacci = (n: number): number =>
 export const createFibonacciWorker = implementFunctionWorker(
     // A function that creates a web worker running this script
     () => new Worker(
-        new URL("createFibonacciWorker.js", import.meta.url),
+        new URL("createFibonacciWorker.ts", import.meta.url),
         { type: "module" },
     ),
     fibonacci,

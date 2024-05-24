@@ -6,6 +6,6 @@ export interface Obj {
 }
 
 export const createUniversalObjectWorker = implementFunctionWorker(
-    () => new Worker(new URL("createUniversalObjectWorker.js", import.meta.url), { type: "module" }),
+    () => new Worker(new URL("createUniversalObjectWorker.ts", import.meta.url), { type: "module" }),
     (obj: Obj, method: keyof Obj) => obj[method](),
 );

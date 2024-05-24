@@ -2,6 +2,6 @@
 import { implementFunctionWorker, Worker } from "../index.js";
 
 export const createUniversalFunctionWorker = implementFunctionWorker(
-    () => new Worker(new URL("createUniversalFunctionWorker.js", import.meta.url), { type: "module" }),
+    () => new Worker(new URL("createUniversalFunctionWorker.ts", import.meta.url), { type: "module" }),
     (fun: () => unknown) => fun(),
 );

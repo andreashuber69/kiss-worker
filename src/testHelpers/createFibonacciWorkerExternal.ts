@@ -3,6 +3,6 @@ import { FunctionInfo, implementFunctionWorkerExternal, Worker } from "../index.
 import type { fibonacciExternal } from "./fibonacciExternal.js";
 
 export const createFibonacciWorkerExternal = implementFunctionWorkerExternal(
-    () => new Worker(new URL("fibonacciExternal.js", import.meta.url), { type: "module" }),
+    () => new Worker(new URL("fibonacciExternal.ts", import.meta.url), { type: "module" }),
     new FunctionInfo<typeof fibonacciExternal>(),
 );

@@ -3,6 +3,6 @@ import { implementObjectWorkerExternal, ObjectInfo, Worker } from "../index.js";
 import type { Calculator } from "./Calculator.js";
 
 export const createCalculatorWorkerExternal = implementObjectWorkerExternal(
-    () => new Worker(new URL("Calculator.js", import.meta.url), { type: "module" }),
+    () => new Worker(new URL("Calculator.ts", import.meta.url), { type: "module" }),
     new ObjectInfo<typeof Calculator>(),
 );
