@@ -1,6 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { implementFunctionWorker, Worker } from "../index.js";
-import { postMessage } from "#api";
+import { postMessage } from "api";
 
 
 const doFunnyThings = async (what: "post" | "throw" | "throwDelayed" | "throwOutside") => {

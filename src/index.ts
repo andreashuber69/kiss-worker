@@ -25,4 +25,4 @@ export { ObjectInfo } from "./ObjectInfo.js";
 
 export { serveObject } from "./serveObject.js";
 
-export { Worker } from "#api";
+export { Worker } from "api";

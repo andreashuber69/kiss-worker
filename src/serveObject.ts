@@ -3,7 +3,7 @@ import { getAllPropertyNames } from "./getAllPropertyNames.js";
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
 import type { WorkerSignature } from "./Signature.js";
-import { addEventListener, postMessage } from "#api";
+import { addEventListener, postMessage } from "api";
 
 // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
 // version of the code is ever loaded.

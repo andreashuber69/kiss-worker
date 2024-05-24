@@ -4,7 +4,7 @@ import { FunctionInfo } from "./FunctionInfo.js";
 import type { FunctionWorker } from "./FunctionWorker.js";
 import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
 import { serveFunction } from "./serveFunction.js";
-import { isWorker } from "#api";
+import { isWorker } from "api";
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode FunctionWorker} interface.
