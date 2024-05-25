@@ -1,14 +1,20 @@
 import type { WorkerOptions } from "node:worker_threads";
 import { isMainThread, parentPort, Worker } from "node:worker_threads";
 
+// None of the following code will ever be executed in a browser and therefore should be excluded from istanbul
+// coverage.
+/* istanbul ignore next -- @preserve */
 const addEventListener = (type: "message", listener: (ev: MessageEvent) => unknown) => {
     parentPort?.addListener(type, (value: unknown) => listener({ data: value } as unknown as MessageEvent));
 };
 
+/* istanbul ignore next -- @preserve */
 const isWorker = () => !isMainThread;
 
+/* istanbul ignore next -- @preserve */
 const postMessage = (message: unknown) => parentPort?.postMessage({ data: message });
 
+/* istanbul ignore next -- @preserve */
 class WorkerLocal extends Worker {
     public constructor(filename: URL | string, options: WorkerOptions & { type: "module" }) {
         const workerFilename = filename.toString();
