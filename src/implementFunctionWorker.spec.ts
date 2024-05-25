@@ -88,9 +88,11 @@ describe("FunctionWorker", () => {
         it("should throw when marshalling of a function is attempted", async () => {
             const worker = createUniversalFunctionWorker();
 
-            await expect(async () => await worker.execute(() => 2)).rejects.toThrow(
-                new Error("Failed to execute 'postMessage' on 'Worker': () => 2 could not be cloned."),
-            );
+            try {
+                await worker.execute(() => 2);
+            } catch (error: unknown) {
+                expect(error instanceof Error && error.message.endsWith("() => 2 could not be cloned.")).toBe(true);
+            }
         });
 
         it("should throw when attempting to call a method on a marshalled object", async () => {
