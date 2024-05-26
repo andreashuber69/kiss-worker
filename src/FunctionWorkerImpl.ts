@@ -88,10 +88,10 @@ export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
     };
 
     readonly #onMessageError = (ev: object) =>
-        this.#showError("Argument deserialization failed", JSON.stringify(this.#getInfo(ev)));
+        this.#showError("Argument deserialization failed", JSON.stringify(this.#getCause(ev)));
 
     readonly #onError = (ev: object) => {
-        const info = this.#getInfo(ev);
+        const info = this.#getCause(ev);
 
         if (info.filename) {
             this.#showError("Exception thrown outside of func", `:\n${JSON.stringify(info)}`);
@@ -111,10 +111,10 @@ export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
         }
     }
 
-    #getInfo(ev: unknown) {
+    #getCause(error: object) {
         // Apparently for security reasons, JSON.stringify will not work on ev, which is why we have to extract the
         // relevant properties ourselves.
-        const { message, filename, lineno } = ev as Record<string, unknown>;
+        const { message, filename, lineno } = error as Record<string, unknown>;
         return { message, filename, lineno };
     }
 
