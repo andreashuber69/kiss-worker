@@ -59,7 +59,7 @@ export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
         return this.#workerImpl;
     }
 
-    readonly #onMessage = (ev: unknown) => {
+    readonly #onMessage = (ev: object) => {
         if (!this.#currentResolve || !this.#currentReject) {
             if (this.#postMessageWasCalled) {
                 this.#postMessageWasCalled = false;
@@ -87,10 +87,10 @@ export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
         this.#resetHandlers();
     };
 
-    readonly #onMessageError = (ev: unknown) =>
+    readonly #onMessageError = (ev: object) =>
         this.#showError("Argument deserialization failed", JSON.stringify(this.#getInfo(ev)));
 
-    readonly #onError = (ev: unknown) => {
+    readonly #onError = (ev: object) => {
         const info = this.#getInfo(ev);
 
         if (info.filename) {

@@ -29,11 +29,11 @@ class WorkerLocal extends Worker {
         }
     }
 
-    public addEventListener(event: "error" | "message" | "messageerror", listener: (ev: unknown) => void) {
+    public addEventListener(event: "error" | "message" | "messageerror", listener: (ev: object) => void) {
         this.addListener(event, listener);
     }
 
-    public removeEventListener(event: "error" | "message" | "messageerror", listener: (ev: unknown) => void) {
+    public removeEventListener(event: "error" | "message" | "messageerror", listener: (ev: object) => void) {
         this.removeListener(event, listener);
     }
 }

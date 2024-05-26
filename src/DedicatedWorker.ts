@@ -5,7 +5,7 @@ import type { implementObjectWorker } from "./implementObjectWorker.js";
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
 
 export type AddRemoveEventListener =
-    (event: "error" | "message" | "messageerror", listener: (ev: unknown) => void) => void;
+    (event: "error" | "message" | "messageerror", listener: (ev: object) => void) => void;
 
 /**
  * Exposes the minimally required interface of the object returned by the the `createWorker` parameter of the
