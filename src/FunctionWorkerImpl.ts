@@ -89,19 +89,19 @@ export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
     };
 
     readonly #onMessageError = (ev: object) =>
-        this.#showError("Argument deserialization failed.", getCause(ev));
+        this.#raiseError("Argument deserialization failed.", getCause(ev));
 
     readonly #onError = (ev: object) => {
         const cause = getCause(ev);
 
         if (isInvalidWorkerFile(cause)) {
-            this.#showError("The specified worker file is not a valid script.", cause);
+            this.#raiseError("The specified worker file is not a valid script.", cause);
         } else {
-            this.#showError("Exception thrown outside of worker message handler.", cause);
+            this.#raiseError("Exception thrown outside of worker message handler.", cause);
         }
     };
 
-    #showError(message: string, cause: object) {
+    #raiseError(message: string, cause: object) {
         const error = new Error(message, { cause });
 
         if (this.#currentReject) {
