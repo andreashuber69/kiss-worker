@@ -1,11 +1,11 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { FunctionInfo } from "./FunctionInfo.js";
-import type { FunctionWorker } from "./FunctionWorker.js";
-import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import type { Proxy } from "./Proxy.js";
-import type { CallSignature, WorkerSignature } from "./Signature.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { FunctionInfo } from "./FunctionInfo.ts";
+import type { FunctionWorker } from "./FunctionWorker.ts";
+import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
+import type { Proxy } from "./Proxy.ts";
+import type { CallSignature, WorkerSignature } from "./Signature.ts";
 
 class ProxyImpl<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T>> {
     [key: string]: Proxy<T>[keyof Proxy<T>];

@@ -1,8 +1,8 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { getAllPropertyNames } from "./getAllPropertyNames.js";
-import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import type { WorkerSignature } from "./Signature.js";
+import { getAllPropertyNames } from "./getAllPropertyNames.ts";
+import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
+import type { WorkerSignature } from "./Signature.ts";
 import { addEventListener, postMessage } from "api";
 
 // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)

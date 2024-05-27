@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementObjectWorker, Worker } from "../index.js";
+import { implementObjectWorker, Worker } from "../index.ts";
 
 class Bouncer {
     public bounce(message: string) {

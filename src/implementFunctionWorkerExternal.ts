@@ -1,10 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import type { FunctionInfo } from "./FunctionInfo.js";
-import type { FunctionWorker } from "./FunctionWorker.js";
-import { FunctionWorkerImpl } from "./FunctionWorkerImpl.js";
-import type { implementFunctionWorker } from "./implementFunctionWorker.js";
-import type { serveFunction } from "./serveFunction.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import type { FunctionInfo } from "./FunctionInfo.ts";
+import type { FunctionWorker } from "./FunctionWorker.ts";
+import { FunctionWorkerImpl } from "./FunctionWorkerImpl.ts";
+import type { implementFunctionWorker } from "./implementFunctionWorker.ts";
+import type { serveFunction } from "./serveFunction.ts";
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode FunctionWorker} interface.

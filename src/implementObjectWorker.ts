@@ -1,10 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import { ObjectInfo } from "./ObjectInfo.js";
-import type { ObjectWorker } from "./ObjectWorker.js";
-import { serveObject } from "./serveObject.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
+import { ObjectInfo } from "./ObjectInfo.ts";
+import type { ObjectWorker } from "./ObjectWorker.ts";
+import { serveObject } from "./serveObject.ts";
 import { isWorker } from "api";
 
 /**

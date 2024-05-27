@@ -38,8 +38,10 @@ class WorkerLocal extends Worker {
     }
 }
 
+/* istanbul ignore next -- @preserve */
 const getCause = (error: object) => error;
 
+/* istanbul ignore next -- @preserve */
 const isInvalidWorkerFile = (cause: object) =>
     cause instanceof Error && "code" in cause && cause.code === "ERR_MODULE_NOT_FOUND";
 

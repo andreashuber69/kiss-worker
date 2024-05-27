@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
+import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
 import { addEventListener, postMessage } from "api";
 
 // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)

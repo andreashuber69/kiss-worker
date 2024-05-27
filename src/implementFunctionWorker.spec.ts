@@ -1,12 +1,12 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { assert, describe, expect, it } from "vitest";
-import { createDelayWorker } from "./testHelpers/createDelayWorker.js";
-import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.js";
-import { createFunnyWorker } from "./testHelpers/createFunnyWorker.js";
-import { createUniversalFunctionWorker } from "./testHelpers/createUniversalFunctionWorker.js";
-import { createUniversalObjectWorker } from "./testHelpers/createUniversalObjectWorker.js";
-import type { Obj } from "./testHelpers/createUniversalObjectWorker.js";
-import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.js";
+import { createDelayWorker } from "./testHelpers/createDelayWorker.ts";
+import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.ts";
+import { createFunnyWorker } from "./testHelpers/createFunnyWorker.ts";
+import { createUniversalFunctionWorker } from "./testHelpers/createUniversalFunctionWorker.ts";
+import { createUniversalObjectWorker } from "./testHelpers/createUniversalObjectWorker.ts";
+import type { Obj } from "./testHelpers/createUniversalObjectWorker.ts";
+import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.ts";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
     (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm";

@@ -1,6 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
-import { createCalculatorWorkerExternal } from "./testHelpers/createCalculatorWorkerExternal.js";
+import { createCalculatorWorkerExternal } from "./testHelpers/createCalculatorWorkerExternal.ts";
 
 describe("ObjectWorker", () => {
     describe("obj", () => {

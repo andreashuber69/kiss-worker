@@ -1,6 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
-import type { serveFunction } from "./serveFunction.js";
+import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
+import type { serveFunction } from "./serveFunction.ts";
 
 /**
  * Supplies information to {@linkcode implementFunctionWorkerExternal} about the type of the function being served with

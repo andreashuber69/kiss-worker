@@ -81,7 +81,7 @@ const fibonacci = (n: number): number =>
 export const createFibonacciWorker = implementFunctionWorker(
     // A function that creates a web worker running this script
     () => new Worker(
-        new URL("createFibonacciWorker.js", import.meta.url),
+        new URL("createFibonacciWorker.ts", import.meta.url),
         { type: "module" },
     ),
     fibonacci,
@@ -92,7 +92,7 @@ That's it, we've defined our worker with a single statement! Let's see how we ca
 
 ```ts
 // ./src/main.ts
-import { createFibonacciWorker } from "./createFibonacciWorker.js";
+import { createFibonacciWorker } from "./createFibonacciWorker.ts";
 
 // Start a new worker thread waiting for work.
 const worker = createFibonacciWorker();
@@ -112,6 +112,9 @@ if (element) {
 
 Here are a few facts that might not be immediately obvious:
 
+- All code (implementation and examples) consistently imports files with *.ts* extensions. This has a few advantages
+  for cross-platform code (browser and node). If you have a web-only project using this library, you might want to stick
+  to *.js* extensions. See [Worker Script File Extensions](#worker-script-file-extensions) for more information.
 - Each call to the `createFibonacciWorker()` factory function starts a new and independent worker thread. If necessary,
   a thread could be terminated by calling `worker.terminate()`.
 - The signature of `worker.execute()` is equivalent to the one of `fibonacci()`. Of course, `Error`s thrown by
@@ -125,7 +128,7 @@ Here are a few facts that might not be immediately obvious:
   this detection would **not** work correctly, if code in a worker thread attempted to start another worker thread. This
   can easily be fixed, see [Worker Code Isolation](#worker-code-isolation).
 - In order for build tools to be able to put worker code into a separate chunk, it is vital that the expression
-  `() => new Worker(new URL("createFibonacciWorker.js", import.meta.url), { type: "module" })` is kept as is. Please see
+  `() => new Worker(new URL("createFibonacciWorker.ts", import.meta.url), { type: "module" })` is kept as is. Please see
   associated instructions for [vite](https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url) and
   [webpack](https://webpack.js.org/guides/web-workers/). Other build tools will likely have similar constraints.
 - For browser-only code, the `Worker` import would not be necessary, as it is just an alias for the `Worker` class
@@ -158,7 +161,7 @@ class Calculator {
 export const createCalculatorWorker = implementObjectWorker(
     // A function that creates a web worker running this script
     () => new Worker(
-        new URL("createCalculatorWorker.js", import.meta.url),
+        new URL("createCalculatorWorker.ts", import.meta.url),
         { type: "module" },
     ),
     Calculator,
@@ -167,7 +170,7 @@ export const createCalculatorWorker = implementObjectWorker(
 
 ```ts
 // ./src/main.ts
-import { createCalculatorWorker } from "./createCalculatorWorker.js";
+import { createCalculatorWorker } from "./createCalculatorWorker.ts";
 
 // Start a new worker thread waiting for work.
 const worker = await createCalculatorWorker();
@@ -204,6 +207,37 @@ These are fully supported out of the box, no special API needed.
 If client code does not await each call to `execute` or methods offered by the `obj` property of a given worker, it can
 happen that a call is made even though a previously returned promise is still unsettled. In such a scenario the later
 call is automatically queued and only executed after all previously returned promises have settled.
+
+### Worker Script File Extensions
+
+As mentioned [above](#example-1-single-function), all code (implementation and examples) consistently imports files with
+*.ts* extensions. The same goes for the file names of worker scripts. The rationale for this non-standard approach is
+as follows: Using *.ts* extensions consistently seems to be the only way to run the same tests on both node and in the
+browser. This is mainly due to the fact that [vitest](https://vitest.dev/) automatically detects and transforms
+`Worker` constructor calls for browser test runs but doesn't do so for node. Instead, node test code seems to be
+compiled on demand on a file by file basis. Moreover, the compiled *.js* code doesn't seem to be written to the file
+system, which is why the [node worker](https://github.com/andreashuber69/kiss-worker/blob/develop/src/api/TsxWorker.js)
+uses [`tsImport`](https://tsx.is/node/ts-import) to load the *.ts* file directly.
+
+With the default configuration, the **TypeScript** compiler would flag *.ts* imports with an error. This is because
+`tsc` does not rewrite module names and thus expects the *.js* extension for file imports. Almost no web project
+nowadays employs `tsc` to build production code. The bundler used by this library, ([vite](https://vitejs.dev/)) will
+happily accept *.ts* and *.js* extensions for imports and worker script file names. However, for most projects it still
+makes sense to continue to use `tsc` with the `noEmit` flag for type-checking purposes. This use case is enabled by the
+[`allowImportingTsExtensions`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#allowimportingtsextensions)
+flag.
+
+To cut a long story short:
+
+- If your project uses this library for code running in a browser only, it probably makes sense to stick with *.js*
+  extensions.
+- If your code needs to run on node **and** you happen to use `vite build`, it might make sense to exclusively use *.ts*
+  extensions for everything. Note that this requires the deployment of the *.ts* source code of the worker scripts and
+  [`tsx`](https://www.npmjs.com/package/tsx) needs to be available in the production environment.
+- If you happen to use a different bundler and/or test runner you probably want to experiment a little to find the best
+  solution. If you come to the conclusion that deploying *.ts* files to the production environment does not suit your
+  needs, you can "manually" compile the worker script files to *.js* and deploy them together with the rest of your
+  code.
 
 ### Worker Code Isolation
 
@@ -244,13 +278,13 @@ import { FunctionInfo, implementFunctionWorkerExternal, Worker } from
     "kiss-worker";
 
 // Import the type only
-import type { fibonacci } from "./fibonacci.js";
+import type { fibonacci } from "./fibonacci.ts";
 
 export const createFibonacciWorker = implementFunctionWorkerExternal(
     // A function that creates a web worker running the script serving
     // the function
     () => new Worker(
-        new URL("fibonacci.js", import.meta.url),
+        new URL("fibonacci.ts", import.meta.url),
         { type: "module" },
     ),
     new FunctionInfo<typeof fibonacci>(),
@@ -296,13 +330,13 @@ export type { Calculator };
 import { ObjectInfo, implementObjectWorkerExternal, Worker } from "kiss-worker";
 
 // Import the type only
-import type { Calculator } from "./Calculator.js";
+import type { Calculator } from "./Calculator.ts";
 
 export const createCalculatorWorker = implementObjectWorkerExternal(
     // A function that creates a web worker running the script serving
     // the object
     () => new Worker(
-        new URL("Calculator.js", import.meta.url),
+        new URL("Calculator.ts", import.meta.url),
         { type: "module" },
     ),
     // Provide required information about the served object

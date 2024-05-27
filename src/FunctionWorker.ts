@@ -1,6 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { implementFunctionWorker } from "./implementFunctionWorker.js";
-import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
+import type { implementFunctionWorker } from "./implementFunctionWorker.ts";
+import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
 
 /**
  * Represents the worker thread created by calling the factory function returned by

@@ -1,9 +1,9 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { FunctionInfo } from "./FunctionInfo.js";
-import type { FunctionWorker } from "./FunctionWorker.js";
-import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
-import { serveFunction } from "./serveFunction.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { FunctionInfo } from "./FunctionInfo.ts";
+import type { FunctionWorker } from "./FunctionWorker.ts";
+import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
+import { serveFunction } from "./serveFunction.ts";
 import { isWorker } from "api";
 
 /**

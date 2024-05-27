@@ -1,6 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { PromiseQueue } from "./PromiseQueue.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { PromiseQueue } from "./PromiseQueue.ts";
 import { getCause, isInvalidWorkerFile } from "api";
 
 interface ExecuteResult<T> {
