@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import type { DedicatedWorker } from "./DedicatedWorker.js";
 import { PromiseQueue } from "./PromiseQueue.js";
+import { getCause, isInvalidWorkerFile } from "api";
 
 interface ExecuteResult<T> {
     type: "result";
@@ -88,34 +89,27 @@ export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
     };
 
     readonly #onMessageError = (ev: object) =>
-        this.#showError("Argument deserialization failed", JSON.stringify(this.#getCause(ev)));
+        this.#showError("Argument deserialization failed.", getCause(ev));
 
     readonly #onError = (ev: object) => {
-        const info = this.#getCause(ev);
+        const cause = getCause(ev);
 
-        if (info.filename) {
-            this.#showError("Exception thrown outside of func", `:\n${JSON.stringify(info)}`);
+        if (isInvalidWorkerFile(cause)) {
+            this.#showError("The specified worker file is not a valid script.", cause);
         } else {
-            this.#showError("The specified worker file is not a valid script", ".");
+            this.#showError("Exception thrown outside of worker message handler.", cause);
         }
     };
 
-    #showError(reason: string, suffix: unknown) {
-        const message = `${reason}${suffix}`;
+    #showError(message: string, cause: object) {
+        const error = new Error(message, { cause });
 
         if (this.#currentReject) {
-            this.#currentReject(new Error(message));
+            this.#currentReject(error);
             this.#resetHandlers();
         } else {
-            console.error(message);
+            console.error(JSON.stringify(error));
         }
-    }
-
-    #getCause(error: object) {
-        // Apparently for security reasons, JSON.stringify will not work on ev, which is why we have to extract the
-        // relevant properties ourselves.
-        const { message, filename, lineno } = error as Record<string, unknown>;
-        return { message, filename, lineno };
     }
 
     #resetHandlers() {

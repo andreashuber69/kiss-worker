@@ -70,8 +70,9 @@ describe("FunctionWorker", () => {
                 await worker.execute("throwOutside");
                 assert(false);
             } catch (error: unknown) {
-                assert(error instanceof Error);
-                expect(error.message.split("\n")[0]).toBe("Exception thrown outside of func:");
+                expect(error instanceof Error && error.message).toBe(
+                    "Exception thrown outside of worker message handler.",
+                );
             }
 
             // Wait for func to return so that the console output always appears.

@@ -38,9 +38,16 @@ class WorkerLocal extends Worker {
     }
 }
 
+const getCause = (error: object) => error;
+
+const isInvalidWorkerFile = (cause: object) =>
+    cause instanceof Error && "code" in cause && cause.code === "ERR_MODULE_NOT_FOUND";
+
 export {
     addEventListener,
     isWorker,
     postMessage,
     WorkerLocal as Worker,
+    getCause,
+    isInvalidWorkerFile,
 };
