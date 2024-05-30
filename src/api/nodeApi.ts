@@ -1,20 +1,19 @@
 import type { WorkerOptions } from "node:worker_threads";
 import { isMainThread, parentPort, Worker } from "node:worker_threads";
 
-const addEventListener = (type: "message", listener: (ev: MessageEvent) => unknown) => {
-    parentPort?.addListener(
+const addEventListener = (type: "message", listener: (ev: MessageEvent) => unknown): void =>
+    void parentPort?.addListener(
         type,
         // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
         // version of the code is ever loaded.
         /* istanbul ignore next -- @preserve */
         (value: unknown) => listener({ data: value } as unknown as MessageEvent),
     );
-};
 
 const isWorker = () => !isMainThread;
 
 /* istanbul ignore next -- @preserve */
-const postMessage = (message: unknown) => parentPort?.postMessage({ data: message });
+const postMessage = (message: unknown): void => parentPort?.postMessage({ data: message });
 
 class WorkerLocal extends Worker {
     public constructor(filename: URL | string, options: WorkerOptions & { type: "module" }) {
