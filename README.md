@@ -112,9 +112,10 @@ if (element) {
 
 Here are a few facts that might not be immediately obvious:
 
-- All code (implementation and examples) consistently imports files with *.ts* extensions. This has a few advantages
-  for cross-platform code (browser and node). If you have a web-only project using this library, you might want to stick
-  to *.js* extensions. See [Worker Script File Extensions](#worker-script-file-extensions) for more information.
+- For the same client code to work on node and in the browser, the worker scripts must be referenced with a *.ts*
+  extension. To be consistent, all example code also uses *.ts* for `import`. If you have a web-only project using this
+  library, you might want to stick to the standard *.js* extensions. See
+  [Worker Script File Extensions](#worker-script-file-extensions) for more information.
 - Each call to the `createFibonacciWorker()` factory function starts a new and independent worker thread. If necessary,
   a thread could be terminated by calling `worker.terminate()`.
 - The signature of `worker.execute()` is equivalent to the one of `fibonacci()`. Of course, `Error`s thrown by
@@ -210,34 +211,47 @@ call is automatically queued and only executed after all previously returned pro
 
 ### Worker Script File Extensions
 
-As mentioned [above](#example-1-single-function), all code (implementation and examples) consistently imports files with
-*.ts* extensions. The same goes for the file names of worker scripts. The rationale for this non-standard approach is
-as follows: Using *.ts* extensions consistently seems to be the only way to run the same tests on both node and in the
-browser. This is mainly due to the fact that [vitest](https://vitest.dev/) automatically detects and transforms
-`Worker` constructor calls for browser test runs but doesn't do so for node. Instead, node test code seems to be
-compiled on demand on a file by file basis. Moreover, the compiled *.js* code doesn't seem to be written to the file
-system, which is why the [node worker](https://github.com/andreashuber69/kiss-worker/blob/develop/src/api/TsxWorker.js)
-uses [`tsImport`](https://tsx.is/node/ts-import) to load the *.ts* file directly.
+As mentioned [above](#example-1-single-function), all examples reference worker scripts with a *.ts* extension, for
+example:
 
-With the default configuration, the **TypeScript** compiler would flag *.ts* imports with an error. This is because
-`tsc` does not rewrite module names and thus expects the *.js* extension for file imports. Almost no web project
-nowadays employs `tsc` to build production code. The bundler used by this library, ([vite](https://vitejs.dev/)) will
-happily accept *.ts* and *.js* extensions for imports and worker script file names. However, for most projects it still
-makes sense to continue to use `tsc` with the `noEmit` flag for type-checking purposes. This use case is enabled by the
-[`allowImportingTsExtensions`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#allowimportingtsextensions)
-flag.
+```ts
+    () => new Worker(
+        new URL("createFibonacciWorker.ts", import.meta.url),
+        { type: "module" },
+    ),
+```
+
+When this code is compiled for the browser, [vite](https://vitejs.dev/) detects the `Worker` constructor call and
+compiles *createFibonacciWorker.ts* into a separate chunk, such that everything works as expected at runtime (the same
+would be true if we passed `"createFibonacciWorker.js"`). However, no such detection takes place when we compile this
+code for node. Even worse, while running tests on node, [vitest](https://vitest.dev/) seems to compile code on a file by
+file basis and the emitted ECMAScript code isn't ever written to the file system. So, there seems to be no way to load
+**emitted** code into a node worker when running **vitest** directly on **TypeScript** files.
+
+This is why the worker of the node version of this library is able to load *.ts* files directly and internally uses
+[tsx](https://www.npmjs.com/package/tsx) to compile it to runnable code at runtime. This way, it is possible to run
+exactly the same tests on node and in the browser. This compatibility extends to production code, but of course comes
+with the caveat of having to deploy **tsx** and the source code of all worker scripts.
+
+For node compatibility it therefore seems to be necessary to reference the source *.ts* files of at least
+worker scripts. To be consistent, this library also uses *.ts* extensions for `import`. By default, the **TypeScript**
+compiler only allows *.js* extensions. They are accepted here, because all code is
+compiled with the [`noEmit`](https://www.typescriptlang.org/tsconfig/#noEmit) and
+[`allowImportingTsExtensions`](https://www.typescriptlang.org/tsconfig/#allowImportingTsExtensions), see
+[tsconfig.json](https://github.com/andreashuber69/kiss-worker/blob/develop/src/tsconfig.json).
 
 To cut a long story short:
 
 - If your project uses this library for code running in a browser only, it probably makes sense to stick with *.js*
-  extensions.
+  extensions for `import` and worker script file names, as that is the established standard for **TypeScript** code.
+  **vite** and **webpack** automatically detect what code is run on a worker thread and build appropriate chunks. The
+  same is probably true for other bundlers.
 - If your code needs to run on node **and** you happen to use `vite build`, it might make sense to exclusively use *.ts*
-  extensions for everything. Note that this requires the deployment of the *.ts* source code of the worker scripts and
-  [`tsx`](https://www.npmjs.com/package/tsx) needs to be available in the production environment.
-- If you happen to use a different bundler and/or test runner you probably want to experiment a little to find the best
-  solution. If you come to the conclusion that deploying *.ts* files to the production environment does not suit your
-  needs, you can "manually" compile the worker script files to *.js* and deploy them together with the rest of your
-  code.
+  extensions to reference worker scripts. Note that this requires the deployment of the *.ts* source code of the worker
+  scripts and **tsx** needs to be available in the production environment.
+- Finally, you can also build and deploy the worker scripts in an extra step and then load the *.js* code into the
+  worker. The node version doesn't use **tsx** on *.js* files and thus avoids the **tsx** dependency and its runtime
+  overhead.
 
 ### Worker Code Isolation
 
