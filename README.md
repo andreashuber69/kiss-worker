@@ -39,6 +39,7 @@ Provides one of the easiest ways to use a worker thread in the browser, in ~2kB 
 1. [Advanced Topics](#advanced-topics)
    - [Asynchronous Functions and Methods](#asynchronous-functions-and-methods)
    - [Simultaneous Calls](#simultaneous-calls)
+   - [Worker Script File Extensions](#worker-script-file-extensions)
    - [Worker Code Isolation](#worker-code-isolation)
 1. [Limitations](#limitations)
 1. [Motivation](#motivation)
