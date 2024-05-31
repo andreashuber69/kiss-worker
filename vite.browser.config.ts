@@ -17,5 +17,6 @@ export default defineConfig({
             formats: ["es"],
         },
         sourcemap: true,
+        outDir: "./dist/browser",
     },
 });

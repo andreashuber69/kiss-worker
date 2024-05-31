@@ -24,8 +24,12 @@
     "name": "Andreas Huber"
   },
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "browser": "./dist/browser/index.js",
+      "types": "./dist/browser/index.d.ts"
+    }
+  },
   "files": [
     "/dist/",
     "!/dist/testHelpers",
@@ -36,7 +40,7 @@
   "scripts": {
     "prelint": "cspell '**' && markdownlint '**/*.md'",
     "lint": "eslint --ext .cjs,.ts --report-unused-disable-directives '.'",
-    "build": "tsc -p './src' && vite build",
+    "build": "tsc -p './src' && vite build --config vite.browser.config.ts",
     "build-code-doc": "typedoc './src/index.ts' --tsconfig './src/tsconfig.json' --excludePrivate --out './code-doc'",
     "show-code-doc": "vite 'code-doc' --logLevel error --open",
     "test-no-coverage": "vitest --run",
