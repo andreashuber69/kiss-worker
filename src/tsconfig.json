@@ -5,6 +5,7 @@
     "lib": ["es2023", "WebWorker"]
   },
   "include": [
-    "**/*.ts"
+    "**/*.js",
+    "**/*.ts",
   ]
 }
