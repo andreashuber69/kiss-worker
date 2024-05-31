@@ -1,7 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
 
-import { PromiseQueue } from "./PromiseQueue.js";
+import { PromiseQueue } from "./PromiseQueue.ts";
 
 const delay = async (sequence: number[], result: number) => {
     await new Promise<void>((resolve) => setTimeout(resolve, 100));

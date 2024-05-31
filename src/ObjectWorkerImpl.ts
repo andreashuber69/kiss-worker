@@ -1,13 +1,13 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { FunctionInfo } from "./FunctionInfo.js";
-import type { FunctionWorker } from "./FunctionWorker.js";
-import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import type { Proxy } from "./Proxy.js";
-import type { CallSignature, WorkerSignature } from "./Signature.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { FunctionInfo } from "./FunctionInfo.ts";
+import type { FunctionWorker } from "./FunctionWorker.ts";
+import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
+import type { Proxy } from "./Proxy.ts";
+import type { CallSignature, WorkerSignature } from "./Signature.ts";
 
-class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
+class ProxyImpl<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T>> {
     [key: string]: Proxy<T>[keyof Proxy<T>];
 
     public constructor(
@@ -28,15 +28,21 @@ class ProxyImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObje
     readonly #worker: FunctionWorker<WorkerSignature<C, T>>;
 }
 
-export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>> {
-    public constructor(createWorker: () => DedicatedWorker) {
-        const createFunctionWorker =
-            implementFunctionWorkerExternal(createWorker, new FunctionInfo<WorkerSignature<C, T>>());
+export class ObjectWorkerImpl<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T>> {
+    public static async create<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T>>(
+        createWorker: () => DedicatedWorker,
+        ...args: ConstructorParameters<C>
+    ) {
+        const result = new ObjectWorkerImpl<C, T>(createWorker);
 
-        this.#worker = createFunctionWorker();
-        // Admittedly, this isn't pretty, but seems to be the only way how we can convince the compiler that obj will
-        // never be undefined without additional runtime checks.
-        this.#obj = undefined as unknown as Proxy<T>;
+        try {
+            await result.construct(...args);
+        } catch (error: unknown) {
+            result.terminate();
+            throw error;
+        }
+
+        return result;
     }
 
     public get obj() {
@@ -47,17 +53,24 @@ export class ObjectWorkerImpl<C extends new (...args: never[]) => T, T extends M
         this.#worker.terminate();
     }
 
-    /**
-     * Constructs the object on the worker thread.
-     * @internal
-     */
-    public async construct(...args: ConstructorParameters<C>) {
+
+    private constructor(createWorker: () => DedicatedWorker) {
+        const createFunctionWorker =
+            implementFunctionWorkerExternal(createWorker, new FunctionInfo<WorkerSignature<C, T>>());
+
+        this.#worker = createFunctionWorker();
+        // Admittedly, this isn't pretty, but seems to be the only way how we can convince the compiler that obj will
+        // never be undefined without additional runtime checks.
+        this.#obj = undefined as unknown as Proxy<T>;
+    }
+
+    readonly #worker: FunctionWorker<WorkerSignature<C, T>>;
+    #obj: Proxy<T>;
+
+    private async construct(...args: ConstructorParameters<C>) {
         const propertyNames =
             await this.#worker.execute("construct", ...args) as ReadonlyArray<Extract<keyof T, string>>;
 
         this.#obj = new ProxyImpl<C, T>(this.#worker, propertyNames) as unknown as Proxy<T>;
     }
-
-    readonly #worker: FunctionWorker<WorkerSignature<C, T>>;
-    #obj: Proxy<T>;
 }

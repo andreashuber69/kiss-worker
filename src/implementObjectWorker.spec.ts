@@ -1,8 +1,8 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { describe, expect, it } from "vitest";
-import { createCalculatorWorker } from "./testHelpers/createCalculatorWorker.js";
-import { createMisbehavedWorker } from "./testHelpers/createMisbehavedWorker.js";
-import { createThrowingWorker } from "./testHelpers/createThrowingWorker.js";
+import { createCalculatorWorker } from "./testHelpers/createCalculatorWorker.ts";
+import { createMisbehavedWorker } from "./testHelpers/createMisbehavedWorker.ts";
+import { createThrowingWorker } from "./testHelpers/createThrowingWorker.ts";
 
 describe("ObjectWorker", () => {
     describe("factory function", () => {

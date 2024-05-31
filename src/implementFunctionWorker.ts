@@ -1,13 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { FunctionInfo } from "./FunctionInfo.js";
-import type { FunctionWorker } from "./FunctionWorker.js";
-import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
-import { serveFunction } from "./serveFunction.js";
-
-const isWorker = typeof WorkerGlobalScope !== "undefined" &&
-    /* istanbul ignore next -- @preserve */
-    self instanceof WorkerGlobalScope;
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { FunctionInfo } from "./FunctionInfo.ts";
+import type { FunctionWorker } from "./FunctionWorker.ts";
+import { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
+import { serveFunction } from "./serveFunction.ts";
+import { isWorker } from "api";
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode FunctionWorker} interface.
@@ -22,14 +19,14 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * call to {@linkcode FunctionWorker.execute}.
  * @returns The factory function returning an object implementing the {@linkcode FunctionWorker} interface.
  */
-export const implementFunctionWorker = <T extends (...args: never[]) => unknown>(
+export const implementFunctionWorker = <T extends (..._: never[]) => unknown>(
     createWorker: () => DedicatedWorker,
     func: T,
-): () => FunctionWorker<T> => {
+) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
-    if (isWorker) {
+    if (isWorker()) {
         serveFunction(func);
     }
 

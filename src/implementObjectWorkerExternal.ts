@@ -1,11 +1,11 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import type { implementObjectWorker } from "./implementObjectWorker.js";
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import type { ObjectInfo } from "./ObjectInfo.js";
-import type { ObjectWorker } from "./ObjectWorker.js";
-import { ObjectWorkerImpl } from "./ObjectWorkerImpl.js";
-import type { serveObject } from "./serveObject.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import type { implementObjectWorker } from "./implementObjectWorker.ts";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
+import type { ObjectInfo } from "./ObjectInfo.ts";
+import type { ObjectWorker } from "./ObjectWorker.ts";
+import { ObjectWorkerImpl } from "./ObjectWorkerImpl.ts";
+import type { serveObject } from "./serveObject.ts";
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
@@ -24,17 +24,8 @@ import type { serveObject } from "./serveObject.js";
  * worker thread.
  * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
-export const implementObjectWorkerExternal = <C extends new (...args: never[]) => T, T extends MethodsOnlyObject<T>>(
+export const implementObjectWorkerExternal = <C extends new (..._: never[]) => T, T extends MethodsOnlyObject<T>>(
     createWorker: () => DedicatedWorker,
     _info: ObjectInfo<C, T>,
-): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => async (...args2: ConstructorParameters<C>) => {
-    const result = new ObjectWorkerImpl<C, T>(createWorker);
-
-    try {
-        await result.construct(...args2);
-        return result;
-    } catch (error: unknown) {
-        result.terminate();
-        throw error;
-    }
-};
+): (...args: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => async (...args: ConstructorParameters<C>) =>
+    await ObjectWorkerImpl.create<C, T>(createWorker, ...args);

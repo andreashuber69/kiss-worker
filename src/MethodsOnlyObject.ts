@@ -9,4 +9,4 @@
  * complexity of providing transparent access to fields, getters and setters is probably not worth the effort. For the
  * rare cases where such access is desired, it can easily be provided through get and set methods.
  */
-export type MethodsOnlyObject<T> = Record<keyof T, (...args: never[]) => unknown>;
+export type MethodsOnlyObject<T> = Record<keyof T, (..._: never[]) => unknown>;

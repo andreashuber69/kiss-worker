@@ -1,26 +1,34 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-export type { AddRemoveEventListener, DedicatedWorker } from "./DedicatedWorker.js";
 
-export type { FunctionWorker } from "./FunctionWorker.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { Worker as WorkerLocal } from "api";
 
-export { implementFunctionWorker } from "./implementFunctionWorker.js";
+const Worker: new (scriptURL: URL | string, options: { type: "module" }) => DedicatedWorker = WorkerLocal;
 
-export { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
+export type { AddRemoveEventListener, DedicatedWorker } from "./DedicatedWorker.ts";
 
-export { FunctionInfo } from "./FunctionInfo.js";
+export type { FunctionWorker } from "./FunctionWorker.ts";
 
-export { serveFunction } from "./serveFunction.js";
+export { implementFunctionWorker } from "./implementFunctionWorker.ts";
 
-export type { ObjectWorker } from "./ObjectWorker.js";
+export { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
 
-export type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
+export { FunctionInfo } from "./FunctionInfo.ts";
 
-export type { Proxy } from "./Proxy.js";
+export { serveFunction } from "./serveFunction.ts";
 
-export { implementObjectWorker } from "./implementObjectWorker.js";
+export type { ObjectWorker } from "./ObjectWorker.ts";
 
-export { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
+export type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
 
-export { ObjectInfo } from "./ObjectInfo.js";
+export type { Proxy } from "./Proxy.ts";
 
-export { serveObject } from "./serveObject.js";
+export { implementObjectWorker } from "./implementObjectWorker.ts";
+
+export { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
+
+export { ObjectInfo } from "./ObjectInfo.ts";
+
+export { serveObject } from "./serveObject.ts";
+
+export { Worker };

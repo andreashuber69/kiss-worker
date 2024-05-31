@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementObjectWorker } from "../implementObjectWorker.js";
+import { implementObjectWorker, Worker } from "../index.ts";
 
 class Throwing {
     public constructor(doThrow: boolean) {
@@ -15,7 +15,7 @@ class Throwing {
 
 export const createThrowingWorker = implementObjectWorker(
     () => new Worker(
-        new URL("createThrowingWorker.js", import.meta.url),
+        new URL("createThrowingWorker.ts", import.meta.url),
         { type: "module" },
     ),
     Throwing,

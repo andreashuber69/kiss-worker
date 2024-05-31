@@ -1,11 +1,11 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { implementFunctionWorker } from "./implementFunctionWorker.js";
-import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
-import type { implementObjectWorker } from "./implementObjectWorker.js";
-import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
+import type { implementFunctionWorker } from "./implementFunctionWorker.ts";
+import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
+import type { implementObjectWorker } from "./implementObjectWorker.ts";
+import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
 
 export type AddRemoveEventListener =
-    (event: "error" | "message" | "messageerror", listener: (ev: unknown) => void) => void;
+    (event: "error" | "message" | "messageerror", listener: (ev: object) => void) => void;
 
 /**
  * Exposes the minimally required interface of the object returned by the the `createWorker` parameter of the
@@ -17,6 +17,6 @@ export type AddRemoveEventListener =
 export interface DedicatedWorker {
     addEventListener: AddRemoveEventListener;
     removeEventListener: AddRemoveEventListener;
-    postMessage: (args: never[]) => void;
+    postMessage: (message: unknown) => void;
     terminate: () => void;
 }

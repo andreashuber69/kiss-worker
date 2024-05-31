@@ -1,8 +1,8 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { implementObjectWorker } from "./implementObjectWorker.js";
-import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import type { Proxy } from "./Proxy.js";
+import type { implementObjectWorker } from "./implementObjectWorker.ts";
+import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
+import type { Proxy } from "./Proxy.ts";
 
 /**
  * Represents the worker thread created by calling the factory function returned by

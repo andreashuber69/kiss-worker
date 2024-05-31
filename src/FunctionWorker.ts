@@ -1,12 +1,12 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { implementFunctionWorker } from "./implementFunctionWorker.js";
-import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.js";
+import type { implementFunctionWorker } from "./implementFunctionWorker.ts";
+import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
 
 /**
  * Represents the worker thread created by calling the factory function returned by
  * {@linkcode implementFunctionWorker} or {@linkcode implementFunctionWorkerExternal}.
  */
-export interface FunctionWorker<T extends (...args: never[]) => unknown> {
+export interface FunctionWorker<T extends (..._: never[]) => unknown> {
     /**
      * Calls the function served on the worker thread.
      * @description Can be called without waiting for previously returned promises to settle. If done so, calls will be

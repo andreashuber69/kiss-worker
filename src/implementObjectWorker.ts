@@ -1,14 +1,11 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.js";
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
-import { ObjectInfo } from "./ObjectInfo.js";
-import type { ObjectWorker } from "./ObjectWorker.js";
-import { serveObject } from "./serveObject.js";
-
-const isWorker = typeof WorkerGlobalScope !== "undefined" &&
-    /* istanbul ignore next -- @preserve */
-    self instanceof WorkerGlobalScope;
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
+import { ObjectInfo } from "./ObjectInfo.ts";
+import type { ObjectWorker } from "./ObjectWorker.ts";
+import { serveObject } from "./serveObject.ts";
+import { isWorker } from "api";
 
 /**
  * Creates a factory function returning an object implementing the {@linkcode ObjectWorker} interface.
@@ -25,16 +22,16 @@ const isWorker = typeof WorkerGlobalScope !== "undefined" &&
  * @returns The factory function returning an object implementing the {@linkcode ObjectWorker} interface.
  */
 export const implementObjectWorker = <
-    C extends new (...args: never[]) => T,
+    C extends new (..._: never[]) => T,
     T extends MethodsOnlyObject<T> = InstanceType<C>,
 >(
     createWorker: () => DedicatedWorker,
     ctor: C,
-): (...args2: ConstructorParameters<C>) => Promise<ObjectWorker<T>> => {
+) => {
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
-    if (isWorker) {
+    if (isWorker()) {
         serveObject<C, T>(ctor);
     }
 

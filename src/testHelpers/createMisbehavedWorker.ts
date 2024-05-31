@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementObjectWorker } from "../implementObjectWorker.js";
+import { implementObjectWorker, Worker } from "../index.ts";
 
 class Bouncer {
     public bounce(message: string) {
@@ -8,7 +8,7 @@ class Bouncer {
 }
 
 const maliciousWorkerFactory = () => {
-    const result = new Worker(new URL("createMisbehavedWorker.js", import.meta.url), { type: "module" });
+    const result = new Worker(new URL("createMisbehavedWorker.ts", import.meta.url), { type: "module" });
     // False positive
     // eslint-disable-next-line unicorn/require-post-message-target-origin
     result.postMessage("Ouch!");

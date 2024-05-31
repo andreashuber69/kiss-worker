@@ -1,7 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import { implementFunctionWorker } from "../implementFunctionWorker.js";
+import { implementFunctionWorker, Worker } from "../index.ts";
 
 export const createUniversalFunctionWorker = implementFunctionWorker(
-    () => new Worker(new URL("createUniversalFunctionWorker.js", import.meta.url), { type: "module" }),
+    () => new Worker(new URL("createUniversalFunctionWorker.ts", import.meta.url), { type: "module" }),
     (fun: () => unknown) => fun(),
 );

@@ -1,6 +1,7 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { DedicatedWorker } from "./DedicatedWorker.js";
-import { PromiseQueue } from "./PromiseQueue.js";
+import type { DedicatedWorker } from "./DedicatedWorker.ts";
+import { PromiseQueue } from "./PromiseQueue.ts";
+import { getCause, isInvalidWorkerFile } from "api";
 
 interface ExecuteResult<T> {
     type: "result";
@@ -14,7 +15,7 @@ interface ExecuteError {
 
 type Message<T> = ExecuteError | ExecuteResult<T>;
 
-export class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
+export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
     public constructor(createWorker: () => DedicatedWorker) {
         this.#workerImpl = createWorker();
         this.#workerImpl.addEventListener("message", this.#onMessage);
@@ -59,7 +60,7 @@ export class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
         return this.#workerImpl;
     }
 
-    readonly #onMessage = (ev: unknown) => {
+    readonly #onMessage = (ev: object) => {
         if (!this.#currentResolve || !this.#currentReject) {
             if (this.#postMessageWasCalled) {
                 this.#postMessageWasCalled = false;
@@ -87,35 +88,28 @@ export class FunctionWorkerImpl<T extends (...args: never[]) => unknown> {
         this.#resetHandlers();
     };
 
-    readonly #onMessageError = (ev: unknown) =>
-        this.#showError("Argument deserialization failed", JSON.stringify(this.#getInfo(ev)));
+    readonly #onMessageError = (ev: object) =>
+        this.#raiseError("Argument deserialization failed.", getCause(ev));
 
-    readonly #onError = (ev: unknown) => {
-        const info = this.#getInfo(ev);
+    readonly #onError = (ev: object) => {
+        const cause = getCause(ev);
 
-        if (info.filename) {
-            this.#showError("Exception thrown outside of func", `:\n${JSON.stringify(info)}`);
+        if (isInvalidWorkerFile(cause)) {
+            this.#raiseError("The specified worker file is not a valid script.", cause);
         } else {
-            this.#showError("The specified worker file is not a valid script", ".");
+            this.#raiseError("Exception thrown outside of worker message handler.", cause);
         }
     };
 
-    #showError(reason: string, suffix: unknown) {
-        const message = `${reason}${suffix}`;
+    #raiseError(message: string, cause: object) {
+        const error = new Error(message, { cause });
 
         if (this.#currentReject) {
-            this.#currentReject(new Error(message));
+            this.#currentReject(error);
             this.#resetHandlers();
         } else {
-            console.error(message);
+            console.error(JSON.stringify(error));
         }
-    }
-
-    #getInfo(ev: unknown) {
-        // Apparently for security reasons, JSON.stringify will not work on ev, which is why we have to extract the
-        // relevant properties ourselves.
-        const { message, filename, lineno } = ev as Record<string, unknown>;
-        return { message, filename, lineno };
     }
 
     #resetHandlers() {

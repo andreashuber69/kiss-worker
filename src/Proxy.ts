@@ -1,5 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
-import type { MethodsOnlyObject } from "./MethodsOnlyObject.js";
+import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
 
 /**
  * A type with async equivalents of the methods declared on `T`.

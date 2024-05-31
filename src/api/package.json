@@ -1,0 +1,8 @@
+{
+  "name": "api",
+  "type": "module",
+  "exports": {
+    "browser": "./browserApi.ts",
+    "node": "./nodeApi.ts"
+  }
+}

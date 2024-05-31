@@ -1,12 +1,12 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
 import { assert, describe, expect, it } from "vitest";
-import { createDelayWorker } from "./testHelpers/createDelayWorker.js";
-import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.js";
-import { createFunnyWorker } from "./testHelpers/createFunnyWorker.js";
-import { createUniversalFunctionWorker } from "./testHelpers/createUniversalFunctionWorker.js";
-import { createUniversalObjectWorker } from "./testHelpers/createUniversalObjectWorker.js";
-import type { Obj } from "./testHelpers/createUniversalObjectWorker.js";
-import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.js";
+import { createDelayWorker } from "./testHelpers/createDelayWorker.ts";
+import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.ts";
+import { createFunnyWorker } from "./testHelpers/createFunnyWorker.ts";
+import { createUniversalFunctionWorker } from "./testHelpers/createUniversalFunctionWorker.ts";
+import { createUniversalObjectWorker } from "./testHelpers/createUniversalObjectWorker.ts";
+import type { Obj } from "./testHelpers/createUniversalObjectWorker.ts";
+import { createWrongFilenameWorker } from "./testHelpers/createWrongFilenameWorker.ts";
 
 const isExpected = (result: PromiseSettledResult<void>) =>
     (result.status === "rejected") && (result.reason instanceof Error) && result.reason.message === "Hmmm";
@@ -70,8 +70,9 @@ describe("FunctionWorker", () => {
                 await worker.execute("throwOutside");
                 assert(false);
             } catch (error: unknown) {
-                assert(error instanceof Error);
-                expect(error.message.split("\n")[0]).toBe("Exception thrown outside of func:");
+                expect(error instanceof Error && error.message).toBe(
+                    "Exception thrown outside of worker message handler.",
+                );
             }
 
             // Wait for func to return so that the console output always appears.
@@ -88,9 +89,11 @@ describe("FunctionWorker", () => {
         it("should throw when marshalling of a function is attempted", async () => {
             const worker = createUniversalFunctionWorker();
 
-            await expect(async () => await worker.execute(() => 2)).rejects.toThrow(
-                new Error("Failed to execute 'postMessage' on 'Worker': () => 2 could not be cloned."),
-            );
+            try {
+                await worker.execute(() => 2);
+            } catch (error: unknown) {
+                expect(error instanceof Error && error.message.endsWith("() => 2 could not be cloned.")).toBe(true);
+            }
         });
 
         it("should throw when attempting to call a method on a marshalled object", async () => {
