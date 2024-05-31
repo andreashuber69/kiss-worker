@@ -250,9 +250,9 @@ To cut a long story short:
 - If your code needs to run on node **and** you happen to use `vite build`, it might make sense to exclusively use *.ts*
   extensions to reference worker scripts. Note that this requires the deployment of the *.ts* source code of the worker
   scripts and **tsx** needs to be available in the production environment.
-- Finally, you can also build and deploy the worker scripts in an extra step and then load the *.js* code into the
-  worker. The node version doesn't use **tsx** on *.js* files and thus avoids the **tsx** dependency and its runtime
-  overhead.
+- Finally, you can also build the worker scripts in an extra step, deploy them with the rest of your code and then have
+  the worker load the built *.js* code. The node version doesn't use **tsx** on *.js* files and thus avoids the **tsx**
+  dependency and its runtime overhead.
 
 ### Worker Code Isolation
 
