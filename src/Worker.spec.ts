@@ -13,7 +13,7 @@ describe("Worker", () => {
                 worker.addEventListener("error", (ev) => reject(ev));
             });
 
-            await worker.terminate();
+            worker.terminate();
         });
     });
 });
