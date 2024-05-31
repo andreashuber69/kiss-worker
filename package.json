@@ -27,6 +27,7 @@
   "exports": {
     ".": {
       "browser": "./dist/browser/index.js",
+      "node": "./dist/node/index.js",
       "types": "./dist/browser/index.d.ts"
     }
   },
@@ -40,7 +41,7 @@
   "scripts": {
     "prelint": "cspell '**' && markdownlint '**/*.md'",
     "lint": "eslint --ext .cjs,.ts --report-unused-disable-directives '.'",
-    "build": "tsc -p './src' && vite build --config vite.browser.config.ts",
+    "build": "tsc -p './src' && vite build --config vite.browser.config.ts && vite build --config vite.node.config.ts",
     "build-code-doc": "typedoc './src/index.ts' --tsconfig './src/tsconfig.json' --excludePrivate --out './code-doc'",
     "show-code-doc": "vite 'code-doc' --logLevel error --open",
     "test-no-coverage": "vitest --run",
