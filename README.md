@@ -39,7 +39,7 @@ Provides one of the easiest ways to use a worker thread.
 1. [Advanced Topics](#advanced-topics)
    - [Asynchronous Functions and Methods](#asynchronous-functions-and-methods)
    - [Simultaneous Calls](#simultaneous-calls)
-   - [Worker Script File Extensions](#worker-script-file-extensions)
+   - [Node Compatibility](#node-compatibility)
    - [Worker Code Isolation](#worker-code-isolation)
 1. [Limitations](#limitations)
 1. [Motivation](#motivation)
@@ -50,10 +50,11 @@ Provides one of the easiest ways to use a worker thread.
 
 - Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for client code
 - Fully transparent marshalling of arguments, return values **and** `Error` objects
+- Works in browsers and on node
 - Sequentialization of simultaneous calls with a FIFO queue
-- Support for synchronous and asynchronous functions and methods
 - Automated tests for 99% of the code
 - Reporting of incorrectly implemented functions and methods
+- At most 2kB additional chunk size in the browser
 - Tree shaking friendly (only pay for what you use)
 
 ## Prerequisites
@@ -390,7 +391,7 @@ While [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers
 [Worker Threads](https://nodejs.org/api/worker_threads.html) seem to offer a relatively straight-forward way to offload
 such operations onto a separate thread, it's surprisingly hard to get them right. Here are just the most common pitfalls
 (you can find more in the
-[tests](https://github.com/andreashuber69/kiss-worker/blob/develop/src/implementFunctionWorker.spec.ts)):
+[tests](https://github.com/search?q=repo%3Aandreashuber69%2Fkiss-worker+path%3A.spec.ts&type=code)):
 
 - A given worker is often used from more than one place in the code, which introduces the danger of overlapping requests
   with several handlers simultaneously being subscribed to the `"message"` event. Doing so almost certainly introduces
@@ -411,7 +412,7 @@ requirements:
    objects. In other words, calling a function on a worker thread must feel much the same as calling the function
    on the current thread. To that end, it is imperative that the interface is `Promise`-based so that the caller can
    use `await`.
-2. The same client code should work in the browser and node.
+2. The same client code should work in the browser and on node.
 3. Follow the KISS principe (Keep It Simple, Stupid). In other words, the interface must be as simple as possible but
    no simpler. Many libraries disappoint in this department, because they've either failed to keep up with recent
    language improvements (e.g. `async` & `await`) or resort to simplistic solutions that will not work in the general
