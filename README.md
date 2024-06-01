@@ -43,7 +43,7 @@ Provides one of the easiest ways to use a worker thread.
    - [Worker Code Isolation](#worker-code-isolation)
 1. [Limitations](#limitations)
 1. [Motivation](#motivation)
-   - [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
+   - [Workers are Surprisingly Hard to Use](#workers-are-surprisingly-hard-to-use)
    - [Requirements for a Better Interface](#requirements-for-a-better-interface)
 
 ## Features
@@ -80,7 +80,7 @@ const fibonacci = (n: number): number =>
     ((n < 2) ? Math.floor(n) : fibonacci(n - 1) + fibonacci(n - 2));
 
 export const createFibonacciWorker = implementFunctionWorker(
-    // A function that creates a web worker running this script
+    // A function that creates a worker running this script
     () => new Worker(
         new URL("createFibonacciWorker.ts", import.meta.url),
         { type: "module" },
@@ -161,7 +161,7 @@ class Calculator {
 }
 
 export const createCalculatorWorker = implementObjectWorker(
-    // A function that creates a web worker running this script
+    // A function that creates a worker running this script
     () => new Worker(
         new URL("createCalculatorWorker.ts", import.meta.url),
         { type: "module" },
@@ -296,7 +296,7 @@ import { FunctionInfo, implementFunctionWorkerExternal, Worker } from
 import type { fibonacci } from "./fibonacci.ts";
 
 export const createFibonacciWorker = implementFunctionWorkerExternal(
-    // A function that creates a web worker running the script serving
+    // A function that creates a worker running the script serving
     // the function
     () => new Worker(
         new URL("fibonacci.ts", import.meta.url),
@@ -348,7 +348,7 @@ import { ObjectInfo, implementObjectWorkerExternal, Worker } from "kiss-worker";
 import type { Calculator } from "./Calculator.ts";
 
 export const createCalculatorWorker = implementObjectWorkerExternal(
-    // A function that creates a web worker running the script serving
+    // A function that creates a worker running the script serving
     // the object
     () => new Worker(
         new URL("Calculator.ts", import.meta.url),
@@ -384,40 +384,43 @@ You probably know that blocking the main thread of a browser for more than 50ms 
 [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview/) score of a site. That can happen very quickly,
 e.g simply by using a crypto currency library.
 
-### Web Workers are Surprisingly Hard to Use
+### Workers are Surprisingly Hard to Use
 
-While [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) seem to offer a relatively
-straight-forward way to offload such operations onto a separate thread, it's surprisingly hard to get them right. Here
-are just the most common pitfalls (you can find more in the
+While [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) and
+[Worker Threads](https://nodejs.org/api/worker_threads.html) seem to offer a relatively straight-forward way to offload
+such operations onto a separate thread, it's surprisingly hard to get them right. Here are just the most common pitfalls
+(you can find more in the
 [tests](https://github.com/andreashuber69/kiss-worker/blob/develop/src/implementFunctionWorker.spec.ts)):
 
-- A given web worker is often used from more than one place in the code, which introduces the danger of overlapping
-  requests with several handlers simultaneously being subscribed to the `"message"` event. Doing so almost
-  certainly introduces subtle bugs.
+- A given worker is often used from more than one place in the code, which introduces the danger of overlapping requests
+  with several handlers simultaneously being subscribed to the `"message"` event. Doing so almost certainly introduces
+  subtle bugs.
 - Code executing on the worker might throw to signal error conditions. Such an unhandled exception in the worker thread
-  will trigger the `"error"` event, but the calling thread will only get a generic `Error`. The original `Error` object
-  is lost.
+  will trigger the `"error"` event, but in a browser the calling thread will only get a generic `Error`. The original
+  `Error` object is lost.
 
 ### Requirements for a Better Interface
 
-The **Web Workers** interface was designed that way because it has to cover even the most exotic use cases. I would
-claim you usually just need a transparent way to execute a single function or methods of an object on a different
-thread. Since **Web Workers** aren't exactly new, on [npm](https://npmjs.com) there are hundreds of packages that
-attempt to do just that. The ones I've seen all fail to satisfy at least one of the following requirements:
+The **Web Workers** and **Worker Threads** interfaces were designed that way because they have to cover even the most
+exotic use cases. I would claim you usually just need a transparent way to execute a single function or methods of an
+object on a different thread. Since workers aren't exactly new, on [npm](https://npmjs.com) there are hundreds of
+packages that attempt to do just that. The ones I've seen all fail to satisfy at least one of the following
+requirements:
 
 1. Provide **TypeScript** types and offer fully transparent marshalling of arguments, return values **and** `Error`
    objects. In other words, calling a function on a worker thread must feel much the same as calling the function
    on the current thread. To that end, it is imperative that the interface is `Promise`-based so that the caller can
    use `await`.
-2. Follow the KISS principe (Keep It Simple, Stupid). In other words, the interface must be as simple as possible but
+2. The same client code should work in the browser and node.
+3. Follow the KISS principe (Keep It Simple, Stupid). In other words, the interface must be as simple as possible but
    no simpler. Many libraries disappoint in this department, because they've either failed to keep up with recent
    language improvements (e.g. `async` & `await`) or resort to simplistic solutions that will not work in the general
    case (e.g. sending a string representation of a function to the worker thread).
-3. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
-   cost in the form of additional chunk size and thus helps to keep your site fast and snappy. For example,
+4. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
+   cost in the form of additional chunk size and thus helps to keep your web site fast and snappy. For example,
    many of the features offered by the popular [`workerpool`](https://www.npmjs.com/package/workerpool) will go unused
    in the vast majority of the cases. Unsurprisingly, `workerpool` is >3 times larger than this library (minified and
    gzipped). To be clear: I'm sure there **is** a use case for all the features offered by `workerpool`, just not a very
    common one.
-4. Automatically test all code of every release and provide code coverage metrics.
-5. Last but not least: Provide comprehensive tutorial and reference documentation.
+5. Automatically test all code of every release and provide code coverage metrics.
+6. Last but not least: Provide comprehensive tutorial and reference documentation.
