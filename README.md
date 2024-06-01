@@ -28,7 +28,7 @@
   </a>
 </p>
 
-Provides one of the easiest ways to use a worker thread in the browser, in ~2kB additional chunk size!
+Provides one of the easiest ways to use a worker thread.
 
 1. [Features](#features)
 1. [Prerequisites](#prerequisites)
@@ -48,7 +48,7 @@ Provides one of the easiest ways to use a worker thread in the browser, in ~2kB 
 
 ## Features
 
-- Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for all client code
+- Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for client code
 - Fully transparent marshalling of arguments, return values **and** `Error` objects
 - Sequentialization of simultaneous calls with a FIFO queue
 - Support for synchronous and asynchronous functions and methods
@@ -115,8 +115,8 @@ Here are a few facts that might not be immediately obvious:
 
 - For the same client code to work on node and in the browser, the worker scripts must be referenced with a *.ts*
   extension. To be consistent, all example code also uses *.ts* for `import`. If you have a web-only project using this
-  library, you might want to stick to the standard *.js* extensions. See
-  [Worker Script File Extensions](#worker-script-file-extensions) for more information.
+  library, you might want to stick to the standard *.js* extensions. See [Node Compatibility](#node-compatibility) for
+  more information.
 - Each call to the `createFibonacciWorker()` factory function starts a new and independent worker thread. If necessary,
   a thread could be terminated by calling `worker.terminate()`.
 - The signature of `worker.execute()` is equivalent to the one of `fibonacci()`. Of course, `Error`s thrown by
@@ -210,7 +210,7 @@ If client code does not await each call to `execute` or methods offered by the `
 happen that a call is made even though a previously returned promise is still unsettled. In such a scenario the later
 call is automatically queued and only executed after all previously returned promises have settled.
 
-### Worker Script File Extensions
+### Node Compatibility
 
 As mentioned [above](#example-1-single-function), all examples reference worker scripts with a *.ts* extension, for
 example:
@@ -230,14 +230,14 @@ file basis and the emitted ECMAScript code isn't ever written to the file system
 **emitted** code into a node worker when running **vitest** directly on **TypeScript** files.
 
 This is why the worker of the node version of this library is able to load *.ts* files directly and internally uses
-[tsx](https://www.npmjs.com/package/tsx) to compile it to runnable code at runtime. This way, it is possible to run
-exactly the same tests on node and in the browser. This compatibility extends to production code, but of course comes
-with the caveat of having to deploy **tsx** and the source code of all worker scripts.
+[tsx](https://www.npmjs.com/package/tsx) to compile it to runnable code. This way, it is possible to run exactly the
+same tests on node and in the browser. This compatibility extends to production code, but of course comes with the
+additional **tsx** dependency and the need to deploy the source code of all worker scripts.
 
-For node compatibility it therefore seems to be necessary to reference the source *.ts* files of at least
-worker scripts. To be consistent, this library also uses *.ts* extensions for `import`. By default, the **TypeScript**
-compiler only allows *.js* extensions. They are accepted here, because all code is
-compiled with the [`noEmit`](https://www.typescriptlang.org/tsconfig/#noEmit) and
+For node compatibility it therefore seems to be necessary to reference the source *.ts* files of at least worker
+scripts. To be consistent, this library also uses *.ts* extensions for `import`. By default, the **TypeScript** compiler
+only allows *.js* extensions. They are accepted here, because all code is compiled with the
+[`noEmit`](https://www.typescriptlang.org/tsconfig/#noEmit) and
 [`allowImportingTsExtensions`](https://www.typescriptlang.org/tsconfig/#allowImportingTsExtensions), see
 [tsconfig.json](https://github.com/andreashuber69/kiss-worker/blob/develop/src/tsconfig.json).
 
@@ -247,12 +247,12 @@ To cut a long story short:
   extensions for `import` and worker script file names, as that is the established standard for **TypeScript** code.
   **vite** and **webpack** automatically detect what code is run on a worker thread and build appropriate chunks. The
   same is probably true for other bundlers.
-- If your code needs to run on node **and** you happen to use `vite build`, it might make sense to exclusively use *.ts*
-  extensions to reference worker scripts. Note that this requires the deployment of the *.ts* source code of the worker
-  scripts and **tsx** needs to be available in the production environment.
-- Finally, you can also build the worker scripts in an extra step, deploy them with the rest of your code and then have
-  the worker load the built *.js* code. The node version doesn't use **tsx** on *.js* files and thus avoids the **tsx**
-  dependency and its runtime overhead.
+- If your code needs to run on node **and** you happen to use `vite build` and/or **vitest**, it might make sense to
+  exclusively use *.ts* extensions to reference worker scripts. Note that this requires the deployment of the *.ts*
+  source code of the worker scripts and **tsx** needs to be available in the production environment.
+- Finally, you can also build the worker scripts in an extra step, deploy them with the rest of the emitted code and
+  then have the worker load the built *.js* code. The node version doesn't use **tsx** on *.js* files and thus avoids
+  the **tsx** dependency and its runtime overhead.
 
 ### Worker Code Isolation
 
