@@ -28,7 +28,7 @@
   </a>
 </p>
 
-Provides one of the easiest ways to use a worker thread in the browser, in ~2kB additional chunk size!
+Provides one of the easiest ways to use a worker thread.
 
 1. [Features](#features)
 1. [Prerequisites](#prerequisites)
@@ -39,26 +39,27 @@ Provides one of the easiest ways to use a worker thread in the browser, in ~2kB 
 1. [Advanced Topics](#advanced-topics)
    - [Asynchronous Functions and Methods](#asynchronous-functions-and-methods)
    - [Simultaneous Calls](#simultaneous-calls)
-   - [Worker Script File Extensions](#worker-script-file-extensions)
+   - [Node Compatibility](#node-compatibility)
    - [Worker Code Isolation](#worker-code-isolation)
 1. [Limitations](#limitations)
 1. [Motivation](#motivation)
-   - [Web Workers are Surprisingly Hard to Use](#web-workers-are-surprisingly-hard-to-use)
+   - [Workers are Surprisingly Hard to Use](#workers-are-surprisingly-hard-to-use)
    - [Requirements for a Better Interface](#requirements-for-a-better-interface)
 
 ## Features
 
-- Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for all client code
+- Full [TypeScript](https://typescriptlang.org) support with the best achievable type safety for client code
 - Fully transparent marshalling of arguments, return values **and** `Error` objects
+- Works in browsers and on node
 - Sequentialization of simultaneous calls with a FIFO queue
-- Support for synchronous and asynchronous functions and methods
 - Automated tests for 99% of the code
 - Reporting of incorrectly implemented functions and methods
+- At most 2kB additional chunk size in the browser
 - Tree shaking friendly (only pay for what you use)
 
 ## Prerequisites
 
-This is an ESM-only package. If you're still targeting browsers without ESM support, this package is not for you.
+This is an ESM-only package. If you're still targeting platforms without ESM support, this package is not for you.
 
 ## Getting Started
 
@@ -80,7 +81,7 @@ const fibonacci = (n: number): number =>
     ((n < 2) ? Math.floor(n) : fibonacci(n - 1) + fibonacci(n - 2));
 
 export const createFibonacciWorker = implementFunctionWorker(
-    // A function that creates a web worker running this script
+    // A function that creates a worker running this script
     () => new Worker(
         new URL("createFibonacciWorker.ts", import.meta.url),
         { type: "module" },
@@ -115,8 +116,8 @@ Here are a few facts that might not be immediately obvious:
 
 - For the same client code to work on node and in the browser, the worker scripts must be referenced with a *.ts*
   extension. To be consistent, all example code also uses *.ts* for `import`. If you have a web-only project using this
-  library, you might want to stick to the standard *.js* extensions. See
-  [Worker Script File Extensions](#worker-script-file-extensions) for more information.
+  library, you might want to stick to the standard *.js* extensions. See [Node Compatibility](#node-compatibility) for
+  more information.
 - Each call to the `createFibonacciWorker()` factory function starts a new and independent worker thread. If necessary,
   a thread could be terminated by calling `worker.terminate()`.
 - The signature of `worker.execute()` is equivalent to the one of `fibonacci()`. Of course, `Error`s thrown by
@@ -161,7 +162,7 @@ class Calculator {
 }
 
 export const createCalculatorWorker = implementObjectWorker(
-    // A function that creates a web worker running this script
+    // A function that creates a worker running this script
     () => new Worker(
         new URL("createCalculatorWorker.ts", import.meta.url),
         { type: "module" },
@@ -210,7 +211,7 @@ If client code does not await each call to `execute` or methods offered by the `
 happen that a call is made even though a previously returned promise is still unsettled. In such a scenario the later
 call is automatically queued and only executed after all previously returned promises have settled.
 
-### Worker Script File Extensions
+### Node Compatibility
 
 As mentioned [above](#example-1-single-function), all examples reference worker scripts with a *.ts* extension, for
 example:
@@ -230,14 +231,14 @@ file basis and the emitted ECMAScript code isn't ever written to the file system
 **emitted** code into a node worker when running **vitest** directly on **TypeScript** files.
 
 This is why the worker of the node version of this library is able to load *.ts* files directly and internally uses
-[tsx](https://www.npmjs.com/package/tsx) to compile it to runnable code at runtime. This way, it is possible to run
-exactly the same tests on node and in the browser. This compatibility extends to production code, but of course comes
-with the caveat of having to deploy **tsx** and the source code of all worker scripts.
+[tsx](https://www.npmjs.com/package/tsx) to compile it to runnable code. This way, it is possible to run exactly the
+same tests on node and in the browser. This compatibility extends to production code, but of course comes with the
+additional **tsx** dependency and the need to deploy the source code of all worker scripts.
 
-For node compatibility it therefore seems to be necessary to reference the source *.ts* files of at least
-worker scripts. To be consistent, this library also uses *.ts* extensions for `import`. By default, the **TypeScript**
-compiler only allows *.js* extensions. They are accepted here, because all code is
-compiled with the [`noEmit`](https://www.typescriptlang.org/tsconfig/#noEmit) and
+For node compatibility it therefore seems to be necessary to reference the source *.ts* files of at least worker
+scripts. To be consistent, this library also uses *.ts* extensions for `import`. By default, the **TypeScript** compiler
+only allows *.js* extensions. They are accepted here, because all code is compiled with the
+[`noEmit`](https://www.typescriptlang.org/tsconfig/#noEmit) and
 [`allowImportingTsExtensions`](https://www.typescriptlang.org/tsconfig/#allowImportingTsExtensions), see
 [tsconfig.json](https://github.com/andreashuber69/kiss-worker/blob/develop/src/tsconfig.json).
 
@@ -247,12 +248,12 @@ To cut a long story short:
   extensions for `import` and worker script file names, as that is the established standard for **TypeScript** code.
   **vite** and **webpack** automatically detect what code is run on a worker thread and build appropriate chunks. The
   same is probably true for other bundlers.
-- If your code needs to run on node **and** you happen to use `vite build`, it might make sense to exclusively use *.ts*
-  extensions to reference worker scripts. Note that this requires the deployment of the *.ts* source code of the worker
-  scripts and **tsx** needs to be available in the production environment.
-- Finally, you can also build the worker scripts in an extra step, deploy them with the rest of your code and then have
-  the worker load the built *.js* code. The node version doesn't use **tsx** on *.js* files and thus avoids the **tsx**
-  dependency and its runtime overhead.
+- If your code needs to run on node **and** you happen to use `vite build` and/or **vitest**, it might make sense to
+  exclusively use *.ts* extensions to reference worker scripts. Note that this requires the deployment of the *.ts*
+  source code of the worker scripts and **tsx** needs to be available in the production environment.
+- Finally, you can also build the worker scripts in an extra step, deploy them with the rest of the emitted code and
+  then have the worker load the built *.js* code. The node version doesn't use **tsx** on *.js* files and thus avoids
+  the **tsx** dependency and its runtime overhead.
 
 ### Worker Code Isolation
 
@@ -296,7 +297,7 @@ import { FunctionInfo, implementFunctionWorkerExternal, Worker } from
 import type { fibonacci } from "./fibonacci.ts";
 
 export const createFibonacciWorker = implementFunctionWorkerExternal(
-    // A function that creates a web worker running the script serving
+    // A function that creates a worker running the script serving
     // the function
     () => new Worker(
         new URL("fibonacci.ts", import.meta.url),
@@ -348,7 +349,7 @@ import { ObjectInfo, implementObjectWorkerExternal, Worker } from "kiss-worker";
 import type { Calculator } from "./Calculator.ts";
 
 export const createCalculatorWorker = implementObjectWorkerExternal(
-    // A function that creates a web worker running the script serving
+    // A function that creates a worker running the script serving
     // the object
     () => new Worker(
         new URL("Calculator.ts", import.meta.url),
@@ -384,40 +385,43 @@ You probably know that blocking the main thread of a browser for more than 50ms 
 [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview/) score of a site. That can happen very quickly,
 e.g simply by using a crypto currency library.
 
-### Web Workers are Surprisingly Hard to Use
+### Workers are Surprisingly Hard to Use
 
-While [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) seem to offer a relatively
-straight-forward way to offload such operations onto a separate thread, it's surprisingly hard to get them right. Here
-are just the most common pitfalls (you can find more in the
-[tests](https://github.com/andreashuber69/kiss-worker/blob/develop/src/implementFunctionWorker.spec.ts)):
+While [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) and
+[Worker Threads](https://nodejs.org/api/worker_threads.html) seem to offer a relatively straight-forward way to offload
+such operations onto a separate thread, it's surprisingly hard to get them right. Here are just the most common pitfalls
+(you can find more in the
+[tests](https://github.com/search?q=repo%3Aandreashuber69%2Fkiss-worker+path%3A.spec.ts&type=code)):
 
-- A given web worker is often used from more than one place in the code, which introduces the danger of overlapping
-  requests with several handlers simultaneously being subscribed to the `"message"` event. Doing so almost
-  certainly introduces subtle bugs.
+- A given worker is often used from more than one place in the code, which introduces the danger of overlapping requests
+  with several handlers simultaneously being subscribed to the `"message"` event. Doing so almost certainly introduces
+  subtle bugs.
 - Code executing on the worker might throw to signal error conditions. Such an unhandled exception in the worker thread
-  will trigger the `"error"` event, but the calling thread will only get a generic `Error`. The original `Error` object
-  is lost.
+  will trigger the `"error"` event, but in a browser the calling thread will only get a generic `Error`. The original
+  `Error` object is lost.
 
 ### Requirements for a Better Interface
 
-The **Web Workers** interface was designed that way because it has to cover even the most exotic use cases. I would
-claim you usually just need a transparent way to execute a single function or methods of an object on a different
-thread. Since **Web Workers** aren't exactly new, on [npm](https://npmjs.com) there are hundreds of packages that
-attempt to do just that. The ones I've seen all fail to satisfy at least one of the following requirements:
+The **Web Workers** and **Worker Threads** interfaces were designed that way because they have to cover even the most
+exotic use cases. I would claim you usually just need a transparent way to execute a single function or methods of an
+object on a different thread. Since workers aren't exactly new, on [npm](https://npmjs.com) there are hundreds of
+packages that attempt to do just that. The ones I've seen all fail to satisfy at least one of the following
+requirements:
 
 1. Provide **TypeScript** types and offer fully transparent marshalling of arguments, return values **and** `Error`
    objects. In other words, calling a function on a worker thread must feel much the same as calling the function
    on the current thread. To that end, it is imperative that the interface is `Promise`-based so that the caller can
    use `await`.
-2. Follow the KISS principe (Keep It Simple, Stupid). In other words, the interface must be as simple as possible but
+2. The same client code should work in the browser and on node.
+3. Follow the KISS principe (Keep It Simple, Stupid). In other words, the interface must be as simple as possible but
    no simpler. Many libraries disappoint in this department, because they've either failed to keep up with recent
    language improvements (e.g. `async` & `await`) or resort to simplistic solutions that will not work in the general
    case (e.g. sending a string representation of a function to the worker thread).
-3. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
-   cost in the form of additional chunk size and thus helps to keep your site fast and snappy. For example,
+4. Cover the most common use cases well and leave the more exotic ones to other libraries. This approach minimizes the
+   cost in the form of additional chunk size and thus helps to keep your web site fast and snappy. For example,
    many of the features offered by the popular [`workerpool`](https://www.npmjs.com/package/workerpool) will go unused
    in the vast majority of the cases. Unsurprisingly, `workerpool` is >3 times larger than this library (minified and
    gzipped). To be clear: I'm sure there **is** a use case for all the features offered by `workerpool`, just not a very
    common one.
-4. Automatically test all code of every release and provide code coverage metrics.
-5. Last but not least: Provide comprehensive tutorial and reference documentation.
+5. Automatically test all code of every release and provide code coverage metrics.
+6. Last but not least: Provide comprehensive tutorial and reference documentation.

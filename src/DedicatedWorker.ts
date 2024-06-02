@@ -11,8 +11,7 @@ export type AddRemoveEventListener =
  * Exposes the minimally required interface of the object returned by the the `createWorker` parameter of the
  * {@linkcode implementFunctionWorker}, {@linkcode implementFunctionWorkerExternal}, {@linkcode implementObjectWorker}
  * and {@linkcode implementObjectWorkerExternal} functions.
- * @description This is a subset of the [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker) interface
- * (currently available in browsers only).
+ * @description This is a subset of the [`Worker`](https://developer.mozilla.org/en-US/docs/Web/API/Worker) interface.
  */
 export interface DedicatedWorker {
     addEventListener: AddRemoveEventListener;
