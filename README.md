@@ -59,7 +59,7 @@ Provides one of the easiest ways to use a worker thread.
 
 ## Prerequisites
 
-This is an ESM-only package. If you're still targeting browsers without ESM support, this package is not for you.
+This is an ESM-only package. If you're still targeting platforms without ESM support, this package is not for you.
 
 ## Getting Started
 
