@@ -1,6 +1,8 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 /**
  * Constrains `T` to only declare methods.
+ * @template T The type of the object to be constrained to containing only methods.
  * @description The primary purpose of a worker is to provide a way to offload CPU-bound work onto a separate thread.
  * The interface of a type supporting such a use case often looks quite different from one that runs code that does not
  * hog the CPU. While the latter might have a well balanced mixture of fields, getters, setters and (mutating) methods,

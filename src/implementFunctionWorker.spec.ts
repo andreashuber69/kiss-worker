@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import { assert, describe, expect, it } from "vitest";
 import { createDelayWorker } from "./testHelpers/createDelayWorker.ts";
 import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.ts";

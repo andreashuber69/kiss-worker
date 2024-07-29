@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { implementFunctionWorkerExternal } from "./implementFunctionWorkerExternal.ts";
 import type { serveFunction } from "./serveFunction.ts";
 

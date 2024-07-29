@@ -1,3 +1,5 @@
+// https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 const getAllPropertyNamesImpl = (obj: unknown): string[] => {
     if (obj && obj !== Object.prototype) {
         return [

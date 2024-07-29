@@ -1,3 +1,5 @@
+// https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { WorkerOptions } from "node:worker_threads";
 import { isMainThread, parentPort, Worker } from "node:worker_threads";
 

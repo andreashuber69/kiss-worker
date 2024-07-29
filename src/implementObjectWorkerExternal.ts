@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { DedicatedWorker } from "./DedicatedWorker.ts";
 import type { implementObjectWorker } from "./implementObjectWorker.ts";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";

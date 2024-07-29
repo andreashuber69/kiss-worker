@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { DedicatedWorker } from "./DedicatedWorker.ts";
 import { FunctionInfo } from "./FunctionInfo.ts";
 import type { FunctionWorker } from "./FunctionWorker.ts";

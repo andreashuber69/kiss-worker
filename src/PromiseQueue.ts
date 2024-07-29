@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 export class PromiseQueue {
     public async execute<T>(createAwaitable: () => Promise<T>) {
         const resultPromise = PromiseQueue.push(this.pendingPromise, createAwaitable);
