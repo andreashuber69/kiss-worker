@@ -8,6 +8,7 @@ export default defineWorkspace([
         test: {
             name: "browser",
             browser: {
+                provider: "webdriverio",
                 enabled: true,
                 name: "chrome",
             },
