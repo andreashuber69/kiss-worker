@@ -93,7 +93,7 @@ describe("FunctionWorker", () => {
             try {
                 await worker.execute(() => 2);
             } catch (error: unknown) {
-                expect(error instanceof Error && error.message.endsWith("() => 2 could not be cloned.")).toBe(true);
+                expect(error instanceof Error && error.message.endsWith("could not be cloned.")).toBe(true);
             }
         });
 

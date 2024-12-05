@@ -8,7 +8,7 @@ export default defineConfig({
         coverage: {
             provider: "istanbul",
             include: ["src/**/*.ts"],
-            exclude: ["src/testHelpers/*.ts"],
+            exclude: ["src/testHelpers/*.ts", "src/**/*.spec.ts"],
             reporter: ["lcov", "text"],
         },
     },
