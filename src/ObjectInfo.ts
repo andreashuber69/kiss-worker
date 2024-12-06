@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
 import type { serveObject } from "./serveObject.ts";

@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { DedicatedWorker } from "./DedicatedWorker.ts";
 import { FunctionInfo } from "./FunctionInfo.ts";
 import type { FunctionWorker } from "./FunctionWorker.ts";
@@ -17,9 +18,9 @@ class ProxyImpl<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<
         this.#worker = worker;
 
         for (const key of propertyNames) {
-            // The cast-fest below is necessary because there seems to be no way to transform the type of args to the
-            // parameter types of #worker.execute. The same goes for the type of the function.
             this[key as string] = (async (...args: Parameters<Proxy<T>[keyof Proxy<T>]>) =>
+                // The cast-fest below is necessary because there seems to be no way to transform the type of args to
+                // the parameter types of #worker.execute. The same goes for the type of the function.
                 await this.#worker.execute(...(["call", key, ...args] as Parameters<CallSignature<T>>))
             ) as Proxy<T>[keyof Proxy<T>];
         }

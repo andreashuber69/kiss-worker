@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 

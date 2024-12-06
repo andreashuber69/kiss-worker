@@ -1,14 +1,14 @@
+// https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { WorkerOptions } from "node:worker_threads";
 import { isMainThread, parentPort, Worker } from "node:worker_threads";
 
-const addEventListener = (type: "message", listener: (ev: MessageEvent) => unknown): void =>
-    void parentPort?.addListener(
-        type,
-        // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
-        // version of the code is ever loaded.
-        /* istanbul ignore next -- @preserve */
-        (value: unknown) => listener({ data: value } as unknown as MessageEvent),
-    );
+const addEventListener = (type: "message", listener: (ev: MessageEvent) => unknown) => {
+    // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
+    // version of the code is ever loaded.
+    /* istanbul ignore next -- @preserve */
+    parentPort?.addListener(type, (value: unknown) => listener({ data: value } as unknown as MessageEvent));
+};
 
 const isWorker = () => !isMainThread;
 

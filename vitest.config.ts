@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import { defineConfig } from "vitest/config";
 
 // eslint-disable-next-line import/no-anonymous-default-export, import/no-default-export
@@ -7,7 +8,7 @@ export default defineConfig({
         coverage: {
             provider: "istanbul",
             include: ["src/**/*.ts"],
-            exclude: ["src/testHelpers/*.ts"],
+            exclude: ["src/testHelpers/*.ts", "src/**/*.spec.ts"],
             reporter: ["lcov", "text"],
         },
     },

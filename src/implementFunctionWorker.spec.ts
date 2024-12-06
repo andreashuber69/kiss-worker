@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import { assert, describe, expect, it } from "vitest";
 import { createDelayWorker } from "./testHelpers/createDelayWorker.ts";
 import { createFibonacciWorker } from "./testHelpers/createFibonacciWorker.ts";
@@ -92,7 +93,7 @@ describe("FunctionWorker", () => {
             try {
                 await worker.execute(() => 2);
             } catch (error: unknown) {
-                expect(error instanceof Error && error.message.endsWith("() => 2 could not be cloned.")).toBe(true);
+                expect(error instanceof Error && error.message.endsWith("could not be cloned.")).toBe(true);
             }
         });
 

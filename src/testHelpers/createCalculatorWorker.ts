@@ -1,4 +1,6 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+/* eslint-disable jsdoc/convert-to-jsdoc-comments */
+
 import { implementObjectWorker, Worker } from "../index.ts";
 
 // We want to serve an object of this class on a worker thread

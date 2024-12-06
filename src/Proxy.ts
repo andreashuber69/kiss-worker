@@ -1,8 +1,10 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";
 
 /**
  * A type with async equivalents of the methods declared on `T`.
+ * @template T The original type.
  * @description Contains only the methods with string identifiers, methods identified by numbers or symbols will not
  * appear.
  */

@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import { describe, it } from "vitest";
 import { Worker } from "./index.ts";
 

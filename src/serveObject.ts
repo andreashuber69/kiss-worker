@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import { getAllPropertyNames } from "./getAllPropertyNames.ts";
 import type { implementObjectWorkerExternal } from "./implementObjectWorkerExternal.ts";
 import type { MethodsOnlyObject } from "./MethodsOnlyObject.ts";

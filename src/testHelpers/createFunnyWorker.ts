@@ -1,4 +1,5 @@
 // https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 import { implementFunctionWorker, Worker } from "../index.ts";
 import { postMessage } from "api";
 

@@ -343,7 +343,8 @@ export type { Calculator };
 
 ```ts
 // ./src/createCalculatorWorker.ts
-import { ObjectInfo, implementObjectWorkerExternal, Worker } from "kiss-worker";
+import { ObjectInfo, implementObjectWorkerExternal, Worker } from
+    "kiss-worker";
 
 // Import the type only
 import type { Calculator } from "./Calculator.ts";

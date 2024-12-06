@@ -1,3 +1,5 @@
+// https://github.com/andreashuber69/kiss-worker/blob/develop/README.md
+
 const addEventListenerLocal = addEventListener;
 const postMessageLocal = postMessage;
 const WorkerLocal = Worker;
