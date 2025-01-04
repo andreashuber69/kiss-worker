@@ -8,4 +8,8 @@ module.exports = {
     },
     extends: ["@andreashuber69"],
     ignorePatterns: ["/code-doc/", "/coverage/", "/dist/"],
+    rules: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        "jsdoc/require-template": "off",
+    },
 };

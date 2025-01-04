@@ -7,6 +7,7 @@ const addEventListener = (type: "message", listener: (ev: MessageEvent) => unkno
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     parentPort?.addListener(type, (value: unknown) => listener({ data: value } as unknown as MessageEvent));
 };
 

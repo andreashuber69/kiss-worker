@@ -17,6 +17,7 @@ const handleMessage = async <T extends (..._: never[]) => unknown>(func: T, ev: 
 };
 
 /* istanbul ignore next -- @preserve */
+
 /**
  * Serves `func` on a worker thread such that it can be called from the thread calling
  * {@linkcode implementFunctionWorkerExternal}.

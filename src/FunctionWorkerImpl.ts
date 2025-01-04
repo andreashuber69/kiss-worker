@@ -75,6 +75,7 @@ export class FunctionWorkerImpl<T extends (..._: never[]) => unknown> {
         // We're deliberately casting (as opposed to typing the parameter accordingly) to avoid TS4023. This error
         // appears because TypeScript puts # private properties in the .d.ts files and code importing the type would
         // thus need to "see" the types associated with the parameter type.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const { data } = ev as { data: Message<Awaited<ReturnType<T>>> };
 
         if (data.type === "result") {

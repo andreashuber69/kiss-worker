@@ -18,9 +18,11 @@ class ProxyImpl<C extends new (..._: never[]) => T, T extends MethodsOnlyObject<
         this.#worker = worker;
 
         for (const key of propertyNames) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             this[key as string] = (async (...args: Parameters<Proxy<T>[keyof Proxy<T>]>) =>
                 // The cast-fest below is necessary because there seems to be no way to transform the type of args to
                 // the parameter types of #worker.execute. The same goes for the type of the function.
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 await this.#worker.execute(...(["call", key, ...args] as Parameters<CallSignature<T>>))
             ) as Proxy<T>[keyof Proxy<T>];
         }
@@ -62,6 +64,7 @@ export class ObjectWorkerImpl<C extends new (..._: never[]) => T, T extends Meth
         this.#worker = createFunctionWorker();
         // Admittedly, this isn't pretty, but seems to be the only way how we can convince the compiler that obj will
         // never be undefined without additional runtime checks.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         this.#obj = undefined as unknown as Proxy<T>;
     }
 
@@ -70,8 +73,10 @@ export class ObjectWorkerImpl<C extends new (..._: never[]) => T, T extends Meth
 
     private async construct(...args: ConstructorParameters<C>) {
         const propertyNames =
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             await this.#worker.execute("construct", ...args) as ReadonlyArray<Extract<keyof T, string>>;
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         this.#obj = new ProxyImpl<C, T>(this.#worker, propertyNames) as unknown as Proxy<T>;
     }
 }

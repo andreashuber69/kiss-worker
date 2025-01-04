@@ -38,6 +38,7 @@ const handleMessage = async <C extends new (..._: never[]) => T, T extends Metho
 };
 
 /* istanbul ignore next -- @preserve */
+
 /**
  * Calls `ctor` and serves the returned object on a worker thread such that its methods can be called from
  * the thread calling {@linkcode implementObjectWorkerExternal}.

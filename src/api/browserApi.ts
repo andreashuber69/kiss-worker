@@ -8,9 +8,10 @@ const isWorker = () => typeof WorkerGlobalScope !== "undefined" &&
     // Code coverage is not reported for code executed within a worker, because only the original (uninstrumented)
     // version of the code is ever loaded.
     /* istanbul ignore next -- @preserve */
-    self instanceof WorkerGlobalScope;
+    globalThis instanceof WorkerGlobalScope;
 
 const getCause = (error: object) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const { message, filename, lineno } = error as Record<string, unknown>;
     return { message, filename, lineno };
 };
