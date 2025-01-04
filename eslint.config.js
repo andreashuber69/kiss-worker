@@ -3,10 +3,10 @@ import generalConfig from "@andreashuber69/eslint-config";
 const config = [
     ...generalConfig,
     {
-        files: ["./src/*.ts"],
+        files: ["src/**/*.ts"],
     },
     {
-        ignores: ["/code-doc/", "coverage/", "dist/"],
+        ignores: ["code-doc/", "coverage/", "dist/"],
     },
     {
         languageOptions: {
