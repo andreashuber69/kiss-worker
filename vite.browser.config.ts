@@ -17,7 +17,7 @@ export default defineConfig({
     plugins: [
         dts({
             rollupTypes: true,
-            tsconfigPath: "./src/tsconfig.json",
+            tsconfigPath: "./tsconfig.json",
         }),
     ],
 });

@@ -4,11 +4,13 @@
     "@tsconfig/node-lts/tsconfig"
   ],
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "lib": ["es2023", "WebWorker"],
     "noEmit": true,
     "verbatimModuleSyntax": true
   },
   "include": [
-    ".eslintrc.cjs",
-    "*.ts"
+    "src/**/*.js",
+    "src/**/*.ts",
   ]
 }

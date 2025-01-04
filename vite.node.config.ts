@@ -14,7 +14,6 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 index: "./src/index.ts",
-                // eslint-disable-next-line @typescript-eslint/naming-convention
                 TsxWorker: "./src/api/TsxWorker.js",
             },
         },
