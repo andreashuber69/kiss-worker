@@ -40,7 +40,7 @@
   ],
   "scripts": {
     "prelint": "cspell '**' && markdownlint '**/*.md'",
-    "lint": "eslint --report-unused-disable-directives",
+    "lint": "eslint",
     "build": "tsc && vite build --config vite.browser.config.ts && vite build --config vite.node.config.ts",
     "build-code-doc": "typedoc './src/index.ts' --tsconfig './src/tsconfig.json' --excludePrivate --out './code-doc'",
     "show-code-doc": "vite 'code-doc' --logLevel error --open",
@@ -54,7 +54,7 @@
     "finish-release": "git flow release finish -p -m \"chore: finish release\" v`cat package.json | jq -r '.version'`"
   },
   "devDependencies": {
-    "@andreashuber69/eslint-config": "^2.0.0-beta.0",
+    "@andreashuber69/eslint-config": "^2.0.0-beta.3",
     "@tsconfig/node-lts": "^22.0.1",
     "@tsconfig/strictest": "^2.0.5",
     "@types/node": "^22.10.5",
@@ -67,11 +67,11 @@
     "markdownlint-cli": "^0.43.0",
     "tsx": "^4.19.2",
     "typedoc": "^0.27.6",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.4.0",
     "vitest": "^2.1.8",
-    "webdriverio": "^9.5.1"
+    "webdriverio": "^9.5.3"
   },
   "peerDependencies": {
     "tsx": "^4.11.0"
