@@ -7,17 +7,17 @@ import dts from "vite-plugin-dts";
 export default defineConfig({
     build: {
         lib: {
-            entry: ["./src/index.ts"],
+            entry: ["src/index.ts"],
             fileName: "index",
             formats: ["es"],
         },
-        outDir: "./dist/browser",
+        outDir: "dist/browser",
         sourcemap: true,
     },
     plugins: [
         dts({
             rollupTypes: true,
-            tsconfigPath: "./tsconfig.json",
+            tsconfigPath: "tsconfig.json",
         }),
     ],
 });

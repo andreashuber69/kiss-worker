@@ -6,15 +6,15 @@ import { defineConfig } from "vite";
 export default defineConfig({
     build: {
         lib: {
-            entry: ["./src/index.ts"],
+            entry: ["src/index.ts"],
             fileName: "index",
             formats: ["es"],
         },
-        outDir: "./dist/node",
+        outDir: "dist/node",
         rollupOptions: {
             input: {
-                index: "./src/index.ts",
-                TsxWorker: "./src/api/TsxWorker.js",
+                index: "src/index.ts",
+                TsxWorker: "src/api/TsxWorker.js",
             },
         },
         sourcemap: true,
