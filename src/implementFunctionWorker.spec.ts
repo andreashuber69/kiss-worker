@@ -107,7 +107,7 @@ describe("FunctionWorker", () => {
             }
 
             await expect(async () => await worker.execute(new MyObj(), "execute")).rejects.toThrow(
-                new Error("obj[method] is not a function"),
+                new TypeError("obj[method] is not a function"),
             );
         });
     });
