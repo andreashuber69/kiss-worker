@@ -14,10 +14,5 @@ export default defineConfig({
         outDir: "dist/browser",
         sourcemap: true,
     },
-    plugins: [
-        dts({
-            rollupTypes: true,
-            tsconfigPath: "tsconfig.json",
-        }),
-    ],
+    plugins: [dts({ rollupTypes: true })],
 });

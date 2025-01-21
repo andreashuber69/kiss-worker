@@ -6,11 +6,9 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "lib": ["es2023", "WebWorker"],
-    "noEmit": true,
-    "verbatimModuleSyntax": true
+    "noEmit": true
   },
   "include": [
-    "src/**/*.js",
-    "src/**/*.ts",
+    "src/**/*",
   ]
 }
