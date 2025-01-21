@@ -5,5 +5,4 @@ import { workerData } from "node:worker_threads";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { tsImport } from "tsx/esm/api";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
 void tsImport(workerData.tsxWorkerFilename, import.meta.url);
