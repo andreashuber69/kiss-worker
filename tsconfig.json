@@ -1,14 +1,10 @@
 {
-  "extends": [
-    "@tsconfig/strictest/tsconfig",
-    "@tsconfig/node-lts/tsconfig"
-  ],
+  "extends": ["@tsconfig/strictest/tsconfig"],
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "lib": ["es2023", "WebWorker"],
+    "module": "Node16",
     "noEmit": true
   },
-  "include": [
-    "src/**/*",
-  ]
+  "include": ["src/**/*"]
 }

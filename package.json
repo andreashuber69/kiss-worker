@@ -53,7 +53,6 @@
   },
   "devDependencies": {
     "@andreashuber69/eslint-config": "^2.1.1",
-    "@tsconfig/node-lts": "^22.0.1",
     "@tsconfig/strictest": "^2.0.5",
     "@types/node": "^22.10.7",
     "@vitest/browser": "^3.0.3",
@@ -77,5 +76,8 @@
     "tsx": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "@tsconfig/node-lts": "^22.0.1"
   }
 }
