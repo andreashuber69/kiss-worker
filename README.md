@@ -17,13 +17,13 @@
   <a href="https://codeclimate.com/github/andreashuber69/kiss-worker/maintainability">
     <img src="https://api.codeclimate.com/v1/badges/f3afec1c547d0c33bf94/maintainability" alt="Maintainability">
   </a>
-  <a href="https://coveralls.io/github/andreashuber69/kiss-worker?branch=develop">
-    <img src="https://coveralls.io/repos/github/andreashuber69/kiss-worker/badge.svg?branch=develop" alt="Coverage">
+  <a href="https://coveralls.io/github/andreashuber69/kiss-worker?branch=master">
+    <img src="https://coveralls.io/repos/github/andreashuber69/kiss-worker/badge.svg?branch=master" alt="Coverage">
   </a>
   <a href="https://www.npmjs.com/package/kiss-worker?activeTab=code">
     <img src="https://img.shields.io/bundlephobia/minzip/kiss-worker" alt="npm Bundle Size">
   </a>
-  <a href="https://github.com/andreashuber69/kiss-worker/blob/develop/LICENSE">
+  <a href="https://github.com/andreashuber69/kiss-worker/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/andreashuber69/kiss-worker.svg" alt="License">
   </a>
 </p>
@@ -240,7 +240,7 @@ scripts. To be consistent, this library also uses *.ts* extensions for `import`.
 only allows *.js* extensions. They are accepted here, because all code is compiled with the
 [`noEmit`](https://www.typescriptlang.org/tsconfig/#noEmit) and
 [`allowImportingTsExtensions`](https://www.typescriptlang.org/tsconfig/#allowImportingTsExtensions), see
-[tsconfig.json](https://github.com/andreashuber69/kiss-worker/blob/develop/src/tsconfig.json).
+[tsconfig.json](https://github.com/andreashuber69/kiss-worker/blob/master/tsconfig.json).
 
 To cut a long story short:
 
@@ -378,7 +378,7 @@ instance to convey the required information.
   **not** declaring anything `protected` or `private`.
 - The public interface of an object served on a worker thread cannot currently consist of anything else than methods,
   which is enforced at compile time. The rationale is documented on
-  [`MethodsOnlyObject`](https://github.com/andreashuber69/kiss-worker/blob/develop/src/MethodsOnlyObject.ts).
+  [`MethodsOnlyObject`](https://github.com/andreashuber69/kiss-worker/blob/master/src/MethodsOnlyObject.ts).
 
 ## Motivation
 
