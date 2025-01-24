@@ -57,9 +57,9 @@
   "devDependencies": {
     "@andreashuber69/eslint-config": "^2.1.1",
     "@tsconfig/strictest": "^2.0.5",
-    "@types/node": "^22.10.7",
-    "@vitest/browser": "^3.0.3",
-    "@vitest/coverage-istanbul": "^3.0.3",
+    "@types/node": "^22.10.10",
+    "@vitest/browser": "^3.0.4",
+    "@vitest/coverage-istanbul": "^3.0.4",
     "api": "file:src/api",
     "coveralls": "^3.1.1",
     "cspell": "^8.17.2",
@@ -69,8 +69,8 @@
     "typescript": "^5.7.3",
     "vite": "^6.0.11",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.3",
-    "webdriverio": "^9.5.7"
+    "vitest": "^3.0.4",
+    "webdriverio": "^9.6.4"
   },
   "peerDependencies": {
     "tsx": "^4.11.0"
@@ -79,8 +79,5 @@
     "tsx": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "@tsconfig/node-lts": "^22.0.1"
   }
 }
