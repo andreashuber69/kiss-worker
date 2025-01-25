@@ -48,6 +48,7 @@
     "build-code-doc": "typedoc './src/index.ts' --tsconfig './src/tsconfig.json' --excludePrivate --out './code-doc'",
     "show-code-doc": "vite 'code-doc' --logLevel error --open",
     "test-no-coverage": "vitest --run",
+    "pretest": "npm run build",
     "test": "vitest --run --coverage",
     "show-coverage": "vite 'coverage/lcov-report' --logLevel error --open",
     "ci": "npm run lint && npm run build && npm test",
