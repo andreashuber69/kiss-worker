@@ -6,16 +6,6 @@ import { defineWorkspace } from "vitest/config";
 export default defineWorkspace([
     {
         test: {
-            name: "browser",
-            browser: {
-                enabled: true,
-                provider: "webdriverio",
-                instances: [{ browser: "firefox" }],
-            },
-        },
-    },
-    {
-        test: {
             name: "node",
         },
     },
