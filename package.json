@@ -55,11 +55,11 @@
     "finish-release": "git flow release finish -p -m \"chore: finish release\" v`cat package.json | jq -r '.version'`"
   },
   "devDependencies": {
-    "@andreashuber69/eslint-config": "^2.1.1",
+    "@andreashuber69/eslint-config": "^2.1.2",
     "@tsconfig/strictest": "^2.0.5",
-    "@types/node": "^22.13.2",
-    "@vitest/browser": "^3.0.5",
-    "@vitest/coverage-istanbul": "^3.0.5",
+    "@types/node": "^22.13.4",
+    "@vitest/browser": "^3.0.6",
+    "@vitest/coverage-istanbul": "^3.0.6",
     "api": "file:src/api",
     "coveralls": "^3.1.1",
     "cspell": "^8.17.3",
@@ -69,8 +69,8 @@
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.5",
-    "webdriverio": "^9.9.0"
+    "vitest": "^3.0.6",
+    "webdriverio": "^9.9.1"
   },
   "peerDependencies": {
     "tsx": "^4.11.0"
